@@ -1,0 +1,378 @@
+{
+  "ml-engineer": {
+    "title": "ML Engineer Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "python", "name": "Python Programming" },
+          { "id": "math", "name": "Mathematics & Statistics" },
+          { "id": "dsa", "name": "Data Structures & Algorithms" }
+        ]
+      },
+      {
+        "name": "CORE ML",
+        "topics": [
+          { "id": "ml-basics", "name": "Machine Learning Basics" },
+          { "id": "supervised", "name": "Supervised Learning" },
+          { "id": "unsupervised", "name": "Unsupervised Learning" }
+        ]
+      },
+      {
+        "name": "DEEP LEARNING",
+        "topics": [
+          { "id": "dl-fundamentals", "name": "Deep Learning Fundamentals" },
+          { "id": "cnn", "name": "Convolutional Neural Networks" },
+          { "id": "rnn", "name": "Recurrent Neural Networks" }
+        ]
+      },
+      {
+        "name": "ADVANCED",
+        "topics": [
+          { "id": "nlp", "name": "Natural Language Processing" },
+          { "id": "cv", "name": "Computer Vision" },
+          { "id": "transformers", "name": "Transformers & Attention" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "tools", "name": "Tools" },
+          { "id": "deployment", "name": "Deployment" }
+        ]
+      }
+    ]
+  },
+  "data-analyst": {
+    "title": "Data Analyst Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "python", "name": "Python for Data Analysis" },
+          { "id": "sql", "name": "SQL & Databases" },
+          { "id": "statistics", "name": "Statistics Fundamentals" }
+        ]
+      },
+      {
+        "name": "DATA VISUALIZATION",
+        "topics": [
+          { "id": "matplotlib", "name": "Matplotlib & Seaborn" },
+          { "id": "powerbi", "name": "Power BI / Tableau" },
+          { "id": "dashboarding", "name": "Dashboard Design" }
+        ]
+      },
+      {
+        "name": "DATA ANALYSIS",
+        "topics": [
+          { "id": "eda", "name": "Exploratory Data Analysis" },
+          { "id": "pandas", "name": "Pandas & NumPy" },
+          { "id": "stat-models", "name": "Statistical Modeling" }
+        ]
+      },
+      {
+        "name": "ADVANCED ANALYTICS",
+        "topics": [
+          { "id": "ml-basics", "name": "ML for Analytics" },
+          { "id": "forecasting", "name": "Time Series & Forecasting" },
+          { "id": "optimization", "name": "Optimization Techniques" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "excel", "name": "Excel Advanced" },
+          { "id": "cloud-tools", "name": "Cloud & BI Tools" }
+        ]
+      }
+    ]
+  },
+  "nlp-engineer": {
+    "title": "NLP Engineer Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "python", "name": "Python Programming" },
+          { "id": "linguistics", "name": "Linguistics Basics" },
+          { "id": "math", "name": "Math & Probability" }
+        ]
+      },
+      {
+        "name": "CORE NLP",
+        "topics": [
+          { "id": "text-preprocessing", "name": "Text Preprocessing" },
+          { "id": "embedding", "name": "Word Embeddings" },
+          { "id": "seq-models", "name": "Sequence Models" }
+        ]
+      },
+      {
+        "name": "ADVANCED NLP",
+        "topics": [
+          { "id": "transformers", "name": "Transformers & Attention" },
+          { "id": "qa", "name": "Question Answering Systems" },
+          { "id": "summarization", "name": "Text Summarization" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "huggingface", "name": "Hugging Face & Libraries" },
+          { "id": "deployment", "name": "Deploying NLP Models" }
+        ]
+      }
+    ]
+  },
+  "frontend-developer": {
+    "title": "Frontend Developer Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "html", "name": "HTML" },
+          { "id": "css", "name": "CSS" },
+          { "id": "js", "name": "JavaScript" }
+        ]
+      },
+      {
+        "name": "FRAMEWORKS",
+        "topics": [
+          { "id": "react", "name": "React.js" },
+          { "id": "vue", "name": "Vue.js Basics" },
+          { "id": "angular", "name": "Angular Basics" }
+        ]
+      },
+      {
+        "name": "ADVANCED UI",
+        "topics": [
+          { "id": "tailwind", "name": "Tailwind CSS" },
+          { "id": "responsive", "name": "Responsive Design" },
+          { "id": "testing", "name": "Frontend Testing" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "git", "name": "Git & Version Control" },
+          { "id": "deployment", "name": "Deploying Frontend Apps" }
+        ]
+      }
+    ]
+  },
+  "backend-developer": {
+    "title": "Backend Developer Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "python", "name": "Python / Node.js / Java" },
+          { "id": "databases", "name": "Databases & SQL" },
+          { "id": "dsa", "name": "Data Structures & Algorithms" }
+        ]
+      },
+      {
+        "name": "FRAMEWORKS & API",
+        "topics": [
+          { "id": "express", "name": "Express / Flask / Spring Boot" },
+          { "id": "rest", "name": "RESTful APIs" },
+          { "id": "auth", "name": "Authentication & Authorization" }
+        ]
+      },
+      {
+        "name": "ADVANCED",
+        "topics": [
+          { "id": "microservices", "name": "Microservices Architecture" },
+          { "id": "scaling", "name": "Scalability & Caching" },
+          { "id": "testing", "name": "Backend Testing" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "docker", "name": "Docker & Containers" },
+          { "id": "ci-cd", "name": "CI/CD Pipelines" }
+        ]
+      }
+    ]
+  },
+  "fullstack-developer": {
+    "title": "Full-stack Developer Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "html", "name": "HTML & CSS" },
+          { "id": "js", "name": "JavaScript" },
+          { "id": "dsa", "name": "Data Structures & Algorithms" }
+        ]
+      },
+      {
+        "name": "FRONTEND",
+        "topics": [
+          { "id": "react", "name": "React.js" },
+          { "id": "vue", "name": "Vue.js Basics" },
+          { "id": "responsive", "name": "Responsive Design" }
+        ]
+      },
+      {
+        "name": "BACKEND",
+        "topics": [
+          { "id": "node", "name": "Node.js / Express" },
+          { "id": "databases", "name": "Databases & SQL" },
+          { "id": "auth", "name": "Authentication & Authorization" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "git", "name": "Git & Version Control" },
+          { "id": "deployment", "name": "Deploying Fullstack Apps" }
+        ]
+      }
+    ]
+  },
+  "react-developer": {
+    "title": "React Developer Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "js", "name": "JavaScript ES6+" },
+          { "id": "html-css", "name": "HTML & CSS" },
+          { "id": "dsa", "name": "Data Structures Basics" }
+        ]
+      },
+      {
+        "name": "REACT CORE",
+        "topics": [
+          { "id": "react-fundamentals", "name": "React Fundamentals" },
+          { "id": "hooks", "name": "React Hooks" },
+          { "id": "state-management", "name": "State Management" }
+        ]
+      },
+      {
+        "name": "ADVANCED",
+        "topics": [
+          { "id": "routing", "name": "React Router" },
+          { "id": "testing", "name": "React Testing" },
+          { "id": "performance", "name": "Performance Optimization" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "git", "name": "Git & Version Control" },
+          { "id": "deployment", "name": "Deploying React Apps" }
+        ]
+      }
+    ]
+  },
+  "flutter-developer": {
+    "title": "Flutter Developer Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "dart", "name": "Dart Programming" },
+          { "id": "widgets", "name": "Flutter Widgets" },
+          { "id": "state", "name": "State Management Basics" }
+        ]
+      },
+      {
+        "name": "APP DEVELOPMENT",
+        "topics": [
+          { "id": "ui", "name": "UI Design & Layout" },
+          { "id": "navigation", "name": "Navigation & Routing" },
+          { "id": "networking", "name": "Networking & APIs" }
+        ]
+      },
+      {
+        "name": "ADVANCED",
+        "topics": [
+          { "id": "performance", "name": "Performance Optimization" },
+          { "id": "testing", "name": "Flutter Testing" },
+          { "id": "animations", "name": "Animations & Transitions" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "git", "name": "Git & Version Control" },
+          { "id": "deployment", "name": "Deploying Flutter Apps" }
+        ]
+      }
+    ]
+  },
+  "cloud-engineer": {
+    "title": "Cloud Engineer Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "os", "name": "Operating Systems & Networking" },
+          { "id": "linux", "name": "Linux Fundamentals" },
+          { "id": "programming", "name": "Python / Bash Scripting" }
+        ]
+      },
+      {
+        "name": "CLOUD CORE",
+        "topics": [
+          { "id": "aws", "name": "AWS Core Services" },
+          { "id": "azure", "name": "Azure Core Services" },
+          { "id": "gcp", "name": "GCP Core Services" }
+        ]
+      },
+      {
+        "name": "ADVANCED",
+        "topics": [
+          { "id": "infra", "name": "Infrastructure as Code" },
+          { "id": "security", "name": "Cloud Security" },
+          { "id": "cost", "name": "Cost Optimization" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "docker", "name": "Docker & Containers" },
+          { "id": "ci-cd", "name": "CI/CD & DevOps Tools" }
+        ]
+      }
+    ]
+  },
+  "devops-engineer": {
+    "title": "DevOps Engineer Path",
+    "categories": [
+      {
+        "name": "FOUNDATION",
+        "topics": [
+          { "id": "linux", "name": "Linux Fundamentals" },
+          { "id": "scripting", "name": "Bash / Python Scripting" },
+          { "id": "dsa", "name": "Data Structures Basics" }
+        ]
+      },
+      {
+        "name": "DEVOPS CORE",
+        "topics": [
+          { "id": "git", "name": "Git & Version Control" },
+          { "id": "ci-cd", "name": "CI/CD Pipelines" },
+          { "id": "containers", "name": "Docker & Kubernetes" }
+        ]
+      },
+      {
+        "name": "MONITORING & CLOUD",
+        "topics": [
+          { "id": "monitoring", "name": "Monitoring & Logging" },
+          { "id": "aws", "name": "Cloud Platforms" },
+          { "id": "automation", "name": "Infrastructure Automation" }
+        ]
+      },
+      {
+        "name": "TOOLS & DEPLOYMENT",
+        "topics": [
+          { "id": "ansible", "name": "Ansible / Terraform" },
+          { "id": "deployment", "name": "Production Deployment" }
+        ]
+      }
+    ]
+  }
+}
