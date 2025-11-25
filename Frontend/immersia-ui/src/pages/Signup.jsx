@@ -2,8 +2,12 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input.jsx";
 import { Label } from "@/components/ui/label.jsx";
 import { Button } from "@/components/ui/button.jsx";
+import { useNavigate } from "react-router-dom";
+
 
 function Signup() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     fullname: "",
     email: "",
@@ -14,9 +18,27 @@ function Signup() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+//  this is the main logic that is binding the sigup frontend to backend
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting:", form);
+    try {
+    const response = await fetch("http://127.0.0.1:8000/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+
+    const data = await response.json();
+    console.log("Server response:", data);
+
+    if (data.access_token) {
+      localStorage.setItem("token", data.access_token);
+      alert("Signup successful!");
+      navigate("/skill");
+    }
+  } catch (err) {
+    console.error("Signup error:", err);
+  }
   };
 
   return (
