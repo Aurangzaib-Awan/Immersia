@@ -2,17 +2,39 @@ import { Input } from "@/components/ui/input.jsx";
 import { Label } from "@/components/ui/label.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 
 function Login() {
     const [form, setForm] = useState({ email: "", password: "" });
+    const Navigate=useNavigate()
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
-    function handleSubmit(e) {
+    const handleSubmit=async (e)=> {
         e.preventDefault();
-        console.log("user logged in !");
+        try {
+        const response = await fetch("http://127.0.0.1:8000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+      console.log("Server response:", data);
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        Navigate("/skill");
+      } else {
+        alert("Login failed. Check your credentials.");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      alert("Something went wrong. Try again.");
+    }
     }
 
     return (
