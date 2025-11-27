@@ -81,3 +81,34 @@ export const courseAPI = {
     });
   },
 };
+
+// Add to your existing api.js
+export const projectAPI = {
+  // Get all projects
+  getProjects: async () => {
+    return await apiRequest('/projects');
+  },
+
+  // Create new project
+  createProject: async (projectData) => {
+    return await apiRequest('/projects', {
+      method: 'POST',
+      body: JSON.stringify(projectData),
+    });
+  },
+
+  // Update existing project
+  updateProject: async (projectId, projectData) => {
+    return await apiRequest(`/projects/${projectId}`, {
+      method: 'PUT',
+      body: JSON.stringify(projectData),
+    });
+  },
+
+  // Delete project
+  deleteProject: async (projectId) => {
+    return await apiRequest(`/projects/${projectId}`, {
+      method: 'DELETE',
+    });
+  },
+};

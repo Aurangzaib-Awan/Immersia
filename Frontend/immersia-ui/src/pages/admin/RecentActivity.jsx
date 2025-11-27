@@ -30,44 +30,46 @@ const RecentActivity = () => {
   }, []);
 
   return (
-    <div className="bg-surface-800 rounded-xl shadow-sm border border-background-700 p-4 sm:p-6">
-      <h3 className="text-lg font-semibold text-text-white mb-4">Recent Activity</h3>
-      
-      {/* Scroll container for activities - shows 6 at a time */}
-      <div className="max-h-64 overflow-y-auto">
-        <div className="space-y-3 sm:space-y-4 pr-2">
-          {activities.map((activity, index) => (
-            <div 
-              key={activity.id}
-              className={`flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 sm:py-3 border-b border-background-700 last:border-b-0 gap-2 sm:gap-0 transition-all duration-500 ${
-                visibleActivities.some(a => a.id === activity.id)
-                  ? 'opacity-100 transform translate-x-0'
-                  : 'opacity-0 transform translate-x-4'
-              }`}
-              style={{
-                transitionDelay: visibleActivities.some(a => a.id === activity.id) ? `${index * 60}ms` : '0ms'
-              }}
-            >
-              <div className="flex-1 min-w-0">
-                <p className="text-text-white font-medium truncate">{activity.user}</p>
-                <p className="text-text-gray text-sm truncate">{activity.action}</p>
+    <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
+      <div className="bg-surface-800 rounded-xl p-4 sm:p-6">
+        <h3 className="text-lg font-semibold text-text-white mb-4">Recent Activity</h3>
+        
+        {/* Scroll container for activities - shows 6 at a time */}
+        <div className="max-h-64 overflow-y-auto">
+          <div className="space-y-3 sm:space-y-4 pr-2">
+            {activities.map((activity, index) => (
+              <div 
+                key={activity.id}
+                className={`flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 sm:py-3 border-b border-background-700 last:border-b-0 gap-2 sm:gap-0 transition-all duration-500 ${
+                  visibleActivities.some(a => a.id === activity.id)
+                    ? 'opacity-100 transform translate-x-0'
+                    : 'opacity-0 transform translate-x-4'
+                }`}
+                style={{
+                  transitionDelay: visibleActivities.some(a => a.id === activity.id) ? `${index * 60}ms` : '0ms'
+                }}
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="text-text-white font-medium truncate">{activity.user}</p>
+                  <p className="text-text-gray text-sm truncate">{activity.action}</p>
+                </div>
+                <span className="text-text-light text-sm whitespace-nowrap sm:text-right">
+                  {activity.time}
+                </span>
               </div>
-              <span className="text-text-light text-sm whitespace-nowrap sm:text-right">
-                {activity.time}
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+        
+        {/* Show message if there are more activities */}
+        {activities.length > 6 && (
+          <div className="mt-4 text-center">
+            <p className="text-text-light text-sm">
+              Scroll to see more activities
+            </p>
+          </div>
+        )}
       </div>
-      
-      {/* Show message if there are more activities */}
-      {activities.length > 6 && (
-        <div className="mt-4 text-center">
-          <p className="text-text-light text-sm">
-            Scroll to see more activities
-          </p>
-        </div>
-      )}
     </div>
   );
 };

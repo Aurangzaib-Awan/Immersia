@@ -1,5 +1,5 @@
 import React, { useState } from "react"; 
-import { FaTachometerAlt, FaUsers, FaBook, FaChartLine, FaCog } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaBook, FaChartLine, FaProjectDiagram  } from 'react-icons/fa';
 import { Link, useLocation } from 'react-router-dom';
 
 const Sidebar = () => {
@@ -9,8 +9,8 @@ const Sidebar = () => {
     const menuItems = [
         { name: "Dashboard", icon: <FaTachometerAlt />, path: "/admin" }, 
         { name: 'Users', icon: <FaUsers />, path: "/admin/users" },
-        { name: 'Content', icon: <FaBook />, path: "/admin/content" },
-        { name: 'Settings', icon: <FaCog />, path: "/admin/settings" }
+        { name: 'Learning Content', icon: <FaBook />, path: "/admin/learningContent" },
+        { name: 'Projects', icon: <FaProjectDiagram  />, path: "/admin/projects" }
     ];
 
     const closeMobileSidebar = () => {
@@ -34,11 +34,16 @@ const Sidebar = () => {
                 isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
             }`}>
                 <div className="p-4 lg:p-6">
-                    <h1 className="text-xl lg:text-2xl font-bold text-text-white text-center lg:text-left">
-                        <span className="lg:hidden">I</span>
-                        <span className="hidden lg:inline">Immersia.</span>
-                    </h1>
+                    {/* Animated Title */}
+                    <div className="flex justify-center lg:justify-start">
+                        <h1 className="text-xl lg:text-2xl font-bold text-center lg:text-left bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
+                            <span className="lg:hidden">I</span>
+                            <span className="hidden lg:inline">Immersia.</span>
+                        </h1>
+                    </div>
+                   
                 </div>
+                
                 <nav className="mt-6">
                     {menuItems.map((item) => (
                         <Link
@@ -73,6 +78,24 @@ const Sidebar = () => {
                     onClick={closeMobileSidebar}
                 ></div>
             )}
+
+            {/* Add the gradient animation keyframes */}
+            <style jsx>{`
+                @keyframes gradient-flow {
+                    0% {
+                        background-position: 0% 50%;
+                    }
+                    50% {
+                        background-position: 100% 50%;
+                    }
+                    100% {
+                        background-position: 0% 50%;
+                    }
+                }
+                .animate-gradient-flow {
+                    animation: gradient-flow 3s ease infinite;
+                }
+            `}</style>
         </>
     );
 };

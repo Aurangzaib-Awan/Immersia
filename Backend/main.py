@@ -3,12 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.register import signup 
 from routes.course import courseRoute
 from routes.register import login
+from routes.project import projectRoute 
 
 app=FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # during development only
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -16,3 +17,4 @@ app.add_middleware(
 app.include_router(courseRoute.router) 
 app.include_router(signup.router)
 app.include_router(login.router)
+app.include_router(projectRoute.router) 

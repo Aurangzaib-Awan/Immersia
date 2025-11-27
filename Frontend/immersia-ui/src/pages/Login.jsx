@@ -3,26 +3,17 @@ import { Label } from "@/components/ui/label.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-import { authAPI } from "@/services/api"; // Your auth API service
-=======
+import { authAPI } from "@/services/api";
 
->>>>>>> a25f5316ff48657011d8fbc2300b3f71b6e94d0e
-
-function Login({ setUser }) {  // ✅ Accept setUser prop
+function Login({ setUser }) {
     const [form, setForm] = useState({ email: "", password: "" });
-<<<<<<< HEAD
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-=======
-    const Navigate=useNavigate()
->>>>>>> a25f5316ff48657011d8fbc2300b3f71b6e94d0e
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
-<<<<<<< HEAD
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -39,7 +30,7 @@ function Login({ setUser }) {  // ✅ Accept setUser prop
                 
                 console.log("Login successful - Token:", data.token);
                 
-                // 🎯 UPDATE: Call setUser prop to update global state
+                // Update global state if setUser prop provided
                 if (setUser) {
                     setUser(data.user);
                 }
@@ -59,30 +50,6 @@ function Login({ setUser }) {  // ✅ Accept setUser prop
         } finally {
             setLoading(false);
         }
-=======
-    const handleSubmit=async (e)=> {
-        e.preventDefault();
-        try {
-        const response = await fetch("http://127.0.0.1:8000/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const data = await response.json();
-      console.log("Server response:", data);
-
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        Navigate("/skill");
-      } else {
-        alert("Login failed. Check your credentials.");
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      alert("Something went wrong. Try again.");
-    }
->>>>>>> a25f5316ff48657011d8fbc2300b3f71b6e94d0e
     }
 
     return (

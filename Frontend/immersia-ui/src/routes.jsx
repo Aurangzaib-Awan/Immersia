@@ -15,7 +15,7 @@ import RootLayout from "./pages/admin/RootLayout.jsx";
 import Dashboard from "./pages/admin//Dashboard";
 import UserManagement from "./pages/admin//UserManagement";
 import ContentManagement from "./pages/admin/ContentManagement";
-import Settings from "./pages/admin/Settings";
+import ProjectManagement from "./pages/admin/ProjectManagement";
 
 // Protected Route Components
 const ProtectedRoute = ({ user, children, adminOnly = false }) => {
@@ -99,8 +99,8 @@ function AppRoutes({ user, setUser }) {
       >
         <Route index element={<Dashboard />} />
         <Route path="users" element={<UserManagement />} />
-        <Route path="content" element={<ContentManagement />} />
-        <Route path="settings" element={<Settings />} />
+        <Route path="learningContent" element={<ContentManagement />} />
+        <Route path="projects" element={<ProjectManagement />} />
       </Route>
 
       {/* Default redirect */}
