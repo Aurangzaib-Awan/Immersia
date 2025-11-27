@@ -5,7 +5,7 @@ export default {
     darkMode: ["class"],
     content: [
     "./index.html",
-    "./src/**/*.{js,jsx}",
+    "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
   	extend: {
@@ -15,6 +15,7 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+  			// CSS Variables (from admin config)
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -27,7 +28,12 @@ export default {
   			},
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+  				foreground: 'hsl(var(--primary-foreground))',
+                // Extended with user app colors
+                500: '#2563eb',
+                600: '#1d4ed8',
+                400: '#60a5fa', 
+                300: '#93c5fd',
   			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
@@ -54,10 +60,22 @@ export default {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
+  			},
+            // User app background colors (renamed to avoid conflict)
+            surface: {
+                900: '#111827',
+                800: '#1f2937', 
+                700: '#374151',
+            },
+            // User app text colors
+            text: {
+                white: '#ffffff',
+                gray: '#d1d5db', 
+                light: '#9ca3af',
+                muted: '#6b7280',
+            }
   		}
   	}
   },
   plugins: [tailwindAnimate],
 }
-

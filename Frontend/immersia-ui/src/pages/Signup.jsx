@@ -3,10 +3,11 @@ import { Input } from "@/components/ui/input.jsx";
 import { Label } from "@/components/ui/label.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { useNavigate } from "react-router-dom";
-
+import { authAPI } from "@/services/api"; // Adjust import path as needed
 
 function Signup() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     fullname: "",
@@ -18,27 +19,31 @@ function Signup() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-//  this is the main logic that is binding the sigup frontend to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
-    const response = await fetch("http://127.0.0.1:8000/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+      const data = await authAPI.register(form);
+      console.log("Server response:", data);
 
-    const data = await response.json();
-    console.log("Server response:", data);
-
-    if (data.access_token) {
-      localStorage.setItem("token", data.access_token);
-      alert("Signup successful!");
-      navigate("/skill");
+      if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        // Also store user data if available in response
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+        alert("Signup successful!");
+        navigate("/skill");
+      } else {
+        alert("Signup failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Signup error:", err);
+      alert("Signup failed. Please check your information and try again.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Signup error:", err);
-  }
   };
 
   return (
@@ -56,6 +61,7 @@ function Signup() {
               name="fullname"
               value={form.fullname}
               onChange={handleChange}
+              required
               className="bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md"
             />
           </div>
@@ -68,6 +74,7 @@ function Signup() {
               name="email"
               value={form.email}
               onChange={handleChange}
+              required
               className="bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md"
             />
           </div>
@@ -80,15 +87,17 @@ function Signup() {
               name="password"
               value={form.password}
               onChange={handleChange}
+              required
               className="bg-gray-700 border-gray-600 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rounded-md"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full py-2 mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+            disabled={loading}
+            className="w-full py-2 mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign Up
+            {loading ? "Creating Account..." : "Sign Up"}
           </Button>
         </form>
         
@@ -112,7 +121,7 @@ function Signup() {
           variant="outline"
           className="w-full py-2 mt-2 text-gray-300 font-semibold rounded-lg border-gray-600 hover:bg-gray-700 hover:text-white transition-colors"
         >
-          Sign in with Google
+          Sign up with Google
         </Button>
       </section>
     </main>

@@ -8,10 +8,14 @@ function Mindmap() {
   const [selectedTopics, setSelectedTopics] = useState(new Set());
   const [careerData, setCareerData] = useState(null);
 
+  // Fixed useEffect - uses setTimeout to make state updates asynchronous
   useEffect(() => {
     if (careerId && careerPaths[careerId]) {
-      setCareerData(careerPaths[careerId]);
-      setSelectedTopics(new Set());
+      // Use setTimeout to avoid synchronous state updates
+      setTimeout(() => {
+        setCareerData(careerPaths[careerId]);
+        setSelectedTopics(new Set());
+      }, 0);
     }
   }, [careerId]);
 

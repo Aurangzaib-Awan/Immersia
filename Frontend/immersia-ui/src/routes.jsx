@@ -1,5 +1,6 @@
-import {Route,Routes} from "react-router-dom";
-import Home from "./pages/Home.jsx"
+// routes/AppRoutes.jsx
+import { Route, Routes, Navigate } from "react-router-dom";
+import Home from "./pages/Home.jsx";
 import Signup from "./pages/Signup.jsx";
 import Login from "./pages/Login.jsx";
 import Learn from "./pages/Learn.jsx";
@@ -9,20 +10,103 @@ import Skills from "./pages/Skills.jsx";
 import Mindmap from "./pages/MindMap.jsx";
 import Divide from "./pages/Divide.jsx";
 
-function AppRoutes(){
-    return(
-        <Routes>
-            <Route path="/" element={<Home />}/>
-            <Route path="/signup" element={<Signup />}/>
-            <Route path="/login" element={<Login />}/>
-            <Route path="/learn" element={<Learn />}/>
-            <Route path="/project" element={<Projects />}/>
-            <Route path="/talent" element={<Talent />}/>
-            <Route path="/skill" element={<Skills />}/>
-            <Route path="/mindmap" element={<Mindmap />}/>
-            <Route path="/divide" element={<Divide />}/>
-        </Routes>
+// Admin Components
+import RootLayout from "./pages/admin/RootLayout.jsx";
+import Dashboard from "./pages/admin//Dashboard";
+import UserManagement from "./pages/admin//UserManagement";
+import ContentManagement from "./pages/admin/ContentManagement";
+import Settings from "./pages/admin/Settings";
 
-    )
+// Protected Route Components
+const ProtectedRoute = ({ user, children, adminOnly = false }) => {
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  if (adminOnly && !user.is_admin) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+};
+
+function AppRoutes({ user, setUser }) {
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<Home />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login setUser={setUser} />} />
+      
+      {/* User Routes - Protected but not admin only */}
+      <Route 
+        path="/learn" 
+        element={
+          <ProtectedRoute user={user}>
+            <Learn />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/project" 
+        element={
+          <ProtectedRoute user={user}>
+            <Projects />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/talent" 
+        element={
+          <ProtectedRoute user={user}>
+            <Talent />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/skill" 
+        element={
+          <ProtectedRoute user={user}>
+            <Skills />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/mindmap" 
+        element={
+          <ProtectedRoute user={user}>
+            <Mindmap />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/divide" 
+        element={
+          <ProtectedRoute user={user}>
+            <Divide />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Admin Routes - Protected and admin only */}
+      <Route 
+        path="/admin" 
+        element={
+          <ProtectedRoute user={user} adminOnly={true}>
+            <RootLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="content" element={<ContentManagement />} />
+        <Route path="settings" element={<Settings />} />
+      </Route>
+
+      {/* Default redirect */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
+
 export default AppRoutes;
