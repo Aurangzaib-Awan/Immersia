@@ -52,98 +52,98 @@ const Home = () => {
       </section>
 
       {/* Learning Paths Section */}
-      <section id="paths" className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-gray-900 to-surface-900">
-        <div className="max-w-7xl mx-auto">
-          {/* Two Powerful Learning Paths - Flow Gradient Typography */}
-          <h2 className="text-3xl sm:text-4xl font-bold text-center bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-12">
-            Two Powerful Learning Paths
-          </h2>
-          <p className="text-lg sm:text-xl text-gray-400 text-center mb-12 max-w-3xl mx-auto">
-            Choose the approach that works best for you. Learn systematically or by building
-            real projects.
+<section id="paths" className="py-16 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-gray-900 to-surface-900">
+  <div className="max-w-7xl mx-auto">
+    {/* Two Powerful Learning Paths - Flow Gradient Typography */}
+    <h2 className="text-3xl sm:text-4xl font-bold text-center bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-12">
+      Two Powerful Learning Paths
+    </h2>
+    <p className="text-lg sm:text-xl text-gray-400 text-center mb-12 max-w-3xl mx-auto">
+      Choose the approach that works best for you. Learn systematically or by building
+      real projects.
+    </p>
+
+    <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-6xl mx-auto">
+      {/* Structured Learning Path - Fixed Smooth Animation */}
+      <div className="group relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
+        <div className="bg-surface-800 rounded-xl p-6 sm:p-8 h-full">
+          {/* Structured Learning Path - Flow Gradient Typography */}
+          <h3 className="text-2xl font-bold text-white mb-6">
+            Structured Learning Path
+          </h3>
+          <p className="text-gray-400 mb-8 leading-relaxed">
+            Master concepts step by step with guided courses.
           </p>
-
-          <div className="grid md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-6xl mx-auto">
-            {/* Structured Learning Path - Animated Gradient Flow Border */}
-            <div className="group relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow hover:shadow-2xl transition-all duration-300">
-              <div className="bg-surface-800 rounded-xl p-6 sm:p-8 h-full shadow-lg">
-                {/* Structured Learning Path - Flow Gradient Typography */}
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-6">
-                  Structured Learning Path
-                </h3>
-                <p className="text-gray-400 mb-8 leading-relaxed">
-                  Master concepts step by step with guided courses.
-                </p>
-                
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-start">
-                    <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
-                    <span className="text-gray-300">Curated curriculum from industry experts</span>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
-                    <span className="text-gray-300">Interactive courses with video lessons</span>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
-                    <span className="text-gray-300">Comprehensive quizzes and assessments</span>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
-                    <span className="text-gray-300">Earn recognized certifications & badges</span>
-                  </div>
-                </div>
-
-                {/* Button with Flowing Border Glow */}
-                <div className="relative p-[2px] rounded-lg bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-                  <button className="w-full bg-surface-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-all duration-300 shadow-lg">
-                    Explore Paths →
-                  </button>
-                </div>
-              </div>
+          
+          <div className="space-y-4 mb-8">
+            <div className="flex items-start">
+              <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
+              <span className="text-gray-300">Curated curriculum from industry experts</span>
             </div>
-
-            {/* Applied Learning - Animated Gradient Flow Border */}
-            <div className="group relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow hover:shadow-2xl transition-all duration-300">
-              <div className="bg-surface-800 rounded-xl p-6 sm:p-8 h-full shadow-lg">
-                {/* Applied Learning - Flow Gradient Typography */}
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-6">
-                  Applied Learning (Build & Learn)
-                </h3>
-                <p className="text-gray-400 mb-8 leading-relaxed">
-                  Learn by doing. Take on real-world projects and build your portfolio.
-                </p>
-                
-                <div className="space-y-4 mb-8">
-                  <div className="flex items-start">
-                    <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
-                    <span className="text-gray-300">Hands-on projects with real challenges</span>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
-                    <span className="text-gray-300">Mentorship from industry practitioners</span>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
-                    <span className="text-gray-300">Expert evaluation & constructive feedback</span>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
-                    <span className="text-gray-300">Verified portfolio for recruiters</span>
-                  </div>
-                </div>
-
-                {/* Button with Flowing Border Glow */}
-                <div className="relative p-[2px] rounded-lg bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-                  <button className="w-full bg-surface-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-all duration-300 shadow-lg">
-                    Start a Project →
-                  </button>
-                </div>
-              </div>
+            <div className="flex items-start">
+              <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
+              <span className="text-gray-300">Interactive courses with video lessons</span>
+            </div>
+            <div className="flex items-start">
+              <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
+              <span className="text-gray-300">Comprehensive quizzes and assessments</span>
+            </div>
+            <div className="flex items-start">
+              <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
+              <span className="text-gray-300">Earn recognized certifications & badges</span>
             </div>
           </div>
+
+          {/* Button with Flowing Border Glow */}
+          <div className="relative p-[2px] rounded-lg bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
+            <button className="w-full bg-surface-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-300">
+              Explore Paths →
+            </button>
+          </div>
         </div>
-      </section>
+      </div>
+
+      {/* Applied Learning - Fixed Smooth Animation */}
+      <div className="group relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
+        <div className="bg-surface-800 rounded-xl p-6 sm:p-8 h-full">
+          {/* Applied Learning - Flow Gradient Typography */}
+          <h3 className="text-2xl font-bold text-white mb-6">
+            Applied Learning (Build & Learn)
+          </h3>
+          <p className="text-gray-400 mb-8 leading-relaxed">
+            Learn by doing. Take on real-world projects and build your portfolio.
+          </p>
+          
+          <div className="space-y-4 mb-8">
+            <div className="flex items-start">
+              <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
+              <span className="text-gray-300">Hands-on projects with real challenges</span>
+            </div>
+            <div className="flex items-start">
+              <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
+              <span className="text-gray-300">Mentorship from industry practitioners</span>
+            </div>
+            <div className="flex items-start">
+              <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
+              <span className="text-gray-300">Expert evaluation & constructive feedback</span>
+            </div>
+            <div className="flex items-start">
+              <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
+              <span className="text-gray-300">Verified portfolio for recruiters</span>
+            </div>
+          </div>
+
+          {/* Button with Flowing Border Glow */}
+          <div className="relative p-[2px] rounded-lg bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
+            <button className="w-full bg-surface-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-300">
+              Start a Project →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* Expert Review Section */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-surface-800">

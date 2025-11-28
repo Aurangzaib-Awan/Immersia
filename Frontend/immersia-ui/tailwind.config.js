@@ -74,7 +74,21 @@ export default {
                 light: '#9ca3af',
                 muted: '#6b7280',
             }
-  		}
+  		},
+      // ADD THIS ANIMATION SECTION
+      animation: {
+        'gradient-flow': 'gradientFlow 3s ease infinite',
+      },
+      keyframes: {
+        gradientFlow: {
+          '0%, 100%': {
+            'background-position': '0% 50%',
+          },
+          '50%': {
+            'background-position': '100% 50%',
+          },
+        },
+      },
   	}
   },
   plugins: [tailwindAnimate],

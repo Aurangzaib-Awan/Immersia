@@ -13,7 +13,12 @@ function Divide() {
 
   const handleProjectBasedLearning = () => {
     console.log('Project Based Learning selected with topics:', unknownTopics);
-    navigate('/project-learning', { state: { unknownTopics } });
+    navigate('/projects', { 
+      state: { 
+        unknownTopics,
+        skillGaps: unknownTopics
+      } 
+    });
   };
 
   return (
@@ -21,7 +26,7 @@ function Divide() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-4">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
             Choose Your Learning Style
           </h1>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto">
@@ -39,14 +44,14 @@ function Divide() {
           {/* Traditional Learning Card */}
           <div
             onClick={handleTraditionalLearning}
-            className="group relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105"
+            className="group relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow cursor-pointer"
           >
-            <div className="bg-surface-800 rounded-xl p-6 sm:p-8 h-full shadow-lg">
+            <div className="bg-surface-800 rounded-xl p-6 sm:p-8 h-full">
               <div className="text-center mb-6">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-white text-xl sm:text-2xl font-bold">📚</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
                   Traditional Learning
                 </h3>
                 <p className="text-sky-400 font-semibold text-sm sm:text-base">
@@ -84,14 +89,14 @@ function Divide() {
           {/* Project Based Learning Card */}
           <div
             onClick={handleProjectBasedLearning}
-            className="group relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105"
+            className="group relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow cursor-pointer"
           >
-            <div className="bg-surface-800 rounded-xl p-6 sm:p-8 h-full shadow-lg">
+            <div className="bg-surface-800 rounded-xl p-6 sm:p-8 h-full">
               <div className="text-center mb-6">
-                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-white text-xl sm:text-2xl font-bold">🚀</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
                   Project Based Learning
                 </h3>
                 <p className="text-sky-400 font-semibold text-sm sm:text-base">
@@ -129,7 +134,7 @@ function Divide() {
 
         {/* Progress Info */}
         <div className="mt-12 text-center">
-          <div className="bg-surface-800 rounded-lg p-4 sm:p-6 max-w-2xl mx-auto shadow-lg border border-gray-800">
+          <div className="bg-surface-800 rounded-lg p-4 sm:p-6 max-w-2xl mx-auto border border-gray-800">
             <p className="text-gray-300 text-lg">
               You have <span className="text-sky-400 font-semibold">{unknownTopics.length} topics</span> to master
             </p>

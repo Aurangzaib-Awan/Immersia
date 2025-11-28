@@ -4,11 +4,16 @@ import Home from "./pages/Home.jsx";
 import Signup from "./pages/Signup.jsx";
 import Login from "./pages/Login.jsx";
 import Learn from "./pages/Learn.jsx";
-import Projects from "./pages/Projects.jsx";
 import Talent from "./pages/Talent.jsx";
 import Skills from "./pages/Skills.jsx";
 import Mindmap from "./pages/MindMap.jsx";
 import Divide from "./pages/Divide.jsx";
+
+// PROJECT-BASED LEARNING COMPONENTS
+import ProjectsMarketplace from "./pages/projects/ProjectsMarketplace.jsx";
+import ProjectDetail from "./pages/projects/ProjectDetail";
+import ProjectWorkspace from "./pages/projects/ProjectWorkspace";
+import ProjectSubmission from "./pages/projects/ProjectSubmission";
 
 // Admin Components
 import RootLayout from "./pages/admin/RootLayout.jsx";
@@ -47,14 +52,7 @@ function AppRoutes({ user, setUser }) {
           </ProtectedRoute>
         } 
       />
-      <Route 
-        path="/project" 
-        element={
-          <ProtectedRoute user={user}>
-            <Projects />
-          </ProtectedRoute>
-        } 
-      />
+      
       <Route 
         path="/talent" 
         element={
@@ -84,6 +82,40 @@ function AppRoutes({ user, setUser }) {
         element={
           <ProtectedRoute user={user}>
             <Divide />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* PROJECT-BASED LEARNING ROUTES */}
+      <Route 
+        path="/projects" 
+        element={
+          <ProtectedRoute user={user}>
+            <ProjectsMarketplace />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/projects/:projectId" 
+        element={
+          <ProtectedRoute user={user}>
+            <ProjectDetail />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/projects/:projectId/workspace" 
+        element={
+          <ProtectedRoute user={user}>
+            <ProjectWorkspace />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/projects/:projectId/submit" 
+        element={
+          <ProtectedRoute user={user}>
+            <ProjectSubmission />
           </ProtectedRoute>
         } 
       />
