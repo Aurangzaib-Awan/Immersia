@@ -82,7 +82,7 @@ export const courseAPI = {
   },
 };
 
-// Add to your existing api.js
+// Project API functions
 export const projectAPI = {
   // Get all projects
   getProjects: async () => {
@@ -110,5 +110,34 @@ export const projectAPI = {
     return await apiRequest(`/projects/${projectId}`, {
       method: 'DELETE',
     });
+  },
+};
+
+// ADD ONLY THIS - Admin API functions for StatsGrid
+export const adminAPI = {
+  // Get dashboard stats
+  getStats: async () => {
+    return await apiRequest('/admin/stats');
+  },
+
+  // Get all users
+  getUsers: async () => {
+    return await apiRequest('/admin/users');
+  },
+    // Delete user
+  deleteUser: async (userId) => {
+    return await apiRequest(`/admin/users/${userId}`, {
+      method: 'DELETE',
+});
+  },
+
+  // Get all courses
+  getCourses: async () => {
+    return await apiRequest('/courses');
+  },
+
+  // Get all projects
+  getProjects: async () => {
+    return await apiRequest('/projects');
   },
 };
