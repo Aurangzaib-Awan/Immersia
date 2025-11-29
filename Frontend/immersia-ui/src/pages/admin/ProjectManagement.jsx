@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ProjectForm from './ProjectForm';
 import { projectAPI } from '../../services/api';
 
@@ -15,16 +15,23 @@ const ProjectManagement = () => {
     try {
       setLoading(true);
       const response = await projectAPI.getProjects();
-      setProjects(response.projects);
       
-      // Animate projects in one by one
-      response.projects.forEach((project, index) => {
+      // Handle different response formats
+      const projectsArray = response.projects || response.data || response || [];
+      
+      setProjects(projectsArray);
+      
+      // Reset and re-animate
+      setVisibleProjects([]);
+      projectsArray.forEach((project, index) => {
         setTimeout(() => {
           setVisibleProjects(prev => [...prev, project]);
         }, index * 150);
       });
     } catch (error) {
       console.error('Failed to load projects:', error);
+      // Add user-facing error message
+      // setError('Failed to load projects. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -35,15 +42,28 @@ const ProjectManagement = () => {
     loadProjects();
   }, []);
 
-  // Filter projects
-  const filteredProjects = projects.filter(project =>
-    project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    project.technologies?.some(tech => 
-      tech.toLowerCase().includes(searchTerm.toLowerCase())
-    ) ||
-    project.category?.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter projects with useMemo for better performance
+  const filteredProjects = useMemo(() => 
+    projects.filter(project =>
+      project.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.technologies?.some(tech => 
+        tech.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      project.category?.toLowerCase().includes(searchTerm.toLowerCase())
+    ),
+    [projects, searchTerm]
   );
+
+  // Reset visibleProjects when search changes
+  useEffect(() => {
+    setVisibleProjects([]);
+    filteredProjects.forEach((project, index) => {
+      setTimeout(() => {
+        setVisibleProjects(prev => [...prev, project]);
+      }, index * 100);
+    });
+  }, [filteredProjects]);
 
   // Filter visible projects for animation
   const animatedFilteredProjects = filteredProjects.filter(project =>

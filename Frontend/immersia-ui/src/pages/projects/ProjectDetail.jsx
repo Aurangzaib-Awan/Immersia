@@ -1,53 +1,46 @@
 // components/ProjectDetail.jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Clock, Users, ChevronRight, BookOpen } from 'lucide-react';
-
-const MOCK_PROJECTS = [
-  {
-    id: 1,
-    title: "E-commerce Analytics Dashboard",
-    shortDescription: "Build a comprehensive dashboard to track e-commerce metrics and customer behavior",
-    category: "Data Analytics",
-    curatorName: "Data Science Team",
-    difficultyLevel: "Intermediate",
-    estimatedDuration: "4 weeks",
-    technologiesUsed: ["Python", "Pandas", "Plotly", "SQL", "Flask", "PostgreSQL"],
-    prerequisites: ["Basic Python knowledge", "SQL fundamentals", "Data analysis concepts"],
-    detailedProjectDescription: `In this project, you'll build a comprehensive e-commerce analytics dashboard that tracks key business metrics, customer behavior, and sales performance. You'll work with real-world e-commerce data to create interactive visualizations that help business stakeholders make data-driven decisions. The project covers data cleaning, database design, backend API development, and frontend dashboard creation. You'll learn how to handle large datasets, create meaningful visualizations, and deploy your application.`
-  },
-  {
-    id: 2,
-    title: "Real-time Stock Prediction Model",
-    shortDescription: "Create ML model to predict stock prices using historical data",
-    category: "Machine Learning",
-    curatorName: "AI Research Team",
-    difficultyLevel: "Advanced",
-    estimatedDuration: "6 weeks",
-    technologiesUsed: ["Python", "TensorFlow", "LSTM", "Yahoo Finance API"],
-    prerequisites: ["Python programming", "Machine Learning basics", "Statistics"],
-    detailedProjectDescription: "Create a machine learning model to predict stock prices using historical data and LSTM networks."
-  },
-  {
-    id: 3,
-    title: "Customer Segmentation Analysis",
-    shortDescription: "Segment customers using clustering algorithms for targeted marketing",
-    category: "Data Science",
-    curatorName: "Marketing Analytics",
-    difficultyLevel: "Beginner",
-    estimatedDuration: "3 weeks",
-    technologiesUsed: ["Python", "Scikit-learn", "K-means", "Matplotlib"],
-    prerequisites: ["Basic Python", "Data analysis concepts"],
-    detailedProjectDescription: "Segment customers using clustering algorithms for targeted marketing campaigns."
-  }
-];
+import { projectAPI } from '../../services/api';
 
 const ProjectDetail = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
-  
-  // Find project by ID - dynamic data
-  const project = MOCK_PROJECTS.find(p => p.id === parseInt(projectId));
+  const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch project details from backend
+  useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        setLoading(true);
+        // Get all projects and find the specific one
+        const response = await projectAPI.getProjects();
+        
+        // Handle different response formats (same as ProjectsMarketplace)
+        const projectsArray = response.projects || response.data || response || [];
+        
+        console.log('Projects array in ProjectDetail:', projectsArray); // Debug log
+        
+        const foundProject = projectsArray.find(p => p.id === projectId);
+        
+        if (!foundProject) {
+          throw new Error('Project not found');
+        }
+        
+        setProject(foundProject);
+      } catch (err) {
+        setError('Failed to load project details. Please try again later.');
+        console.error('Error fetching project:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
+  }, [projectId]);
 
   const getDifficultyColor = (level) => {
     switch (level) {
@@ -62,10 +55,33 @@ const ProjectDetail = () => {
     navigate(`/projects/${projectId}/workspace`);
   };
 
-  if (!project) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 flex items-center justify-center">
-        <div className="text-white">Project not found</div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-20">
+            <div className="w-16 h-16 border-4 border-sky-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-300 text-lg">Loading project details...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !project) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 text-white p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center py-20">
+            <div className="text-red-400 text-lg mb-4">{error || 'Project not found'}</div>
+            <Link 
+              to="/projects"
+              className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 inline-block"
+            >
+              Back to Projects
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
@@ -91,16 +107,16 @@ const ProjectDetail = () => {
               <h1 className="text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-4">
                 {project.title}
               </h1>
-              <p className="text-xl text-gray-300 mb-6">{project.shortDescription}</p>
+              <p className="text-xl text-gray-300 mb-6">{project.description}</p>
 
               <div className="flex flex-wrap gap-6 text-sm text-gray-400">
                 <div className="flex items-center gap-2">
                   <Clock className="w-5 h-5" />
-                  <span>{project.estimatedDuration}</span>
+                  <span>{project.duration}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Users className="w-5 h-5" />
-                  <span>Curated by: {project.curatorName}</span>
+                  <span>Curated by: {project.curator}</span>
                 </div>
               </div>
             </div>
@@ -109,8 +125,8 @@ const ProjectDetail = () => {
             <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full lg:w-80">
               <div className="bg-surface-800 rounded-xl p-6 h-full">
                 <div className="text-center mb-6">
-                  <span className={`text-sm font-medium px-4 py-2 rounded-full ${getDifficultyColor(project.difficultyLevel)}`}>
-                    {project.difficultyLevel}
+                  <span className={`text-sm font-medium px-4 py-2 rounded-full ${getDifficultyColor(project.difficulty)}`}>
+                    {project.difficulty}
                   </span>
                 </div>
                 
@@ -124,7 +140,7 @@ const ProjectDetail = () => {
                 <div className="mt-6 pt-6 border-t border-gray-700">
                   <div className="text-sm text-gray-400">
                     <div className="font-medium text-gray-300 mb-2">Curated by:</div>
-                    <div>{project.curatorName}</div>
+                    <div>{project.curator}</div>
                   </div>
                 </div>
               </div>
@@ -142,7 +158,7 @@ const ProjectDetail = () => {
                 Project Description
               </h2>
               <div className="text-gray-300 leading-relaxed whitespace-pre-line">
-                {project.detailedProjectDescription}
+                {project.project_description || project.description}
               </div>
             </section>
           </div>
@@ -151,7 +167,7 @@ const ProjectDetail = () => {
             <section className="bg-surface-800 border border-gray-700 rounded-xl p-6">
               <h3 className="text-lg font-bold text-white mb-4">Technologies Used</h3>
               <div className="flex flex-wrap gap-2">
-                {project.technologiesUsed.map((tech, index) => (
+                {project.technologies?.map((tech, index) => (
                   <span
                     key={index}
                     className="text-sm text-sky-400 bg-sky-500/10 px-3 py-2 rounded-lg border border-sky-400/20"
@@ -165,7 +181,7 @@ const ProjectDetail = () => {
             <section className="bg-surface-800 border border-gray-700 rounded-xl p-6">
               <h3 className="text-lg font-bold text-white mb-4">Prerequisites</h3>
               <div className="space-y-2">
-                {project.prerequisites.map((prereq, index) => (
+                {project.prerequisites?.map((prereq, index) => (
                   <div key={index} className="flex items-center gap-3 text-gray-300">
                     <div className="w-2 h-2 bg-sky-400 rounded-full"></div>
                     <span>{prereq}</span>
