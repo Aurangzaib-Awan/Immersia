@@ -11,6 +11,30 @@ const ProjectDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Function to render markdown to HTML
+  const renderMarkdown = (text) => {
+    if (!text) return '';
+    
+    return text
+      // Headers
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold text-white mt-6 mb-3">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-white mt-7 mb-4">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-white mt-8 mb-5">$1</h1>')
+      // Bold and Italic
+      .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-white">$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em class="italic text-gray-300">$1</em>')
+      // Lists
+      .replace(/^- (.*$)/gim, '<li class="ml-6 text-gray-300 mb-1">$1</li>')
+      .replace(/(<li.*?<\/li>)/gims, '<ul class="list-disc mb-4">$1</ul>')
+      // Line breaks
+      .replace(/\n\n/g, '</p><p class="mb-4">')
+      .replace(/\n/g, '<br>')
+      // Code
+      .replace(/`(.*?)`/g, '<code class="bg-gray-700 px-2 py-1 rounded text-sm font-mono text-sky-300">$1</code>')
+      // Wrap in paragraph if no other block elements
+      .replace(/^(?!<[hu])(.*)$/gim, '<p class="mb-4 text-gray-300 leading-relaxed">$1</p>');
+  };
+
   // Fetch project details from backend
   useEffect(() => {
     const fetchProject = async () => {
@@ -24,7 +48,10 @@ const ProjectDetail = () => {
         
         console.log('Projects array in ProjectDetail:', projectsArray); // Debug log
         
-        const foundProject = projectsArray.find(p => p.id === projectId);
+        // Make sure projectId comparison works (convert to string if needed)
+        const foundProject = projectsArray.find(p => 
+          p.id.toString() === projectId || p.id === projectId
+        );
         
         if (!foundProject) {
           throw new Error('Project not found');
@@ -157,9 +184,12 @@ const ProjectDetail = () => {
                 <BookOpen className="w-6 h-6 text-sky-400" />
                 Project Description
               </h2>
-              <div className="text-gray-300 leading-relaxed whitespace-pre-line">
-                {project.project_description || project.description}
-              </div>
+              <div 
+                className="markdown-content text-gray-300 leading-relaxed"
+                dangerouslySetInnerHTML={{ 
+                  __html: renderMarkdown(project.project_description || project.description) 
+                }}
+              />
             </section>
           </div>
 

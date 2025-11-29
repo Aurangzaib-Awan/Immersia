@@ -1,5 +1,35 @@
 import React, { useState } from 'react';
 
+// Markdown preview component - MOVED OUTSIDE the main component
+const MarkdownPreview = ({ content }) => {
+  const renderMarkdown = (text) => {
+    if (!text) return '';
+    
+    return text
+      // Headers
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold text-white mt-4 mb-2">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-white mt-5 mb-3">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-white mt-6 mb-4">$1</h1>')
+      // Bold and Italic
+      .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-white">$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>')
+      // Lists
+      .replace(/^- (.*$)/gim, '<li class="ml-4 text-gray-300">$1</li>')
+      .replace(/(<li.*?<\/li>)/gims, '<ul class="list-disc ml-6 my-2">$1</ul>')
+      // Line breaks
+      .replace(/\n/g, '<br>')
+      // Code
+      .replace(/`(.*?)`/g, '<code class="bg-gray-700 px-1 py-0.5 rounded text-sm font-mono">$1</code>');
+  };
+
+  return (
+    <div 
+      className="prose prose-invert max-w-none text-gray-300 leading-relaxed"
+      dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
+    />
+  );
+};
+
 const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
   // Top categories array
   const topCategories = [
@@ -60,6 +90,18 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
   const [errors, setErrors] = useState({});
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [techInput, setTechInput] = useState('');
+  const [activeTab, setActiveTab] = useState('write'); // 'write' or 'preview'
+
+  // Markdown guide - MOVED INSIDE the component but as a constant, not a component
+  const markdownGuide = [
+    { syntax: '# Header', description: 'Large header' },
+    { syntax: '## Header', description: 'Medium header' },
+    { syntax: '### Header', description: 'Small header' },
+    { syntax: '**bold**', description: 'Bold text' },
+    { syntax: '*italic*', description: 'Italic text' },
+    { syntax: '- List item', description: 'Bullet point' },
+    { syntax: '`code`', description: 'Inline code' },
+  ];
 
   // Handle basic form changes
   const handleChange = (e) => {
@@ -84,22 +126,6 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
       category: category
     }));
     setShowCategoryDropdown(false);
-  };
-
-  // Handle category input - prevent non-predefined entries
-  const handleCategoryInput = (e) => {
-    const value = e.target.value;
-    // Only allow values that match predefined categories
-    const matchingCategory = topCategories.find(cat => 
-      cat.toLowerCase() === value.toLowerCase()
-    );
-    
-    if (matchingCategory || value === '') {
-      setFormData(prev => ({
-        ...prev,
-        category: matchingCategory || value
-      }));
-    }
   };
 
   // Handle technology management - allow any technology
@@ -264,43 +290,95 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                   {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description}</p>}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Category with Dropdown - Only predefined categories */}
-                  <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                    <label className="block text-white text-sm font-medium mb-2">
-                      Category *
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        name="category"
-                        value={formData.category}
-                        onChange={handleCategoryInput}
-                        onFocus={() => setShowCategoryDropdown(true)}
-                        onBlur={() => setTimeout(() => setShowCategoryDropdown(false), 200)}
-                        className={`w-full bg-gray-700 border ${
-                          errors.category ? 'border-red-500' : 'border-gray-600'
-                        } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
-                        placeholder="Select or search category"
-                      />
-                      
-                      {/* Category Dropdown */}
-                      {showCategoryDropdown && (
-                        <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto shadow-xl">
-                          {filteredCategories.map((category, index) => (
-                            <div
-                              key={index}
-                              className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-white transition-colors border-b border-gray-700 last:border-b-0"
-                              onMouseDown={() => handleCategorySelect(category)}
-                            >
-                              {category}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {errors.category && <p className="text-red-400 text-sm mt-1">{errors.category}</p>}
-                    </div>
-                  </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {/* Category with Enhanced Dropdown and Search */}
+  <div className="bg-gray-800 rounded-lg p-4 shadow-md">
+    <label className="block text-white text-sm font-medium mb-2">
+      Category *
+    </label>
+    <div className="relative">
+      <input
+        type="text"
+        name="category"
+        value={formData.category}
+        onChange={(e) => {
+          handleChange(e);
+          setShowCategoryDropdown(true);
+        }}
+        onFocus={() => setShowCategoryDropdown(true)}
+        onBlur={() => setTimeout(() => setShowCategoryDropdown(false), 200)}
+        className={`w-full bg-gray-700 border ${
+          errors.category ? 'border-red-500' : 'border-gray-600'
+        } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+        placeholder="Type to search categories..."
+      />
+      
+      {/* Enhanced Category Dropdown with Search Results */}
+      {showCategoryDropdown && (
+        <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto shadow-xl">
+          {/* Search results header */}
+          <div className="px-3 py-2 text-xs text-gray-400 border-b border-gray-700">
+            {filteredCategories.length > 0 
+              ? `Found ${filteredCategories.length} categories` 
+              : 'No categories found'
+            }
+          </div>
+          
+          {/* Category options */}
+          {filteredCategories.map((category, index) => (
+            <div
+              key={index}
+              className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-white transition-colors border-b border-gray-700 last:border-b-0 flex items-center justify-between"
+              onMouseDown={(e) => {
+                e.preventDefault(); // Prevent input blur
+                handleCategorySelect(category);
+              }}
+            >
+              <span>{category}</span>
+              {formData.category === category && (
+                <span className="text-sky-400 text-sm">✓</span>
+              )}
+            </div>
+          ))}
+          
+          {/* Add new category option if no exact match */}
+          {formData.category && 
+           !topCategories.includes(formData.category) && 
+           !filteredCategories.includes(formData.category) && (
+            <div
+              className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-sky-400 transition-colors border-t border-gray-700 flex items-center"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                handleCategorySelect(formData.category);
+              }}
+            >
+              <span className="mr-2">+</span>
+              <span>Add "{formData.category}" as new category</span>
+            </div>
+          )}
+        </div>
+      )}
+      {errors.category && <p className="text-red-400 text-sm mt-1">{errors.category}</p>}
+    </div>
+    
+    {/* Quick category suggestions */}
+    <div className="mt-3">
+      <div className="text-xs text-gray-400 mb-2">Popular categories:</div>
+      <div className="flex flex-wrap gap-2">
+        {topCategories.slice(0, 4).map((category) => (
+          <button
+            type="button"
+            key={category}
+            onClick={() => handleCategorySelect(category)}
+            className="text-xs text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 px-2 py-1 rounded transition-colors"
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+                        
 
                   {/* Curator */}
                   <div className="bg-gray-800 rounded-lg p-4 shadow-md">
@@ -444,24 +522,95 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                   {errors.prerequisites && <p className="text-red-400 text-sm mt-1">{errors.prerequisites}</p>}
                 </div>
 
-                {/* Detailed Project Description */}
+                {/* Detailed Project Description with Markdown Support */}
                 <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                  <label className="block text-white text-sm font-medium mb-2">
-                    Detailed Project Description *
-                  </label>
-                  <textarea
-                    name="project_description"
-                    value={formData.project_description}
-                    onChange={handleChange}
-                    rows="8"
-                    className={`w-full bg-gray-700 border ${
-                      errors.project_description ? 'border-red-500' : 'border-gray-600'
-                    } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
-                    placeholder="Provide detailed project requirements, features to implement, expected outcomes, success criteria, and any specific instructions..."
-                  />
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-white text-sm font-medium">
+                      Detailed Project Description *
+                    </label>
+                    
+                    {/* Markdown Guide */}
+                    <div className="relative group">
+                      <button
+                        type="button"
+                        className="text-xs text-sky-400 hover:text-sky-300 transition-colors"
+                      >
+                        Markdown Guide
+                      </button>
+                      <div className="absolute right-0 top-6 w-64 bg-gray-900 border border-gray-600 rounded-lg p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                        <h4 className="font-medium text-white mb-2">Markdown Syntax</h4>
+                        <div className="space-y-1 text-xs">
+                          {markdownGuide.map((item, index) => (
+                            <div key={index} className="flex justify-between">
+                              <code className="text-sky-400">{item.syntax}</code>
+                              <span className="text-gray-400">{item.description}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Markdown Tabs */}
+                  <div className="flex border-b border-gray-600 mb-3">
+                    <button
+                      type="button"
+                      className={`px-4 py-2 font-medium text-sm ${
+                        activeTab === 'write' 
+                          ? 'border-b-2 border-sky-500 text-sky-500' 
+                          : 'text-gray-400 hover:text-gray-300'
+                      }`}
+                      onClick={() => setActiveTab('write')}
+                    >
+                      Write
+                    </button>
+                    <button
+                      type="button"
+                      className={`px-4 py-2 font-medium text-sm ${
+                        activeTab === 'preview' 
+                          ? 'border-b-2 border-sky-500 text-sky-500' 
+                          : 'text-gray-400 hover:text-gray-300'
+                      }`}
+                      onClick={() => setActiveTab('preview')}
+                    >
+                      Preview
+                    </button>
+                  </div>
+
+                  {/* Markdown Editor/Preview */}
+                  {activeTab === 'write' ? (
+                    <textarea
+                      name="project_description"
+                      value={formData.project_description}
+                      onChange={handleChange}
+                      rows="8"
+                      className={`w-full bg-gray-700 border ${
+                        errors.project_description ? 'border-red-500' : 'border-gray-600'
+                      } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent font-mono text-sm`}
+                      placeholder="Provide detailed project requirements, features to implement, expected outcomes, success criteria, and any specific instructions...
+
+You can use Markdown formatting:
+# Main Heading
+## Subheading
+**Bold text**
+*Italic text*
+- List items
+`inline code`"
+                    />
+                  ) : (
+                    <div className="min-h-[200px] bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 overflow-y-auto max-h-64">
+                      {formData.project_description ? (
+                        <MarkdownPreview content={formData.project_description} />
+                      ) : (
+                        <p className="text-gray-400 italic">Nothing to preview yet. Start writing in the Write tab.</p>
+                      )}
+                    </div>
+                  )}
+                  
                   {errors.project_description && <p className="text-red-400 text-sm mt-1">{errors.project_description}</p>}
                   <p className="text-gray-400 text-xs mt-2">
-                    Include requirements, features to build, expected outputs, and success criteria
+                    Include requirements, features to build, expected outputs, and success criteria. 
+                    <span className="text-sky-400"> Markdown is supported for rich formatting.</span>
                   </p>
                 </div>
               </div>

@@ -191,8 +191,8 @@ const ProjectWorkspace = () => {
           ))}
         </div>
 
-        {/* Drop Zones for Drag and Drop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+        {/* Drop Zones for Drag and Drop - HIDDEN ON MOBILE AND TABLET */}
+        <div className="hidden lg:grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
           {columns.map(column => (
             <div
               key={column.id}
