@@ -15,6 +15,12 @@ import ProjectDetail from "./pages/projects/ProjectDetail";
 import ProjectWorkspace from "./pages/projects/ProjectWorkspace";
 import ProjectSubmission from "./pages/projects/ProjectSubmission";
 
+// COURSE-BASED LEARNING COMPONENTS
+import CoursesMarketplace from "./pages/courses/CourseMarketplace.jsx";
+import CourseDetail from "./pages/courses/CourseDetail.jsx";
+import CourseWorkspace from "./pages/courses/CourseWorkspace.jsx";
+import Quiz from "./pages/courses/Quiz";
+
 // Admin Components
 import RootLayout from "./pages/admin/RootLayout.jsx";
 import Dashboard from "./pages/admin//Dashboard";
@@ -116,6 +122,40 @@ function AppRoutes({ user, setUser }) {
         element={
           <ProtectedRoute user={user}>
             <ProjectSubmission />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* COURSE-BASED LEARNING ROUTES */}
+      <Route 
+        path="/courses" 
+        element={
+          <ProtectedRoute user={user}>
+            <CoursesMarketplace />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/courses/:courseId" 
+        element={
+          <ProtectedRoute user={user}>
+            <CourseDetail />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/courses/:courseId/workspace" 
+        element={
+          <ProtectedRoute user={user}>
+            <CourseWorkspace />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/courses/:courseId/quiz" 
+        element={
+          <ProtectedRoute user={user}>
+            <Quiz />
           </ProtectedRoute>
         } 
       />

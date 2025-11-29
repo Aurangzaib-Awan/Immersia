@@ -1,3 +1,4 @@
+// pages/Divide.jsx
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function Divide() {
@@ -6,9 +7,14 @@ function Divide() {
   
   const unknownTopics = location.state?.unknownTopics || [];
 
-  const handleTraditionalLearning = () => {
-    console.log('Traditional Learning selected with topics:', unknownTopics);
-    navigate('/traditional-learning', { state: { unknownTopics } });
+  const handleCourseLearning = () => {
+    console.log('Course Learning selected with topics:', unknownTopics);
+    navigate('/courses', { 
+      state: { 
+        unknownTopics,
+        skillGaps: unknownTopics
+      } 
+    });
   };
 
   const handleProjectBasedLearning = () => {
@@ -41,9 +47,9 @@ function Divide() {
 
         {/* Learning Style Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 max-w-4xl mx-auto">
-          {/* Traditional Learning Card */}
+          {/* Traditional Learning Card - Now Course Learning */}
           <div
-            onClick={handleTraditionalLearning}
+            onClick={handleCourseLearning}
             className="group relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow cursor-pointer"
           >
             <div className="bg-surface-800 rounded-xl p-6 sm:p-8 h-full">
@@ -52,7 +58,7 @@ function Divide() {
                   <span className="text-white text-xl sm:text-2xl font-bold">📚</span>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">
-                  Traditional Learning
+                  Course Learning
                 </h3>
                 <p className="text-sky-400 font-semibold text-sm sm:text-base">
                   Structured & Comprehensive

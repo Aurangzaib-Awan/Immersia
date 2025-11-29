@@ -1,36 +1,36 @@
-// components/ProjectWorkspace.jsx
+// components/courses/CourseWorkspace.jsx
 import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Users } from 'lucide-react';
-import KanbanBoard from '../../components/KanbanBoard.jsx';
+import { Users, BookOpen, PlayCircle } from 'lucide-react';
+import KanbanBoard from '../../components/KanbanBoard';
 
-const ProjectWorkspace = () => {
-  const { projectId } = useParams();
+const CourseWorkspace = () => {
+  const { courseId } = useParams();
   const navigate = useNavigate();
   
   const nextTaskId = useRef(1);
   
   // Empty initial state for kanban board
   const [tasks, setTasks] = useState({
-    backlog: [],
+    toStudy: [],
     inProgress: [],
     review: [],
-    done: []
+    completed: []
   });
 
   // Separate state for each column's input
   const [newTasks, setNewTasks] = useState({
-    backlog: { title: '', description: '' },
+    toStudy: { title: '', description: '' },
     inProgress: { title: '', description: '' },
     review: { title: '', description: '' },
-    done: { title: '', description: '' }
+    completed: { title: '', description: '' }
   });
 
   const columns = [
-    { id: 'backlog', title: 'Backlog', color: 'bg-gray-500' },
+    { id: 'toStudy', title: 'To Study', color: 'bg-gray-500' },
     { id: 'inProgress', title: 'In Progress', color: 'bg-blue-500' },
     { id: 'review', title: 'Review', color: 'bg-yellow-500' },
-    { id: 'done', title: 'Done', color: 'bg-green-500' }
+    { id: 'completed', title: 'Completed', color: 'bg-green-500' }
   ];
 
   const addTask = (columnId) => {
@@ -76,8 +76,8 @@ const ProjectWorkspace = () => {
     }));
   };
 
-  const handleSubmitProject = () => {
-    navigate(`/projects/${projectId}/submit`);
+  const handleTakeQuiz = () => {
+    navigate(`/courses/${courseId}/quiz`);
   };
 
   return (
@@ -85,28 +85,26 @@ const ProjectWorkspace = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
           <div>
-            {/* Title with flowing gradient text */}
             <h1 className="text-3xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
-              Project Workspace
+              Learning Workspace
             </h1>
-            <p className="text-gray-300">Plan and track your project progress</p>
+            <p className="text-gray-300">Plan and track your learning progress</p>
           </div>
           
           <div className="flex items-center gap-4 mt-4 lg:mt-0">
             <div className="flex items-center gap-2 text-gray-300">
-              <Users className="w-5 h-5" />
-              <span>Individual Project</span>
+              <BookOpen className="w-5 h-5" />
+              <span>Self-Paced Learning</span>
             </div>
             <button 
-              onClick={handleSubmitProject}
-              className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300"
+              onClick={handleTakeQuiz}
+              className="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
             >
-              Submit Project
+              Take Quiz
             </button>
           </div>
         </div>
 
-        {/* Kanban Board Component */}
         <KanbanBoard
           tasks={tasks}
           newTasks={newTasks}
@@ -120,4 +118,4 @@ const ProjectWorkspace = () => {
   );
 };
 
-export default ProjectWorkspace;
+export default CourseWorkspace;
