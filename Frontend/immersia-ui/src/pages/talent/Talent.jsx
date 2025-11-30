@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Users, Award, FileText, Mail, Calendar, MapPin } from 'lucide-react';
-import { talentAPI } from '@/services/api';
+import { useLocation } from 'react-router-dom';
 
 const Talent = ({ user }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTalent, setSelectedTalent] = useState(null);
 
@@ -52,36 +53,29 @@ const Talent = ({ user }) => {
     }
   ];
 
-  const handleLogin = () => {
-    navigate('/login');
-  };
+   const handleLogin = () => {
+        navigate('/login', { state: { from: location } });
+    };
 
-  const handleRecruit = async () => {
+     const handleRecruit = async () => {
     if (!selectedTalent) {
-      alert('Please select a talent first by clicking on their profile');
-      return;
+        alert('Please select a talent first by clicking on their profile');
+        return;
     }
 
     if (!user) {
-      navigate('/login', { state: { returnUrl: `/talent` } });
-      return;
+        navigate('/login', { state: { from: location } });
+        return;
     }
 
-    // Check if user is HR
-    try {
-      const hrStatus = await talentAPI.checkHRStatus(user.email);
-      
-      if (!hrStatus.is_hr) {
+    // Check if user is HR using the role from your login system
+    if (!user.is_hr) {
         alert('Only verified HR professionals can access recruitment features. Please contact admin to verify your HR email.');
         return;
-      }
-
-      // Navigate to talent profile for HR view
-      navigate(`/talent/${selectedTalent.id}`);
-    } catch (error) {
-      console.error('Error checking HR status:', error);
-      alert('Error verifying HR status. Please try again.');
     }
+
+    // Navigate to talent profile for HR view
+    navigate(`/talent/${selectedTalent.id}`);
   };
 
   const filteredTalents = talents.filter(talent => 
@@ -134,23 +128,32 @@ const Talent = ({ user }) => {
           </div>
         </div>
 
-        {/* Centered Search Bar */}
-        <div className="flex justify-center">
-          <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow max-w-2xl w-full">
-            <div className="bg-surface-800 rounded-xl p-2">
-              <div className="flex items-center">
-                <Search className="w-5 h-5 text-gray-400 ml-3" />
-                <input
-                  type="text"
-                  placeholder="Search by name, skills, or role..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-transparent border-0 text-white placeholder-gray-400 focus:outline-none focus:ring-0 px-4 py-3"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+{/* Enhanced Search Bar - Full Width */}
+<div className="w-full px-6">
+  <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full">
+    <div className="bg-surface-800 rounded-xl p-2">
+      <div className="flex items-center">
+        <Search className="w-5 h-5 text-gray-400 ml-3" />
+        <input
+          type="text"
+          placeholder="Search by name, skills, role, bio, or certifications..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full bg-transparent border-0 text-white placeholder-gray-400 focus:outline-none focus:ring-0 px-4 py-2 text-base"
+        />
+        {/* Search Icon on the right when typing */}
+        {searchTerm && (
+          <button 
+            onClick={() => setSearchTerm('')}
+            className="p-1 text-gray-400 hover:text-white transition-colors mr-2"
+          >
+             ✕
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
       </div>
     </div>
     

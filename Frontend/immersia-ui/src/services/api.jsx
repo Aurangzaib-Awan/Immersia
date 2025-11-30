@@ -154,10 +154,3 @@ export const adminAPI = {
     });
   }
 };
-
-export const talentAPI = {
-  // Check HR status
-  checkHRStatus: async (email) => {
-    return await apiRequest(`/talent/check-hr/${email}`);
-  }
-};

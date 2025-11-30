@@ -91,6 +91,26 @@ function AppRoutes({ user, setUser }) {
         } 
       />
       
+      {/* === FIXED: Single Talent Route === */}
+      <Route 
+        path="/talent" 
+        element={
+          <PublicRoute>
+            <Talent user={user} />
+          </PublicRoute>
+        } 
+      />
+      
+      {/* Protected Talent Profile Route for HR */}
+      <Route 
+        path="/talent/:talentId" 
+        element={
+          <ProtectedRoute user={user}>
+            <TalentProfile user={user} />
+          </ProtectedRoute>
+        } 
+      />
+      
       {/* User Routes - Protected but not admin only */}
       <Route 
         path="/learn" 
@@ -101,14 +121,6 @@ function AppRoutes({ user, setUser }) {
         } 
       />
       
-      <Route 
-        path="/talent" 
-        element={
-          <ProtectedRoute user={user}>
-            <Talent />
-          </ProtectedRoute>
-        } 
-      />
       <Route 
         path="/skill" 
         element={
@@ -170,26 +182,6 @@ function AppRoutes({ user, setUser }) {
         } 
       />
       
-        {/* Public Talent Route */}
-<Route 
-  path="/talent" 
-  element={
-    <PublicRoute>
-      <Talent user={user} />
-    </PublicRoute>
-  } 
-/>
-
-{/* Protected Talent Profile Route for HR */}
-<Route 
-  path="/talent/:talentId" 
-  element={
-    <ProtectedRoute user={user}>
-      <TalentProfile user={user} />
-    </ProtectedRoute>
-  } 
-/>
-
       {/* Admin Routes - Protected and admin only */}
       <Route 
         path="/admin" 

@@ -1,6 +1,6 @@
 // pages/TalentProfile.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, Award, FileText, Users, Download } from 'lucide-react';
 
 const TalentProfile = ({ user }) => {
@@ -9,45 +9,75 @@ const TalentProfile = ({ user }) => {
   const [talent, setTalent] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if user is HR
-  const isHRUser = user && user.email && user.email.endsWith('@company.com'); // Replace with your HR email check
-
+  // Move ALL hooks to the top, before any conditional returns
   useEffect(() => {
-    if (!isHRUser) {
-      navigate('/talent');
-      return;
+    // Only fetch data if user is HR
+    if (user && user.is_hr) {
+      // Mock data - replace with actual API call
+      setTimeout(() => {
+        const mockTalent = {
+          id: talentId,
+          name: "Sarah Johnson",
+          title: "Full Stack Developer",
+          email: "sarah.johnson@email.com",
+          phone: "+1 (555) 123-4567",
+          bio: "Passionate developer with 3+ years of experience in React, Node.js, and cloud technologies. Completed 5 certified courses and 12 real-world projects.",
+          skills: ["React", "Node.js", "MongoDB", "AWS", "TypeScript", "Docker", "Git"],
+          certifications: [
+            { name: "Advanced React Development", type: "course", date: "2024-01-15" },
+            { name: "Cloud Architecture", type: "course", date: "2024-02-20" },
+            { name: "E-commerce Platform", type: "project", date: "2024-03-10" }
+          ],
+          experience: [
+            { role: "Senior Developer", company: "Tech Corp", duration: "2 years" },
+            { role: "Full Stack Developer", company: "Startup Inc", duration: "1 year" }
+          ],
+          education: "BS Computer Science - Stanford University",
+          location: "San Francisco, CA",
+          availability: "Immediately",
+          expectedSalary: "$120,000 - $140,000",
+          resumeUrl: "#", // URL to download resume
+          isVerified: true
+        };
+        setTalent(mockTalent);
+        setLoading(false);
+      }, 1000);
+    } else {
+      // Use setTimeout to make setLoading asynchronous
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 0);
+      
+      return () => clearTimeout(timer);
     }
+  }, [talentId, user]); // Add user to dependencies
 
-    // Mock data - replace with actual API call
-    setTimeout(() => {
-      const mockTalent = {
-        id: talentId,
-        name: "Sarah Johnson",
-        title: "Full Stack Developer",
-        email: "sarah.johnson@email.com",
-        phone: "+1 (555) 123-4567",
-        bio: "Passionate developer with 3+ years of experience in React, Node.js, and cloud technologies. Completed 5 certified courses and 12 real-world projects.",
-        skills: ["React", "Node.js", "MongoDB", "AWS", "TypeScript", "Docker", "Git"],
-        certifications: [
-          { name: "Advanced React Development", type: "course", date: "2024-01-15" },
-          { name: "Cloud Architecture", type: "course", date: "2024-02-20" },
-          { name: "E-commerce Platform", type: "project", date: "2024-03-10" }
-        ],
-        experience: [
-          { role: "Senior Developer", company: "Tech Corp", duration: "2 years" },
-          { role: "Full Stack Developer", company: "Startup Inc", duration: "1 year" }
-        ],
-        education: "BS Computer Science - Stanford University",
-        location: "San Francisco, CA",
-        availability: "Immediately",
-        expectedSalary: "$120,000 - $140,000",
-        resumeUrl: "#", // URL to download resume
-        isVerified: true
-      };
-      setTalent(mockTalent);
-      setLoading(false);
-    }, 1000);
-  }, [talentId, isHRUser, navigate]);
+  // Now do conditional returns AFTER all hooks
+  if (!user) {
+    return <Navigate to="/login" state={{ from: `/talent/${talentId}` }} />;
+  }
+
+  if (!user.is_hr) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 text-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-4">
+          <div className="bg-red-500/20 border border-red-400/30 rounded-xl p-6">
+            <h2 className="text-2xl font-bold text-red-400 mb-4">Access Denied</h2>
+            <p className="text-gray-300 mb-4">
+              Only verified HR professionals can view talent profiles. 
+              Your email ({user.email}) doesn't have HR privileges.
+            </p>
+            <button 
+              onClick={() => navigate('/talent')}
+              className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-lg transition-colors"
+            >
+              Back to Talent Pool
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

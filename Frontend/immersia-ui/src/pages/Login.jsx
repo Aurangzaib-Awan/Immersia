@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input.jsx";
 import { Label } from "@/components/ui/label.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI } from "@/services/api";
 
 function Login({ setUser }) {
@@ -10,6 +10,11 @@ function Login({ setUser }) {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get the return URL from location state
+    const from = location.state?.from?.pathname || "/";
+    console.log("Return URL from state:", from);
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -25,6 +30,7 @@ function Login({ setUser }) {
 
         try {
             const data = await authAPI.login(form.email, form.password);
+            console.log("Login response:", data);
             
             if (data.token && data.user) {
                 localStorage.setItem("token", data.token);
@@ -33,11 +39,34 @@ function Login({ setUser }) {
                 if (setUser) {
                     setUser(data.user);
                 }
-                
+
+                console.log("User role:", data.user.role);
+                console.log("User is_admin:", data.user.is_admin);
+                console.log("User is_hr:", data.user.is_hr);
+
+                // FIXED: Proper role-based redirection
                 if (data.user.is_admin) {
+                    // Admin users go to admin dashboard
+                    console.log("Redirecting admin to /admin");
                     navigate("/admin");
+                } else if (data.user.is_hr) {
+                    // HR users go to talent section or return URL
+                    if (from && from !== "/") {
+                        console.log("Redirecting HR to return URL:", from);
+                        navigate(from);
+                    } else {
+                        console.log("Redirecting HR to /talent");
+                        navigate("/talent");
+                    }
                 } else {
-                    navigate("/skill");
+                    // Normal users (students, mentors) go to skills section or return URL
+                    if (from && from !== "/") {
+                        console.log("Redirecting normal user to return URL:", from);
+                        navigate(from);
+                    } else {
+                        console.log("Redirecting normal user to /skill");
+                        navigate("/skill");
+                    }
                 }
             } else {
                 alert("Login failed. Check your credentials.");
@@ -60,7 +89,7 @@ function Login({ setUser }) {
                             Welcome Back
                         </h1>
                         <p className="text-gray-400 text-sm sm:text-base">
-                            Sign in to continue your learning journey
+                            Sign in to continue your journey
                         </p>
                     </div>
 
@@ -77,6 +106,7 @@ function Login({ setUser }) {
                                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300"
                                 placeholder="Enter your email"
                                 disabled={loading}
+                                required
                             />
                         </div>
 
@@ -93,6 +123,7 @@ function Login({ setUser }) {
                                     className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300 pr-12"
                                     placeholder="Enter your password"
                                     disabled={loading}
+                                    required
                                 />
                                 <button
                                     type="button"
@@ -134,14 +165,13 @@ function Login({ setUser }) {
                         </Button>
                     </form>
 
-                    {/* Divider */}
+                    {/* Rest of your login component remains the same */}
                     <div className="flex items-center my-6">
                         <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
                         <span className="mx-4 text-gray-500 text-sm">or continue with</span>
                         <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
                     </div>
 
-                    {/* Google Sign In */}
                     <Button
                         variant="outline"
                         disabled={loading}
@@ -156,7 +186,6 @@ function Login({ setUser }) {
                         Sign in with Google
                     </Button>
 
-                    {/* Sign Up Link */}
                     <div className="text-center text-sm text-gray-400 mt-6 pt-6 border-t border-gray-700">
                         Don't have an account?{" "}
                         <a
@@ -167,7 +196,6 @@ function Login({ setUser }) {
                         </a>
                     </div>
 
-                    {/* Additional Links */}
                     <div className="text-center mt-4">
                         <a
                             href="/forgot-password"

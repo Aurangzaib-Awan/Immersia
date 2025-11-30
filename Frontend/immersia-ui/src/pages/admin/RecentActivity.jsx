@@ -234,7 +234,7 @@ const UserGraph = ({ data }) => {
                 <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10 shadow-lg border border-gray-700">
                   <div className="font-semibold">{item.users} users</div>
                   <div>{item.month} {item.year}</div>
-                  {isPeakMonth && <div className="text-amber-400 text-xs">🌟 Peak Month</div>}
+                  {isPeakMonth && <div className="text-amber-400 text-xs">Peak Month</div>}
                 </div>
                 
                 {/* Shine effect for bars with users */}
@@ -297,12 +297,7 @@ const UserGraph = ({ data }) => {
         </div>
       </div>
 
-      {/* Height scale indicator (optional) */}
-      <div className="flex justify-between items-center mt-2 px-1 text-xs text-gray-400">
-        <span>0</span>
-        <span>{Math.ceil(maxUsers / 2)}</span>
-        <span>{maxUsers}</span>
-      </div>
+     
     </div>
   );
 };
