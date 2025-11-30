@@ -4,7 +4,8 @@ import Home from "./pages/Home.jsx";
 import Signup from "./pages/Signup.jsx";
 import Login from "./pages/Login.jsx";
 import Learn from "./pages/Learn.jsx";
-import Talent from "./pages/Talent.jsx";
+import Talent from "./pages/talent/Talent.jsx";
+import TalentProfile from "./pages/talent/TalentProfile.jsx";
 import Skills from "./pages/Skills.jsx";
 import Mindmap from "./pages/MindMap.jsx";
 import Divide from "./pages/Divide.jsx";
@@ -41,6 +42,11 @@ const ProtectedRoute = ({ user, children, adminOnly = false }) => {
   return children;
 };
 
+// Public Route Component - Allows access without authentication
+const PublicRoute = ({ children }) => {
+  return children;
+};
+
 function AppRoutes({ user, setUser }) {
   return (
     <Routes>
@@ -48,6 +54,42 @@ function AppRoutes({ user, setUser }) {
       <Route path="/" element={<Home />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login setUser={setUser} />} />
+      
+      {/* Public Project Routes - Accessible without login */}
+      <Route 
+        path="/projects" 
+        element={
+          <PublicRoute>
+            <ProjectsMarketplace user={user} />
+          </PublicRoute>
+        } 
+      />
+      <Route 
+        path="/projects/:projectId" 
+        element={
+          <PublicRoute>
+            <ProjectDetail user={user} />
+          </PublicRoute>
+        } 
+      />
+      
+      {/* Public Course Routes - Accessible without login */}
+      <Route 
+        path="/courses" 
+        element={
+          <PublicRoute>
+            <CoursesMarketplace user={user} />
+          </PublicRoute>
+        } 
+      />
+      <Route 
+        path="/courses/:courseId" 
+        element={
+          <PublicRoute>
+            <CourseDetail user={user} />
+          </PublicRoute>
+        } 
+      />
       
       {/* User Routes - Protected but not admin only */}
       <Route 
@@ -92,23 +134,7 @@ function AppRoutes({ user, setUser }) {
         } 
       />
       
-      {/* PROJECT-BASED LEARNING ROUTES */}
-      <Route 
-        path="/projects" 
-        element={
-          <ProtectedRoute user={user}>
-            <ProjectsMarketplace />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/projects/:projectId" 
-        element={
-          <ProtectedRoute user={user}>
-            <ProjectDetail />
-          </ProtectedRoute>
-        } 
-      />
+      {/* PROTECTED Project Workspace Routes - Require authentication */}
       <Route 
         path="/projects/:projectId/workspace" 
         element={
@@ -126,23 +152,7 @@ function AppRoutes({ user, setUser }) {
         } 
       />
       
-      {/* COURSE-BASED LEARNING ROUTES */}
-      <Route 
-        path="/courses" 
-        element={
-          <ProtectedRoute user={user}>
-            <CoursesMarketplace />
-          </ProtectedRoute>
-        } 
-      />
-      <Route 
-        path="/courses/:courseId" 
-        element={
-          <ProtectedRoute user={user}>
-            <CourseDetail />
-          </ProtectedRoute>
-        } 
-      />
+      {/* PROTECTED Course Workspace Routes - Require authentication */}
       <Route 
         path="/courses/:courseId/workspace" 
         element={
@@ -160,6 +170,26 @@ function AppRoutes({ user, setUser }) {
         } 
       />
       
+        {/* Public Talent Route */}
+<Route 
+  path="/talent" 
+  element={
+    <PublicRoute>
+      <Talent user={user} />
+    </PublicRoute>
+  } 
+/>
+
+{/* Protected Talent Profile Route for HR */}
+<Route 
+  path="/talent/:talentId" 
+  element={
+    <ProtectedRoute user={user}>
+      <TalentProfile user={user} />
+    </ProtectedRoute>
+  } 
+/>
+
       {/* Admin Routes - Protected and admin only */}
       <Route 
         path="/admin" 

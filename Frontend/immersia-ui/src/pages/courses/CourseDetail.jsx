@@ -4,7 +4,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Clock, Users, ChevronRight, BookOpen, PlayCircle, FileText, Star } from 'lucide-react';
 import { courseAPI } from '../../services/api';
 
-const CourseDetail = () => {
+const CourseDetail = ({ user }) => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
@@ -72,6 +72,12 @@ const CourseDetail = () => {
   }, [courseId]);
 
   const handleStartLearning = () => {
+    if (!user) {
+      // Redirect to login if not authenticated
+      navigate('/login');
+      return;
+    }
+    // Navigate to workspace if authenticated
     navigate(`/courses/${courseId}/workspace`);
   };
 
@@ -161,8 +167,28 @@ const CourseDetail = () => {
                   onClick={handleStartLearning}
                   className="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 mb-4"
                 >
-                  Start Learning
+                  {user ? "Start Learning" : "Login to Start Learning"}
                 </button>
+
+                {!user && (
+                  <div className="text-center text-sm text-gray-400 mb-4">
+                    <p>You need to be logged in to start this course</p>
+                    <div className="flex gap-2 mt-3">
+                      <Link 
+                        to="/login" 
+                        className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors duration-300 text-center"
+                      >
+                        Login
+                      </Link>
+                      <Link 
+                        to="/signup" 
+                        className="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-2 px-4 rounded transition-colors duration-300 text-center"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  </div>
+                )}
 
                 <div className="mt-6 pt-6 border-t border-gray-700 space-y-4">
                   <div className="text-sm text-gray-400">
