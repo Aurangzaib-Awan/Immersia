@@ -1,7 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
 from con import client
 from bson import ObjectId
 import traceback
+import bcrypt
 
 router = APIRouter()
 
@@ -9,6 +11,60 @@ db = client["immersia"]
 users_collection = db["users"]
 courses_collection = db["courses"]
 projects_collection = db["projects"]
+
+# Add the ChangePasswordModel
+class ChangePasswordModel(BaseModel):
+    current_password: str
+    new_password: str
+
+# Simple function to get current user
+async def get_current_user():
+    # For now, we'll use the admin email directly
+    # You might want to get this from the JWT token in a real implementation
+    return {"email": "admin@immersia.com"}
+
+@router.post("/change-password")
+async def change_password(password_data: ChangePasswordModel, current_user: dict = Depends(get_current_user)):
+    try:
+        print(f"🔄 Changing password for user: {current_user['email']}")
+        
+        # Find the user
+        user = users_collection.find_one({"email": current_user['email']})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        print(f"🔍 Found user: {user['email']}")
+        
+        # Verify current password
+        current_password_bytes = password_data.current_password.encode('utf-8')
+        stored_password_bytes = user['password'].encode('utf-8')
+        
+        if not bcrypt.checkpw(current_password_bytes, stored_password_bytes):
+            print("❌ Current password is incorrect")
+            raise HTTPException(status_code=400, detail="Current password is incorrect")
+        
+        # Hash new password
+        hashed_new_password = bcrypt.hashpw(password_data.new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        
+        # Update password in database
+        result = users_collection.update_one(
+            {"email": current_user['email']},
+            {"$set": {"password": hashed_new_password}}
+        )
+        
+        if result.modified_count == 1:
+            print("✅ Password updated successfully")
+            return {"message": "Password changed successfully"}
+        else:
+            print("❌ Failed to update password in database")
+            raise HTTPException(status_code=500, detail="Failed to update password")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Error changing password: {str(e)}")
+        print(f"📋 Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @router.get("/admin/users")
 async def get_all_users():
@@ -47,7 +103,7 @@ async def get_dashboard_stats():
         print("Error fetching stats:", e)
         raise HTTPException(status_code=500, detail="Internal server error")
 
-# ADD THIS DELETE ENDPOINT FOR USER DELETION
+# DELETE endpoint for user deletion
 @router.delete("/admin/users/{user_id}")
 def delete_user(user_id: str):
     try:
@@ -66,16 +122,15 @@ def delete_user(user_id: str):
         result = users_collection.delete_one({"_id": ObjectId(user_id)})
         
         if result.deleted_count == 1:
-            print(f"✅ User {user_id} deleted successfully")
+            print(f"User {user_id} deleted successfully")
             return {"message": "User deleted successfully"}
         else:
-            print(f"❌ Failed to delete user {user_id}")
+            print(f"Failed to delete user {user_id}")
             raise HTTPException(status_code=500, detail="Failed to delete user")
             
     except HTTPException:
-        # Re-raise HTTP exceptions
         raise
     except Exception as e:
-        print(f"❌ Error deleting user {user_id}: {str(e)}")
+        print(f"error deleting user {user_id}: {str(e)}")
         print(f"Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

@@ -34,15 +34,14 @@ const Sidebar = () => {
                 isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
             }`}>
                 <div className="p-4 lg:p-6">
-                    {/* Animated Title */}
-                    <div className="flex justify-center lg:justify-start">
-                        <h1 className="text-xl lg:text-2xl font-bold text-center lg:text-left bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
-                            <span className="lg:hidden">I</span>
-                            <span className="hidden lg:inline">Immersia.</span>
-                        </h1>
-                    </div>
-                   
-                </div>
+    {/* Animated Title */}
+    <div className="flex justify-center lg:justify-start">
+        <h1 className="text-3xl lg:text-4xl font-bold text-center lg:text-left bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
+            <span className="lg:hidden">I</span>
+            <span className="hidden lg:inline">Immersia.</span>
+        </h1>
+    </div>
+</div>
                 
                 <nav className="mt-6">
                     {menuItems.map((item) => (

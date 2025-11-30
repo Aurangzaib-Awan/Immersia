@@ -3,16 +3,31 @@ const API_BASE_URL = 'http://localhost:8000';
 
 const apiRequest = async (endpoint, options = {}) => {
   try {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
+
+    // Add authorization header if token exists
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+      headers,
       ...options,
     });
 
     if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+      let errorDetail = `API error: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorDetail = errorData.detail || errorData.message || errorDetail;
+      } catch {
+        errorDetail = response.statusText || errorDetail;
+      }
+      throw new Error(errorDetail);
     }
 
     return await response.json();
@@ -24,7 +39,6 @@ const apiRequest = async (endpoint, options = {}) => {
 
 // Auth API functions
 export const authAPI = {
-  // User login
   login: async (email, password) => {
     return await apiRequest('/login', {
       method: 'POST',
@@ -32,7 +46,6 @@ export const authAPI = {
     });
   },
 
-  // User registration
   register: async (userData) => {
     return await apiRequest('/signup', {
       method: 'POST',
@@ -40,41 +53,38 @@ export const authAPI = {
     });
   },
 
-  // Get current user
   getCurrentUser: async () => {
-    const token = localStorage.getItem('token');
-    return await apiRequest('/user', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+    return await apiRequest('/user');
+  },
+
+  // Add changePassword to authAPI as well
+  changePassword: async (currentPassword, newPassword) => {
+    return await apiRequest('/change-password', {
+      method: 'POST',
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword
+      }),
     });
   }
 };
 
-// Course API functions
 export const courseAPI = {
-  // Get all courses
   getCourses: async () => {
     return await apiRequest('/courses');
   },
-
-  // Create new course
   createCourse: async (courseData) => {
     return await apiRequest('/courses', {
       method: 'POST',
       body: JSON.stringify(courseData),
     });
   },
-
-  // Update existing course
   updateCourse: async (courseId, courseData) => {
     return await apiRequest(`/courses/${courseId}`, {
       method: 'PUT',
       body: JSON.stringify(courseData),
     });
   },
-
-  // Delete course
   deleteCourse: async (courseId) => {
     return await apiRequest(`/courses/${courseId}`, {
       method: 'DELETE',
@@ -82,30 +92,22 @@ export const courseAPI = {
   },
 };
 
-// Project API functions
 export const projectAPI = {
-  // Get all projects
   getProjects: async () => {
     return await apiRequest('/projects');
   },
-
-  // Create new project
   createProject: async (projectData) => {
     return await apiRequest('/projects', {
       method: 'POST',
       body: JSON.stringify(projectData),
     });
   },
-
-  // Update existing project
   updateProject: async (projectId, projectData) => {
     return await apiRequest(`/projects/${projectId}`, {
       method: 'PUT',
       body: JSON.stringify(projectData),
     });
   },
-
-  // Delete project
   deleteProject: async (projectId) => {
     return await apiRequest(`/projects/${projectId}`, {
       method: 'DELETE',
@@ -113,7 +115,6 @@ export const projectAPI = {
   },
 };
 
-// ADD ONLY THIS - Admin API functions for StatsGrid
 export const adminAPI = {
   // Get dashboard stats
   getStats: async () => {
@@ -124,11 +125,12 @@ export const adminAPI = {
   getUsers: async () => {
     return await apiRequest('/admin/users');
   },
-    // Delete user
+
+  // Delete user
   deleteUser: async (userId) => {
     return await apiRequest(`/admin/users/${userId}`, {
       method: 'DELETE',
-});
+    });
   },
 
   // Get all courses
@@ -140,4 +142,15 @@ export const adminAPI = {
   getProjects: async () => {
     return await apiRequest('/projects');
   },
+
+  // ADD THIS MISSING FUNCTION
+  changePassword: async (currentPassword, newPassword) => {
+    return await apiRequest('/change-password', {
+      method: 'POST',
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword
+      }),
+    });
+  }
 };
