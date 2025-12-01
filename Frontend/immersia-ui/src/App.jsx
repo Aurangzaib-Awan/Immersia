@@ -60,5 +60,4 @@ function App() {
   // Wrap AppRoutes with user context and protection logic
   return <AppRoutes user={user} setUser={setUser} />;
 }
-
 export default App;

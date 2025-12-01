@@ -4,11 +4,15 @@ import { Label } from "@/components/ui/label.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "@/services/api";
+import { AlertCircle, CheckCircle, Eye, EyeOff, XCircle } from "lucide-react";
 
 function Signup() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [form, setForm] = useState({
     fullname: "",
@@ -16,8 +20,51 @@ function Signup() {
     password: ""
   });
 
+  // Validate form fields
+  const validateForm = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    // Full name validation
+    if (!form.fullname.trim()) {
+      newErrors.fullname = "Full name is required";
+    } else if (form.fullname.trim().length < 2) {
+      newErrors.fullname = "Full name must be at least 2 characters";
+    }
+
+    // Email validation
+    if (!form.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(form.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!form.password) {
+      newErrors.password = "Password is required";
+    } else if (form.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+    } else if (!passwordRegex.test(form.password)) {
+      newErrors.password = "Password must contain uppercase, lowercase, number, and special character";
+    }
+
+    return newErrors;
+  };
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    
+    // Clear field-specific error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
+    }
+    
+    // Clear server error when user modifies any field
+    if (serverError) {
+      setServerError("");
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -26,6 +73,20 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setServerError("");
+    setSuccessMessage("");
+    
+    // Validate form
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      
+      // Scroll to first error
+      const firstErrorField = Object.keys(validationErrors)[0];
+      document.getElementById(firstErrorField)?.focus();
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -37,55 +98,176 @@ function Signup() {
         if (data.user) {
           localStorage.setItem("user", JSON.stringify(data.user));
         }
-        alert("Signup successful!");
-        navigate("/skill");
+        
+        setSuccessMessage("Account created successfully! Redirecting...");
+        
+        // Show success message for 2 seconds before redirecting
+        setTimeout(() => {
+          navigate("/skill");
+        }, 2000);
+        
       } else {
-        alert("Signup failed. Please try again.");
+        setServerError("Signup failed. Please try again.");
       }
     } catch (err) {
       console.error("Signup error:", err);
-      alert("Signup failed. Please check your information and try again.");
+      
+      // Handle different types of errors
+      if (err.response) {
+        // Server responded with error status
+        const { status, data } = err.response;
+        
+        switch (status) {
+          case 409:
+            setErrors({ 
+              email: "This email is already registered. Please use a different email or try logging in." 
+            });
+            setServerError("An account with this email already exists.");
+            break;
+            
+          case 400:
+            if (data.errors) {
+              // Handle validation errors from server
+              const serverErrors = {};
+              data.errors.forEach(error => {
+                if (error.field === 'email') serverErrors.email = error.message;
+                if (error.field === 'password') serverErrors.password = error.message;
+                if (error.field === 'fullname') serverErrors.fullname = error.message;
+              });
+              setErrors(serverErrors);
+            } else if (data.message) {
+              setServerError(data.message);
+            } else {
+              setServerError("Invalid form data. Please check your inputs.");
+            }
+            break;
+            
+          case 422:
+            setServerError("Validation failed. Please check your information.");
+            if (data.errors) {
+              const serverErrors = {};
+              data.errors.forEach(error => {
+                serverErrors[error.field] = error.message;
+              });
+              setErrors(serverErrors);
+            }
+            break;
+            
+          case 500:
+            setServerError("Server error. Please try again later.");
+            break;
+            
+          case 429:
+            setServerError("Too many requests. Please try again in a few minutes.");
+            break;
+            
+          default:
+            setServerError(data?.message || "An unexpected error occurred. Please try again.");
+        }
+      } else if (err.request) {
+        // Request was made but no response received
+        setServerError("Network error. Please check your connection and try again.");
+      } else {
+        // Something else happened
+        setServerError("Signup failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  // Function to handle cancel/back navigation
+  const handleCancel = () => {
+    navigate(-1);
   };
 
   return (
     <main className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 py-8 px-4 sm:px-6">
       {/* Moving Gradient Border */}
       <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full max-w-sm sm:max-w-md">
-        <section className="w-full bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800">
+        <section className="w-full bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800 relative">
+          
+          {/* Cancel Button - Top Right Corner */}
+          <button
+            onClick={handleCancel}
+            disabled={loading}
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white transition-colors duration-200 z-10 disabled:opacity-50"
+            type="button"
+            aria-label="Cancel and go back"
+          >
+            <XCircle className="w-6 h-6 sm:w-7 sm:h-7" />
+          </button>
           
           {/* Header with Flowing Gradient Text */}
-          <div className="text-center mb-8">
-           
-                        <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
-                            Join Immersia
-                        </h1>
+          <div className="text-center mb-8 pt-2">
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
+              Join Immersia
+            </h1>
             <p className="text-gray-400 text-sm sm:text-base">
               Create your account to start learning
             </p>
           </div>
 
+          {/* Success Message */}
+          {successMessage && (
+            <div className="mb-6 p-4 bg-green-900/30 border border-green-700 rounded-lg flex items-center space-x-3 animate-fadeIn">
+              <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
+              <p className="text-green-300 text-sm">{successMessage}</p>
+            </div>
+          )}
+
+          {/* Server Error Message */}
+          {serverError && !successMessage && (
+            <div className="mb-6 p-4 bg-red-900/30 border border-red-700 rounded-lg flex items-start space-x-3 animate-fadeIn">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-red-300 text-sm font-medium mb-1">Signup Error</p>
+                <p className="text-red-300/80 text-sm">{serverError}</p>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Full Name Field */}
-            <div className="space-y-3">
-              <Label htmlFor="fullname" className="text-gray-300 text-sm font-medium">Full Name *</Label>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="fullname" className="text-gray-300 text-sm font-medium">Full Name *</Label>
+                {errors.fullname && (
+                  <span className="text-red-400 text-xs flex items-center">
+                    <AlertCircle className="w-3 h-3 mr-1" />
+                    {errors.fullname}
+                  </span>
+                )}
+              </div>
               <Input
                 id="fullname"
                 name="fullname"
                 value={form.fullname}
                 onChange={handleChange}
                 required
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300"
+                className={`w-full bg-gray-700 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
+                  errors.fullname 
+                    ? "border-red-500 focus:ring-red-500" 
+                    : "border-gray-600 focus:ring-sky-500 focus:border-transparent"
+                }`}
                 placeholder="Enter your full name"
                 disabled={loading}
+                aria-invalid={!!errors.fullname}
+                aria-describedby={errors.fullname ? "fullname-error" : undefined}
               />
             </div>
 
             {/* Email Field */}
-            <div className="space-y-3">
-              <Label htmlFor="email" className="text-gray-300 text-sm font-medium">Email *</Label>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="email" className="text-gray-300 text-sm font-medium">Email *</Label>
+                {errors.email && (
+                  <span className="text-red-400 text-xs flex items-center">
+                    <AlertCircle className="w-3 h-3 mr-1" />
+                    {errors.email}
+                  </span>
+                )}
+              </div>
               <Input
                 type="email"
                 id="email"
@@ -93,15 +275,29 @@ function Signup() {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300"
+                className={`w-full bg-gray-700 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
+                  errors.email 
+                    ? "border-red-500 focus:ring-red-500" 
+                    : "border-gray-600 focus:ring-sky-500 focus:border-transparent"
+                }`}
                 placeholder="Enter your email"
                 disabled={loading}
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "email-error" : undefined}
               />
             </div>
 
             {/* Password Field with Visibility Toggle */}
-            <div className="space-y-3">
-              <Label htmlFor="password" className="text-gray-300 text-sm font-medium">Password *</Label>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="password" className="text-gray-300 text-sm font-medium">Password *</Label>
+                {errors.password && (
+                  <span className="text-red-400 text-xs flex items-center">
+                    <AlertCircle className="w-3 h-3 mr-1" />
+                    {errors.password}
+                  </span>
+                )}
+              </div>
               <div className="relative">
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -110,27 +306,56 @@ function Signup() {
                   value={form.password}
                   onChange={handleChange}
                   required
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300 pr-12"
-                  placeholder="Create a password"
+                  className={`w-full bg-gray-700 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 pr-12 ${
+                    errors.password 
+                      ? "border-red-500 focus:ring-red-500" 
+                      : "border-gray-600 focus:ring-sky-500 focus:border-transparent"
+                  }`}
+                  placeholder="Create a strong password"
                   disabled={loading}
+                  aria-invalid={!!errors.password}
+                  aria-describedby={errors.password ? "password-error" : undefined}
                 />
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors duration-200 disabled:opacity-50"
                   disabled={loading}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
+                    <EyeOff className="w-5 h-5" />
                   ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+                    <Eye className="w-5 h-5" />
                   )}
                 </button>
+              </div>
+              
+              {/* Password Requirements */}
+              <div className="bg-gray-900/50 p-3 rounded-lg mt-2">
+                <p className="text-gray-400 text-xs mb-2">Password must contain:</p>
+                <ul className="text-xs space-y-1">
+                  <li className={`flex items-center ${form.password.length >= 8 ? 'text-green-400' : 'text-gray-500'}`}>
+                    <div className={`w-2 h-2 rounded-full mr-2 ${form.password.length >= 8 ? 'bg-green-400' : 'bg-gray-600'}`} />
+                    At least 8 characters
+                  </li>
+                  <li className={`flex items-center ${/[a-z]/.test(form.password) ? 'text-green-400' : 'text-gray-500'}`}>
+                    <div className={`w-2 h-2 rounded-full mr-2 ${/[a-z]/.test(form.password) ? 'bg-green-400' : 'bg-gray-600'}`} />
+                    One lowercase letter
+                  </li>
+                  <li className={`flex items-center ${/[A-Z]/.test(form.password) ? 'text-green-400' : 'text-gray-500'}`}>
+                    <div className={`w-2 h-2 rounded-full mr-2 ${/[A-Z]/.test(form.password) ? 'bg-green-400' : 'bg-gray-600'}`} />
+                    One uppercase letter
+                  </li>
+                  <li className={`flex items-center ${/\d/.test(form.password) ? 'text-green-400' : 'text-gray-500'}`}>
+                    <div className={`w-2 h-2 rounded-full mr-2 ${/\d/.test(form.password) ? 'bg-green-400' : 'bg-gray-600'}`} />
+                    One number
+                  </li>
+                  <li className={`flex items-center ${/[@$!%*?&]/.test(form.password) ? 'text-green-400' : 'text-gray-500'}`}>
+                    <div className={`w-2 h-2 rounded-full mr-2 ${/[@$!%*?&]/.test(form.password) ? 'bg-green-400' : 'bg-gray-600'}`} />
+                    One special character (@$!%*?&)
+                  </li>
+                </ul>
               </div>
             </div>
 
@@ -202,8 +427,24 @@ function Signup() {
             background-position: 0% 50%;
           }
         }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
         .animate-gradient-flow {
           animation: gradient-flow 3s ease infinite;
+        }
+        
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
         }
       `}</style>
     </main>

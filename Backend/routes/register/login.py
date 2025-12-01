@@ -22,17 +22,12 @@ async def initialize_role_emails():
         sample_roles = [
             # Admin emails
             {"email": "admin@immersia.com", "role": "admin", "is_verified": True},
-            {"email": "superadmin@immersia.com", "role": "admin", "is_verified": True},
             
             # HR emails (verified)
-            {"email": "hr@techcompany.com", "role": "hr", "is_verified": True},
-            {"email": "talent@startup.com", "role": "hr", "is_verified": True},
-            {"email": "recruitment@corporation.com", "role": "hr", "is_verified": True},
+            {"email": "hr@immersia.com", "role": "hr", "is_verified": True},
             
             # Mentor emails (verified)
             {"email": "mentor@immersia.com", "role": "mentor", "is_verified": True},
-            {"email": "expert@immersia.com", "role": "mentor", "is_verified": True},
-            {"email": "guide@immersia.com", "role": "mentor", "is_verified": True},
             
             # Pending verification HR emails
             {"email": "newhr@company.com", "role": "hr", "is_verified": False},

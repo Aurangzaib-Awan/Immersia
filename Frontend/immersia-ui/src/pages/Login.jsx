@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button.jsx";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI } from "@/services/api";
+import {XCircle } from "lucide-react";
 
 function Login({ setUser }) {
     const [form, setForm] = useState({ email: "", password: "" });
@@ -116,16 +117,16 @@ function Login({ setUser }) {
             <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full max-w-sm sm:max-w-md">
                 <div className="bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800 relative">
                     
-                    {/* Close Button - Top Right */}
-                    <button
-                        onClick={handleClose}
-                        className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200 p-1 rounded-full hover:bg-gray-700"
-                        disabled={loading}
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    {/* Cancel Button - Top Right Corner */}
+          <button
+            onClick={handleClose}
+            disabled={loading}
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white transition-colors duration-200 z-10 disabled:opacity-50"
+            type="button"
+            aria-label="Cancel and go back"
+          >
+            <XCircle className="w-6 h-6 sm:w-7 sm:h-7" />
+          </button>
 
                     <div className="text-center mb-8">
                         <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
