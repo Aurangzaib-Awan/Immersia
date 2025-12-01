@@ -9,28 +9,39 @@ function Login({ setUser }) {
     const [form, setForm] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
 
     // Get the return URL from location state
     const from = location.state?.from?.pathname || "/";
-    console.log("Return URL from state:", from);
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
+        // Clear error when user starts typing
+        if (error) setError("");
     }
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
+    const handleClose = () => {
+        // Navigate back or to home page
+        if (from && from !== "/") {
+            navigate(-1); // Go back to previous page
+        } else {
+            navigate("/");
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setError("");
 
         try {
             const data = await authAPI.login(form.email, form.password);
-            console.log("Login response:", data);
             
             if (data.token && data.user) {
                 localStorage.setItem("token", data.token);
@@ -40,50 +51,82 @@ function Login({ setUser }) {
                     setUser(data.user);
                 }
 
-                console.log("User role:", data.user.role);
-                console.log("User is_admin:", data.user.is_admin);
-                console.log("User is_hr:", data.user.is_hr);
-
-                // FIXED: Proper role-based redirection
+                // Enhanced role-based redirection
                 if (data.user.is_admin) {
-                    // Admin users go to admin dashboard
-                    console.log("Redirecting admin to /admin");
                     navigate("/admin");
                 } else if (data.user.is_hr) {
                     // HR users go to talent section or return URL
                     if (from && from !== "/") {
-                        console.log("Redirecting HR to return URL:", from);
                         navigate(from);
                     } else {
-                        console.log("Redirecting HR to /talent");
                         navigate("/talent");
                     }
-                } else {
-                    // Normal users (students, mentors) go to skills section or return URL
+                } else if (data.user.is_mentor) {
+                    // Mentor users go to mentor dashboard
                     if (from && from !== "/") {
-                        console.log("Redirecting normal user to return URL:", from);
                         navigate(from);
                     } else {
-                        console.log("Redirecting normal user to /skill");
+                        navigate("/mentor-dashboard");
+                    }
+                } else {
+                    // Normal users (students) go to skills section or return URL
+                    if (from && from !== "/") {
+                        navigate(from);
+                    } else {
                         navigate("/skill");
                     }
                 }
             } else {
-                alert("Login failed. Check your credentials.");
+                setError("Login failed. Please check your credentials.");
             }
         } catch (err) {
             console.error("Login error:", err);
-            alert("Something went wrong. Try again.");
+            
+            // Handle different error types from backend
+            if (err.response) {
+                const errorDetail = err.response.data?.detail;
+                if (errorDetail === "User not found") {
+                    setError("No account found with this email address.");
+                } else if (errorDetail === "Invalid password") {
+                    setError("Incorrect password. Please try again.");
+                } else if (errorDetail?.includes("duplicate") || errorDetail?.includes("already exists")) {
+                    setError("An account with this email already exists.");
+                } else {
+                    setError(errorDetail || "Something went wrong. Please try again.");
+                }
+            } else if (err.message?.includes("Network Error")) {
+                setError("Network error. Please check your connection and try again.");
+            } else {
+                setError("Something went wrong. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
-    }
+    };
+
+    const handleGoogleLogin = () => {
+        // Placeholder for Google OAuth - you'll need to implement this
+        setError("Google login is not yet implemented. Please use email and password.");
+        // For actual implementation, you would redirect to your backend OAuth endpoint
+        // window.location.href = '/api/auth/google';
+    };
 
     return (
         <main className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 py-8 px-4 sm:px-6">
             <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full max-w-sm sm:max-w-md">
-                <section className="w-full bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800">
+                <div className="bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800 relative">
                     
+                    {/* Close Button - Top Right */}
+                    <button
+                        onClick={handleClose}
+                        className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200 p-1 rounded-full hover:bg-gray-700"
+                        disabled={loading}
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
                     <div className="text-center mb-8">
                         <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
                             Welcome Back
@@ -92,6 +135,13 @@ function Login({ setUser }) {
                             Sign in to continue your journey
                         </p>
                     </div>
+
+                    {/* Error Message Display */}
+                    {error && (
+                        <div className="mb-6 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
+                            <p className="text-red-400 text-sm text-center">{error}</p>
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Email Field */}
@@ -165,14 +215,16 @@ function Login({ setUser }) {
                         </Button>
                     </form>
 
-                    {/* Rest of your login component remains the same */}
+                    {/* Divider */}
                     <div className="flex items-center my-6">
                         <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
                         <span className="mx-4 text-gray-500 text-sm">or continue with</span>
                         <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
                     </div>
 
+                    {/* Google Sign In */}
                     <Button
+                        onClick={handleGoogleLogin}
                         variant="outline"
                         disabled={loading}
                         className="w-full py-3 text-gray-300 font-semibold rounded-lg border border-gray-600 hover:bg-gray-700 hover:text-white hover:border-gray-500 transition-all duration-300 disabled:opacity-50 text-base"
@@ -186,6 +238,7 @@ function Login({ setUser }) {
                         Sign in with Google
                     </Button>
 
+                    {/* Sign Up Link */}
                     <div className="text-center text-sm text-gray-400 mt-6 pt-6 border-t border-gray-700">
                         Don't have an account?{" "}
                         <a
@@ -196,6 +249,7 @@ function Login({ setUser }) {
                         </a>
                     </div>
 
+                    {/* Additional Links */}
                     <div className="text-center mt-4">
                         <a
                             href="/forgot-password"
@@ -204,7 +258,7 @@ function Login({ setUser }) {
                             Forgot your password?
                         </a>
                     </div>
-                </section>
+                </div>
             </div>
         </main>
     );

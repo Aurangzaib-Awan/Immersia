@@ -9,6 +9,7 @@ import TalentProfile from "./pages/talent/TalentProfile.jsx";
 import Skills from "./pages/Skills.jsx";
 import Mindmap from "./pages/MindMap.jsx";
 import Divide from "./pages/Divide.jsx";
+import MentorDashboard from "./pages/mentorReview/MentorDashboard.jsx"; 
 
 // PROJECT-BASED LEARNING COMPONENTS
 import ProjectsMarketplace from "./pages/projects/ProjectsMarketplace.jsx";
@@ -110,7 +111,14 @@ function AppRoutes({ user, setUser }) {
           </ProtectedRoute>
         } 
       />
-      
+      <Route 
+  path="/mentor-dashboard" 
+  element={
+    <ProtectedRoute user={user}>
+      <MentorDashboard user={user} />
+    </ProtectedRoute>
+  } 
+/>
       {/* User Routes - Protected but not admin only */}
       <Route 
         path="/learn" 

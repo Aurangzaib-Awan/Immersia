@@ -8,7 +8,7 @@ router = APIRouter()
 
 db = client["immersia"]
 users_collection = db["users"]
-role_emails_collection = db["role_emails"]  # New collection for role-based emails
+role_emails_collection = db["role_emails"]
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
