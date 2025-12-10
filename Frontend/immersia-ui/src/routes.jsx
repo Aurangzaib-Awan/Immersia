@@ -92,6 +92,17 @@ function AppRoutes({ user, setUser }) {
         } 
       />
       
+        {/* User Routes - Protected but not admin only */}
+      <Route 
+        path="/learn" 
+        element={
+          <ProtectedRoute user={user}>
+            <Learn />
+          </ProtectedRoute>
+        } 
+      />
+      
+
       {/* === FIXED: Single Talent Route === */}
       <Route 
         path="/talent" 
@@ -119,15 +130,6 @@ function AppRoutes({ user, setUser }) {
     </ProtectedRoute>
   } 
 />
-      {/* User Routes - Protected but not admin only */}
-      <Route 
-        path="/learn" 
-        element={
-          <ProtectedRoute user={user}>
-            <Learn />
-          </ProtectedRoute>
-        } 
-      />
       
       <Route 
         path="/skill" 
@@ -154,7 +156,7 @@ function AppRoutes({ user, setUser }) {
         } 
       />
       
-      {/* PROTECTED Project Workspace Routes - Require authentication */}
+     {/* PROTECTED Project Workspace Routes - Require authentication */}
       <Route 
         path="/projects/:projectId/workspace" 
         element={
@@ -171,7 +173,7 @@ function AppRoutes({ user, setUser }) {
           </ProtectedRoute>
         } 
       />
-      
+     
       {/* PROTECTED Course Workspace Routes - Require authentication */}
       <Route 
         path="/courses/:courseId/workspace" 

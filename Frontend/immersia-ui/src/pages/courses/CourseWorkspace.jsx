@@ -1,13 +1,12 @@
 // components/courses/CourseWorkspace.jsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Users, BookOpen, PlayCircle, AlertCircle } from 'lucide-react';
+import { Users, BookOpen, PlayCircle } from 'lucide-react';
 import KanbanBoard from '../../components/KanbanBoard';
 
 const CourseWorkspace = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const [authChecked, setAuthChecked] = useState(false);
   
   const nextTaskId = useRef(1);
   
@@ -26,55 +25,6 @@ const CourseWorkspace = () => {
     review: { title: '', description: '' },
     completed: { title: '', description: '' }
   });
-
-  // Check authentication on component mount
-  useEffect(() => {
-    const checkAuthentication = () => {
-      const token = localStorage.getItem('token');
-      const userData = localStorage.getItem('user');
-      
-      if (!token || !userData) {
-        // Redirect to login with return URL
-        navigate('/login', { 
-          state: { 
-            from: `/courses/${courseId}/workspace`,
-            message: 'Please login to access the course workspace'
-          }
-        });
-        return;
-      }
-      
-      try {
-        const parsedUser = JSON.parse(userData);
-        if (!parsedUser || !parsedUser.email) {
-          // Invalid user data
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          navigate('/login', { 
-            state: { 
-              from: `/courses/${courseId}/workspace`,
-              message: 'Session expired. Please login again'
-            }
-          });
-          return;
-        }
-        
-        setAuthChecked(true);
-      } catch {
-        // Invalid JSON
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        navigate('/login', { 
-          state: { 
-            from: `/courses/${courseId}/workspace`,
-            message: 'Session expired. Please login again'
-          }
-        });
-      }
-    };
-    
-    checkAuthentication();
-  }, [courseId, navigate]);
 
   const columns = [
     { id: 'toStudy', title: 'To Study', color: 'bg-gray-500' },
@@ -129,20 +79,6 @@ const CourseWorkspace = () => {
   const handleTakeQuiz = () => {
     navigate(`/courses/${courseId}/quiz`);
   };
-
-  // Show loading while checking authentication
-  if (!authChecked) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 text-white p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center py-20">
-            <div className="w-16 h-16 border-4 border-sky-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-300 text-lg">Verifying authentication...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 text-white p-6">
