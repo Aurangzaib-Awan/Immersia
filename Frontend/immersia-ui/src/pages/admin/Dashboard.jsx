@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import StatsGrid from './StatsGrid';
-import RecentActivity from './RecentActivity';
+//import RecentActivity from './RecentActivity';
 
 const Dashboard = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -23,7 +23,7 @@ const Dashboard = () => {
         <p className="text-text-light text-sm sm:text-base mt-1">Welcome to your admin dashboard</p>
       </div>
       <StatsGrid />
-      <RecentActivity />
+      {/*<RecentActivity />*/}
     </div>
   );
 };

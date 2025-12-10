@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+/*import React, { useState, useEffect } from 'react';
 import { adminAPI } from '../../services/api';
 
 const RecentActivity = () => {
@@ -133,14 +133,14 @@ const RecentActivity = () => {
 
   return (
     <div className="bg-surface-800 rounded-xl shadow-lg p-6 border border-gray-700">
-      {/* Header with Year Selector */}
+     
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
           <h3 className="text-xl font-bold text-white">User Registration Trend</h3>
           <p className="text-sm text-gray-400 mt-1">Monthly registration overview</p>
         </div>
         
-        {/* Year Selector */}
+        
         {availableYears.length > 0 && (
           <div className="mt-3 sm:mt-0">
             <select 
@@ -156,10 +156,6 @@ const RecentActivity = () => {
         )}
       </div>
 
-      {/* Graph */}
-      <UserGraph data={graphData} />
-
-      {/* Stats */}
       <div className="mt-6 pt-6 border-t border-gray-700">
         <div className="grid grid-cols-2 gap-4 text-center">
           <div className="bg-gray-700 rounded-lg p-4">
@@ -207,7 +203,7 @@ const UserGraph = ({ data }) => {
 
   return (
     <div className="w-full">
-      {/* Graph Bars */}
+      
       <div className="flex items-end justify-between h-48 py-4 px-1 bg-gray-700/30 rounded-lg">
         {data.map((item, index) => {
           const barHeight = calculateBarHeight(item.users);
@@ -216,7 +212,7 @@ const UserGraph = ({ data }) => {
           
           return (
             <div key={index} className="flex flex-col items-center flex-1 mx-0.5">
-              {/* Bar with enhanced styling */}
+             
               <div 
                 className={`w-6 rounded-t-lg transition-all duration-300 relative group ${
                   hasUsers 
@@ -230,19 +226,19 @@ const UserGraph = ({ data }) => {
                   minHeight: hasUsers ? '12px' : '8px'
                 }}
               >
-                {/* Tooltip on hover */}
+               
                 <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10 shadow-lg border border-gray-700">
                   <div className="font-semibold">{item.users} users</div>
                   <div>{item.month} {item.year}</div>
                   {isPeakMonth && <div className="text-amber-400 text-xs">Peak Month</div>}
                 </div>
                 
-                {/* Shine effect for bars with users */}
+                
                 {hasUsers && (
                   <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-white/30 to-transparent rounded-t-lg"></div>
                 )}
                 
-                {/* Peak month indicator */}
+                
                 {isPeakMonth && (
                   <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 text-amber-400">
                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -252,7 +248,7 @@ const UserGraph = ({ data }) => {
                 )}
               </div>
               
-              {/* User Count */}
+              
               <div className={`mt-2 text-xs font-bold ${
                 hasUsers 
                   ? isPeakMonth 
@@ -263,7 +259,7 @@ const UserGraph = ({ data }) => {
                 {item.users}
               </div>
               
-              {/* Month Label */}
+            
               <div className={`mt-1 text-xs font-medium ${
                 hasUsers 
                   ? isPeakMonth 
@@ -278,10 +274,10 @@ const UserGraph = ({ data }) => {
         })}
       </div>
 
-      {/* X-axis line */}
+      
       <div className="h-px bg-gray-600 mt-2"></div>
 
-      {/* Legend */}
+     
       <div className="flex justify-center items-center mt-4 space-x-4 text-xs">
         <div className="flex items-center">
           <div className="w-3 h-3 bg-gradient-to-t from-sky-500 to-blue-600 rounded-sm mr-2"></div>
@@ -303,3 +299,4 @@ const UserGraph = ({ data }) => {
 };
 
 export default RecentActivity;
+*/
