@@ -2,6 +2,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import AppRoutes from './routes';
 
+
 // Protected Route Components (defined outside App component)
 const AdminRoute = ({ user, children }) => {
   if (!user) {

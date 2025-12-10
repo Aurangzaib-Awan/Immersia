@@ -4,6 +4,7 @@ from auth import create_access_token
 from con import client
 from models.login_model import Login_Model
 
+
 router = APIRouter()
 
 db = client["immersia"]

@@ -5,12 +5,15 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI } from "@/services/api";
 import {XCircle } from "lucide-react";
+import { GoogleLogin } from '@react-oauth/google';
+
 
 function Login({ setUser }) {
     const [form, setForm] = useState({ email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -105,11 +108,22 @@ function Login({ setUser }) {
         }
     };
 
-    const handleGoogleLogin = () => {
-        // Placeholder for Google OAuth - you'll need to implement this
-        setError("Google login is not yet implemented. Please use email and password.");
-        // For actual implementation, you would redirect to your backend OAuth endpoint
-        // window.location.href = '/api/auth/google';
+    const handleGoogleSuccess = async (credentialResponse) => {
+        try {
+            const token = credentialResponse.credential; // JWT from Google
+            const data = await authAPI.loginWithGoogle({ token }); // send to backend
+            if (data.access_token) {
+            localStorage.setItem("token", data.access_token);
+            if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
+            navigate("/skill");
+            }
+        } catch (err) {
+            console.error("Google login error:", err);
+        }
+    };
+
+    const handleGoogleFailure = (err) => {
+        console.error("Google login failed:", err);
     };
 
     return (
@@ -224,8 +238,9 @@ function Login({ setUser }) {
                     </div>
 
                     {/* Google Sign In */}
-                    <Button
-                        onClick={handleGoogleLogin}
+                    <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={handleGoogleFailure}
                         variant="outline"
                         disabled={loading}
                         className="w-full py-3 text-gray-300 font-semibold rounded-lg border border-gray-600 hover:bg-gray-700 hover:text-white hover:border-gray-500 transition-all duration-300 disabled:opacity-50 text-base"
@@ -237,7 +252,7 @@ function Login({ setUser }) {
                             <path fill="CurrentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                         </svg>
                         Sign in with Google
-                    </Button>
+                    </GoogleLogin>
 
                     {/* Sign Up Link */}
                     <div className="text-center text-sm text-gray-400 mt-6 pt-6 border-t border-gray-700">
