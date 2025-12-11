@@ -7,6 +7,7 @@ import { authAPI } from "@/services/api";
 import {XCircle } from "lucide-react";
 import { GoogleLogin } from '@react-oauth/google';
 
+const SHOW_GOOGLE = false;
 
 function Login({ setUser }) {
     const [form, setForm] = useState({ email: "", password: "" });
@@ -229,7 +230,8 @@ function Login({ setUser }) {
                             )}
                         </Button>
                     </form>
-
+                {SHOW_GOOGLE && (
+                    <>
                     {/* Divider */}
                     <div className="flex items-center my-6">
                         <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
@@ -274,7 +276,9 @@ function Login({ setUser }) {
                             Forgot your password?
                         </a>
                     </div>
+                    </>)}
                 </div>
+                
             </div>
         </main>
     );
