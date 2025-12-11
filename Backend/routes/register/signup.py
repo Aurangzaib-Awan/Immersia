@@ -43,6 +43,7 @@ async def create_user(user: User):
 
 @router.post("/google-signup")
 async def google_signup(google_user: GoogleUser):
+    print("🔥 Google signup endpoint hit with:", google_user)
     try:
         # Verify token
         try:
@@ -51,6 +52,7 @@ async def google_signup(google_user: GoogleUser):
                 google_requests.Request(),
                 "296570820980-c9l8rqlu3rr8eecc2cpi91ltgnk35va5.apps.googleusercontent.com"
             )
+            print("✔️ Token Verified:", idinfo)
         except Exception as e:
             print("Google token verification failed:", e)
             raise HTTPException(status_code=400, detail="Invalid Google token")
@@ -83,6 +85,7 @@ async def google_signup(google_user: GoogleUser):
             "fullname": fullname,
             "password": None
         }
+        print("➡️ Creating user in DB:", email, fullname)
         users_collection.insert_one(user_dict)
 
         token = create_access_token({"email": email})
