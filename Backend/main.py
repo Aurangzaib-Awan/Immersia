@@ -5,6 +5,7 @@ from routes.course import courseRoute
 from routes.register import login
 from routes.project import projectRoute 
 from routes.admin import admin
+from routes import proctoring
 
 app = FastAPI()
 
@@ -21,3 +22,4 @@ app.include_router(signup.router)
 app.include_router(login.router)
 app.include_router(projectRoute.router)
 app.include_router(admin.router)
+app.include_router(proctoring.router)
