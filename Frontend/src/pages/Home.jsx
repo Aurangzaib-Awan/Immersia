@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Award, FileText, Users, Mail } from 'lucide-react';
 
-const Home = () => {
+const Home = ({ user }) => {
   const topCompanies = [
-    "Google", "Microsoft", "Amazon", "Meta", "Netflix", 
+    "Google", "Microsoft", "Amazon", "Meta", "Netflix",
     "Apple", "Tesla", "Spotify", "Uber", "Airbnb"
   ];
 
@@ -24,12 +24,27 @@ const Home = () => {
             <Link to="/courses" className="text-gray-300 hover:text-sky-400 font-medium transition-colors duration-300">Courses</Link>
             <Link to="/projects" className="text-gray-300 hover:text-sky-400 font-medium transition-colors duration-300">Projects</Link>
             <Link to="/talent" className="text-gray-300 hover:text-sky-400 font-medium transition-colors duration-300">Talent</Link>
-            {/* Get Started Button - Flowing Border Glow */}
-            <div className="relative p-[2px] rounded-full bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-              <Link to="/signup" className="block bg-surface-800 text-white px-6 py-2 rounded-full font-medium hover:bg-gray-700 transition-colors duration-300">
-                Get Started
-              </Link>
-            </div>
+
+            {/* Dynamic Auth Button */}
+            {user ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-400 hidden lg:inline">Hi, {user.fullname?.split(' ')[0] || 'Learner'}</span>
+                <div className="relative p-[2px] rounded-full bg-gradient-to-r from-green-400 via-emerald-600 to-green-400 bg-[length:200%_100%] animate-gradient-flow">
+                  <Link to="/skill" className="block bg-surface-800 text-white px-6 py-2 rounded-full font-medium hover:bg-gray-700 transition-colors duration-300">
+                    Dashboard
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4">
+                <Link to="/login" className="text-gray-300 hover:text-white font-medium transition-colors">Log in</Link>
+                <div className="relative p-[2px] rounded-full bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
+                  <Link to="/signup" className="block bg-surface-800 text-white px-6 py-2 rounded-full font-medium hover:bg-gray-700 transition-colors duration-300">
+                    Get Started
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </nav>
@@ -45,8 +60,8 @@ const Home = () => {
             Learn from Industry Experts, Build Real Projects
           </p>
           <p className="text-lg sm:text-xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Choose your learning journey: master concepts through structured courses, 
-            or dive into real-world projects. Get certified, evaluated by industry experts, 
+            Choose your learning journey: master concepts through structured courses,
+            or dive into real-world projects. Get certified, evaluated by industry experts,
             and discovered by top companies.
           </p>
         </div>
@@ -74,7 +89,7 @@ const Home = () => {
                 <p className="text-gray-400 mb-8 leading-relaxed">
                   Master concepts step by step with guided courses and comprehensive curriculum.
                 </p>
-                
+
                 <div className="space-y-4 mb-8">
                   <div className="flex items-start">
                     <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
@@ -96,7 +111,7 @@ const Home = () => {
 
                 {/* Button with Flowing Border Glow */}
                 <div className="relative p-[2px] rounded-lg bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-                  <Link 
+                  <Link
                     to="/courses"
                     className="block w-full bg-surface-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-300 text-center"
                   >
@@ -116,7 +131,7 @@ const Home = () => {
                 <p className="text-gray-400 mb-8 leading-relaxed">
                   Learn by doing. Take on real-world projects and build your portfolio with hands-on experience.
                 </p>
-                
+
                 <div className="space-y-4 mb-8">
                   <div className="flex items-start">
                     <div className="text-green-400 mr-3 mt-1 flex-shrink-0">✓</div>
@@ -138,7 +153,7 @@ const Home = () => {
 
                 {/* Button with Flowing Border Glow */}
                 <div className="relative p-[2px] rounded-lg bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-                  <Link 
+                  <Link
                     to="/projects"
                     className="block w-full bg-surface-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-300 text-center"
                   >
@@ -151,86 +166,86 @@ const Home = () => {
         </div>
       </section>
       {/* Talent Pool Section */}
-<section className="py-16 sm:py-20 px-4 sm:px-6 bg-surface-800">
-  <div className="max-w-7xl mx-auto">
-    {/* Discover Verified Talent - Flow Gradient Typography */}
-    <h2 className="text-3xl sm:text-4xl font-bold text-center bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-12">
-      Discover Verified Talent
-    </h2>
-    <p className="text-lg sm:text-xl text-gray-400 text-center mb-12 max-w-3xl mx-auto">
-      Connect with skilled professionals who have proven their expertise through certified courses 
-      and real-world project experience.
-    </p>
+      <section className="py-16 sm:py-20 px-4 sm:px-6 bg-surface-800">
+        <div className="max-w-7xl mx-auto">
+          {/* Discover Verified Talent - Flow Gradient Typography */}
+          <h2 className="text-3xl sm:text-4xl font-bold text-center bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-12">
+            Discover Verified Talent
+          </h2>
+          <p className="text-lg sm:text-xl text-gray-400 text-center mb-12 max-w-3xl mx-auto">
+            Connect with skilled professionals who have proven their expertise through certified courses
+            and real-world project experience.
+          </p>
 
-    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
-      {/* Feature 1 */}
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 text-center">
-        <Award className="w-12 h-12 text-sky-400 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-white mb-2">Verified Skills</h3>
-        <p className="text-gray-400 text-sm">
-          Every talent is certified through our rigorous assessment process
-        </p>
-      </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
+            {/* Feature 1 */}
+            <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 text-center">
+              <Award className="w-12 h-12 text-sky-400 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-white mb-2">Verified Skills</h3>
+              <p className="text-gray-400 text-sm">
+                Every talent is certified through our rigorous assessment process
+              </p>
+            </div>
 
-      {/* Feature 2 */}
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 text-center">
-        <FileText className="w-12 h-12 text-sky-400 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-white mb-2">Project Portfolio</h3>
-        <p className="text-gray-400 text-sm">
-          Real-world project experience with expert evaluations
-        </p>
-      </div>
+            {/* Feature 2 */}
+            <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 text-center">
+              <FileText className="w-12 h-12 text-sky-400 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-white mb-2">Project Portfolio</h3>
+              <p className="text-gray-400 text-sm">
+                Real-world project experience with expert evaluations
+              </p>
+            </div>
 
-      {/* Feature 3 */}
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 text-center">
-        <Users className="w-12 h-12 text-sky-400 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-white mb-2">HR Access</h3>
-        <p className="text-gray-400 text-sm">
-          Exclusive access for verified HR professionals
-        </p>
-      </div>
+            {/* Feature 3 */}
+            <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 text-center">
+              <Users className="w-12 h-12 text-sky-400 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-white mb-2">HR Access</h3>
+              <p className="text-gray-400 text-sm">
+                Exclusive access for verified HR professionals
+              </p>
+            </div>
 
-      {/* Feature 4 */}
-      <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 text-center">
-        <Mail className="w-12 h-12 text-sky-400 mx-auto mb-4" />
-        <h3 className="text-lg font-bold text-white mb-2">Direct Recruitment</h3>
-        <p className="text-gray-400 text-sm">
-          Connect directly with pre-vetted candidates
-        </p>
-      </div>
-    </div>
+            {/* Feature 4 */}
+            <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700 text-center">
+              <Mail className="w-12 h-12 text-sky-400 mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-white mb-2">Direct Recruitment</h3>
+              <p className="text-gray-400 text-sm">
+                Connect directly with pre-vetted candidates
+              </p>
+            </div>
+          </div>
 
-    {/* CTA Buttons */}
-    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-      {/* For Job Seekers */}
-      <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-        <Link 
-          to="/signup"
-          className="block bg-surface-800 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-700 transition-all duration-300 shadow-lg min-w-[200px] text-center"
-        >
-          Join Talent Pool
-        </Link>
-      </div>
-      
-      {/* For HR */}
-      <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-        <Link 
-          to="/talent"
-          className="block bg-surface-800 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-700 transition-all duration-300 shadow-lg min-w-[200px] text-center"
-        >
-          Browse Talent
-        </Link>
-      </div>
-    </div>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {/* For Job Seekers */}
+            <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
+              <Link
+                to="/signup"
+                className="block bg-surface-800 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-700 transition-all duration-300 shadow-lg min-w-[200px] text-center"
+              >
+                Join Talent Pool
+              </Link>
+            </div>
 
-    {/* HR Notice */}
-    <div className="text-center mt-8">
-      <p className="text-gray-400 text-sm">
-        HR professionals: Verify your company email to access full candidate profiles
-      </p>
-    </div>
-  </div>
-</section>
+            {/* For HR */}
+            <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
+              <Link
+                to="/talent"
+                className="block bg-surface-800 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-700 transition-all duration-300 shadow-lg min-w-[200px] text-center"
+              >
+                Browse Talent
+              </Link>
+            </div>
+          </div>
+
+          {/* HR Notice */}
+          <div className="text-center mt-8">
+            <p className="text-gray-400 text-sm">
+              HR professionals: Verify your company email to access full candidate profiles
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Expert Review Section */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 bg-surface-800">
@@ -246,7 +261,7 @@ const Home = () => {
                 Get Feedback from Industry Specialists
               </h3>
               <p className="text-gray-400 mb-8 leading-relaxed">
-                Submit your completed projects for evaluation by experienced industry 
+                Submit your completed projects for evaluation by experienced industry
                 professionals who know best practices inside and out.
               </p>
 
@@ -278,15 +293,15 @@ const Home = () => {
                   Get Discovered by Top Companies
                 </h3>
                 <p className="text-gray-400 leading-relaxed mb-8">
-                  Complete your learning journey and join our verified talent marketplace 
+                  Complete your learning journey and join our verified talent marketplace
                   where leading recruiters find exceptional developers.
                 </p>
-                
+
                 {/* Top Companies Grid - StatsGrid with Animated Gradient Flow Border */}
                 <div className="relative p-[2px] rounded-lg bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 p-4 bg-surface-800 rounded-lg">
                     {topCompanies.map((company, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="bg-gray-700 rounded-lg p-3 text-center hover:bg-gray-600 transition-all duration-300 border border-gray-600 hover:border-sky-400/50"
                       >
@@ -317,17 +332,17 @@ const Home = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16 sm:mb-20">
             {/* Get Started Free Button with Flowing Border Glow */}
             <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-              <Link 
+              <Link
                 to="/signup"
                 className="block bg-surface-800 text-white px-6 sm:px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-700 transition-all duration-300 shadow-lg"
               >
                 Get Started Free
               </Link>
             </div>
-            
+
             {/* Explore Courses Button */}
             <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-              <Link 
+              <Link
                 to="/courses"
                 className="block bg-surface-800 text-white px-6 sm:px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-700 transition-all duration-300"
               >
@@ -371,7 +386,7 @@ const Home = () => {
                 </ul>
               </div>
             </div>
-            
+
             <div className="mt-12 pt-8 border-t border-gray-800">
               <p className="text-gray-500 text-sm sm:text-base">
                 © 2025 Immersia. All rights reserved.

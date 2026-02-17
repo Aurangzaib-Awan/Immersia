@@ -46,12 +46,7 @@ export const authAPI = {
     });
   },
 
-  googleSignup: async ({ token }) => {
-  return await apiRequest('/google-signup', {
-    method: 'POST',
-    body: JSON.stringify({token }),
-  });
-  },
+
 
   register: async (userData) => {
     return await apiRequest('/signup', {

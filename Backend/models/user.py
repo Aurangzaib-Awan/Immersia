@@ -5,5 +5,3 @@ class User(BaseModel):
     email: EmailStr
     password: str
 
-class GoogleUser(BaseModel):
-    token: str

@@ -49,7 +49,7 @@ const ChangePasswordForm = ({ onClose }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.currentPassword.trim()) newErrors.currentPassword = 'Current password is required';
     if (!formData.newPassword.trim()) newErrors.newPassword = 'New password is required';
     if (formData.newPassword.length < 6) newErrors.newPassword = 'Password must be at least 6 characters';
@@ -64,15 +64,15 @@ const ChangePasswordForm = ({ onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError('');
-    
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    
+
     try {
       // FIXED: Properly call the API function
       const response = await adminAPI.changePassword(
-        formData.currentPassword, 
+        formData.currentPassword,
         formData.newPassword
       );
 
@@ -83,18 +83,18 @@ const ChangePasswordForm = ({ onClose }) => {
       } else {
         throw new Error('Invalid response from server');
       }
-      
+
     } catch (error) {
       console.error('Error changing password:', error);
-      
+
       // FIXED: Better error handling
       let errorMessage = 'Failed to change password. Please try again.';
-      
+
       if (error.message) {
         // Use the error message from our apiRequest function
         errorMessage = error.message;
       }
-      
+
       setApiError(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -110,7 +110,7 @@ const ChangePasswordForm = ({ onClose }) => {
       <div className="w-full max-w-sm sm:max-w-md my-auto">
         <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full">
           <div className="w-full bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800">
-            
+
             <div className="text-center mb-6">
               <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
                 Change Password
@@ -294,7 +294,7 @@ const ChangePasswordForm = ({ onClose }) => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes gradient-flow {
           0% {
             background-position: 0% 50%;

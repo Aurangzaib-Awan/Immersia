@@ -9,7 +9,7 @@ import TalentProfile from "./pages/talent/TalentProfile.jsx";
 import Skills from "./pages/Skills.jsx";
 import Mindmap from "./pages/MindMap.jsx";
 import Divide from "./pages/Divide.jsx";
-import MentorDashboard from "./pages/mentorReview/MentorDashboard.jsx"; 
+import MentorDashboard from "./pages/mentorReview/MentorDashboard.jsx";
 
 // PROJECT-BASED LEARNING COMPONENTS
 import ProjectsMarketplace from "./pages/projects/ProjectsMarketplace.jsx";
@@ -35,11 +35,23 @@ const ProtectedRoute = ({ user, children, adminOnly = false }) => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-  
+
   if (adminOnly && !user.is_admin) {
     return <Navigate to="/" replace />;
   }
-  
+
+  return children;
+};
+
+// Guest Route Component - Only for non-authenticated users
+const GuestOnlyRoute = ({ user, children }) => {
+  if (user) {
+    // Redirect based on role
+    if (user.is_admin) return <Navigate to="/admin" replace />;
+    if (user.is_hr) return <Navigate to="/talent" replace />;
+    if (user.is_mentor) return <Navigate to="/mentor-dashboard" replace />;
+    return <Navigate to="/skill" replace />;
+  }
   return children;
 };
 
@@ -52,149 +64,163 @@ function AppRoutes({ user, setUser }) {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login setUser={setUser} />} />
-      
+      <Route path="/" element={<Home user={user} />} />
+      <Route
+        path="/signup"
+        element={
+          <GuestOnlyRoute user={user}>
+            <Signup setUser={setUser} />
+          </GuestOnlyRoute>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <GuestOnlyRoute user={user}>
+            <Login setUser={setUser} />
+          </GuestOnlyRoute>
+        }
+      />
+
       {/* Public Project Routes - Accessible without login */}
-      <Route 
-        path="/projects" 
+      <Route
+        path="/projects"
         element={
           <PublicRoute>
             <ProjectsMarketplace user={user} />
           </PublicRoute>
-        } 
+        }
       />
-      <Route 
-        path="/projects/:projectId" 
+      <Route
+        path="/projects/:projectId"
         element={
           <PublicRoute>
             <ProjectDetail user={user} />
           </PublicRoute>
-        } 
+        }
       />
-      
+
       {/* Public Course Routes - Accessible without login */}
-      <Route 
-        path="/courses" 
+      <Route
+        path="/courses"
         element={
           <PublicRoute>
             <CoursesMarketplace user={user} />
           </PublicRoute>
-        } 
+        }
       />
-      <Route 
-        path="/courses/:courseId" 
+      <Route
+        path="/courses/:courseId"
         element={
           <PublicRoute>
             <CourseDetail user={user} />
           </PublicRoute>
-        } 
+        }
       />
-      
-        {/* User Routes - Protected but not admin only */}
-      <Route 
-        path="/learn" 
+
+      {/* User Routes - Protected but not admin only */}
+      <Route
+        path="/learn"
         element={
           <ProtectedRoute user={user}>
             <Learn />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
 
       {/* === FIXED: Single Talent Route === */}
-      <Route 
-        path="/talent" 
+      <Route
+        path="/talent"
         element={
           <PublicRoute>
             <Talent user={user} />
           </PublicRoute>
-        } 
+        }
       />
-      
+
       {/* Protected Talent Profile Route for HR */}
-      <Route 
-        path="/talent/:talentId" 
+      <Route
+        path="/talent/:talentId"
         element={
           <ProtectedRoute user={user}>
             <TalentProfile user={user} />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-  path="/mentor-dashboard" 
-  element={
-    <ProtectedRoute user={user}>
-      <MentorDashboard user={user} />
-    </ProtectedRoute>
-  } 
-/>
-      
-      <Route 
-        path="/skill" 
+      <Route
+        path="/mentor-dashboard"
+        element={
+          <ProtectedRoute user={user}>
+            <MentorDashboard user={user} />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/skill"
         element={
           <ProtectedRoute user={user}>
             <Skills />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/mindmap" 
+      <Route
+        path="/mindmap"
         element={
           <ProtectedRoute user={user}>
             <Mindmap />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/divide" 
+      <Route
+        path="/divide"
         element={
           <ProtectedRoute user={user}>
             <Divide />
           </ProtectedRoute>
-        } 
+        }
       />
-      
-     {/* PROTECTED Project Workspace Routes - Require authentication */}
-      <Route 
-        path="/projects/:projectId/workspace" 
+
+      {/* PROTECTED Project Workspace Routes - Require authentication */}
+      <Route
+        path="/projects/:projectId/workspace"
         element={
           <ProtectedRoute user={user}>
             <ProjectWorkspace />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/projects/:projectId/submit" 
+      <Route
+        path="/projects/:projectId/submit"
         element={
           <ProtectedRoute user={user}>
             <ProjectSubmission />
           </ProtectedRoute>
-        } 
+        }
       />
-     
+
       {/* PROTECTED Course Workspace Routes - Require authentication */}
-      <Route 
-        path="/courses/:courseId/workspace" 
+      <Route
+        path="/courses/:courseId/workspace"
         element={
           <ProtectedRoute user={user}>
             <CourseWorkspace />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/courses/:courseId/quiz" 
+      <Route
+        path="/courses/:courseId/quiz"
         element={
           <ProtectedRoute user={user}>
             <Quiz />
           </ProtectedRoute>
-        } 
+        }
       />
-      
+
       {/* Admin Routes - Protected and admin only */}
-      <Route 
-        path="/admin" 
+      <Route
+        path="/admin"
         element={
           <ProtectedRoute user={user} adminOnly={true}>
             <RootLayout />

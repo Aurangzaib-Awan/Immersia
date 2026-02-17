@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button.jsx";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "@/services/api";
 import { AlertCircle, CheckCircle, Eye, EyeOff, XCircle } from "lucide-react";
-import { GoogleLogin } from "@react-oauth/google";
+
 import { Link } from "react-router-dom";
 
 
-function Signup() {
+function Signup({ setUser }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -58,12 +58,12 @@ function Signup() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-    
+
     // Clear field-specific error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
-    
+
     // Clear server error when user modifies any field
     if (serverError) {
       setServerError("");
@@ -78,12 +78,12 @@ function Signup() {
     e.preventDefault();
     setServerError("");
     setSuccessMessage("");
-    
+
     // Validate form
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      
+
       // Scroll to first error
       const firstErrorField = Object.keys(validationErrors)[0];
       document.getElementById(firstErrorField)?.focus();
@@ -100,34 +100,35 @@ function Signup() {
         localStorage.setItem("token", data.access_token);
         if (data.user) {
           localStorage.setItem("user", JSON.stringify(data.user));
+          if (setUser) setUser(data.user);
         }
-        
+
         setSuccessMessage("Account created successfully! Redirecting...");
-        
+
         // Show success message for 2 seconds before redirecting
         setTimeout(() => {
           navigate("/skill");
         }, 2000);
-        
+
       } else {
         setServerError("Signup failed. Please try again.");
       }
     } catch (err) {
       console.error("Signup error:", err);
-      
+
       // Handle different types of errors
       if (err.response) {
         // Server responded with error status
         const { status, data } = err.response;
-        
+
         switch (status) {
           case 409:
-            setErrors({ 
-              email: "This email is already registered. Please use a different email or try logging in." 
+            setErrors({
+              email: "This email is already registered. Please use a different email or try logging in."
             });
             setServerError("An account with this email already exists.");
             break;
-            
+
           case 400:
             if (data.errors) {
               // Handle validation errors from server
@@ -144,7 +145,7 @@ function Signup() {
               setServerError("Invalid form data. Please check your inputs.");
             }
             break;
-            
+
           case 422:
             setServerError("Validation failed. Please check your information.");
             if (data.errors) {
@@ -155,15 +156,15 @@ function Signup() {
               setErrors(serverErrors);
             }
             break;
-            
+
           case 500:
             setServerError("Server error. Please try again later.");
             break;
-            
+
           case 429:
             setServerError("Too many requests. Please try again in a few minutes.");
             break;
-            
+
           default:
             setServerError(data?.message || "An unexpected error occurred. Please try again.");
         }
@@ -180,33 +181,18 @@ function Signup() {
   };
 
   // Function to handle cancel/back navigation
-    const handleCancel = () => {
-      navigate(-1);
-    };
-
-    //google login login
-    const handleGoogleSignup = async (credentialResponse) => {
-    const token = credentialResponse.credential;
-
-    try {
-      const data = await authAPI.googleSignup({ token });
-
-      localStorage.setItem("token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      navigate("/skill");
-    } catch (err) {
-      console.log("Google signup error:", err);
-      setServerError("Google signup failed");
-    }
+  const handleCancel = () => {
+    navigate(-1);
   };
+
+
 
   return (
     <main className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 py-8 px-4 sm:px-6">
       {/* Moving Gradient Border */}
       <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full max-w-sm sm:max-w-md">
         <section className="w-full bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800 relative">
-          
+
           {/* Cancel Button - Top Right Corner */}
           <button
             onClick={handleCancel}
@@ -217,7 +203,7 @@ function Signup() {
           >
             <XCircle className="w-6 h-6 sm:w-7 sm:h-7" />
           </button>
-          
+
           {/* Header with Flowing Gradient Text */}
           <div className="text-center mb-8 pt-2">
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
@@ -265,11 +251,10 @@ function Signup() {
                 value={form.fullname}
                 onChange={handleChange}
                 required
-                className={`w-full bg-gray-700 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
-                  errors.fullname 
-                    ? "border-red-500 focus:ring-red-500" 
-                    : "border-gray-600 focus:ring-sky-500 focus:border-transparent"
-                }`}
+                className={`w-full bg-gray-700 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${errors.fullname
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-600 focus:ring-sky-500 focus:border-transparent"
+                  }`}
                 placeholder="Enter your full name"
                 disabled={loading}
                 aria-invalid={!!errors.fullname}
@@ -295,11 +280,10 @@ function Signup() {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className={`w-full bg-gray-700 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${
-                  errors.email 
-                    ? "border-red-500 focus:ring-red-500" 
-                    : "border-gray-600 focus:ring-sky-500 focus:border-transparent"
-                }`}
+                className={`w-full bg-gray-700 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 ${errors.email
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-600 focus:ring-sky-500 focus:border-transparent"
+                  }`}
                 placeholder="Enter your email"
                 disabled={loading}
                 aria-invalid={!!errors.email}
@@ -326,11 +310,10 @@ function Signup() {
                   value={form.password}
                   onChange={handleChange}
                   required
-                  className={`w-full bg-gray-700 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 pr-12 ${
-                    errors.password 
-                      ? "border-red-500 focus:ring-red-500" 
-                      : "border-gray-600 focus:ring-sky-500 focus:border-transparent"
-                  }`}
+                  className={`w-full bg-gray-700 border rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-300 pr-12 ${errors.password
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-600 focus:ring-sky-500 focus:border-transparent"
+                    }`}
                   placeholder="Create a strong password"
                   disabled={loading}
                   aria-invalid={!!errors.password}
@@ -350,7 +333,7 @@ function Signup() {
                   )}
                 </button>
               </div>
-              
+
               {/* Password Requirements */}
               <div className="bg-gray-900/50 p-3 rounded-lg mt-2">
                 <p className="text-gray-400 text-xs mb-2">Password must contain:</p>
@@ -410,25 +393,12 @@ function Signup() {
             </Link>
           </div>
 
-          {/* Divider */}
-          <div className="flex items-center my-6">
-            <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
-            <span className="mx-4 text-gray-500 text-sm">or continue with</span>
-            <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
-          </div>
 
-          {/* Google Sign Up */}
-          <GoogleLogin
-            disabled={loading}
-            onSuccess={handleGoogleSignup}
-            onError={() => setServerError("Google signup failed")}
-            className="w-full py-3 text-gray-300 font-semibold rounded-lg border border-gray-600 hover:bg-gray-700 hover:text-white hover:border-gray-500 transition-all duration-300 disabled:opacity-50 text-base"          
-          />
         </section>
       </div>
 
       {/* Add the gradient animation keyframes */}
-      <style jsx>{`
+      <style>{`
         @keyframes gradient-flow {
           0% {
             background-position: 0% 50%;

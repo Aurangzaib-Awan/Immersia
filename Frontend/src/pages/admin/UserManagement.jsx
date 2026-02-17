@@ -20,11 +20,11 @@ const UserManagement = () => {
   // Format join date - your users don't have a date field, so we'll use a fallback
   const formatJoinDate = (dateString) => {
     if (!dateString) return 'No date';
-    
+
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return 'No date';
-      
+
       return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
@@ -38,18 +38,18 @@ const UserManagement = () => {
   // Helper function to get join date - your users don't have date fields
   const getJoinDate = (user) => {
     // Try various possible date fields
-    const dateString = user.createdAt || 
-                      user.created_date || 
-                      user.registrationDate || 
-                      user.dateCreated || 
-                      user.joinDate || 
-                      user.date ||
-                      user.timestamp;
-    
+    const dateString = user.createdAt ||
+      user.created_date ||
+      user.registrationDate ||
+      user.dateCreated ||
+      user.joinDate ||
+      user.date ||
+      user.timestamp;
+
     if (dateString) {
       return formatJoinDate(dateString);
     }
-    
+
     // If no date field exists, use the ObjectId timestamp (MongoDB ObjectIds contain creation timestamp)
     try {
       if (user._id && user._id.length === 24) {
@@ -61,7 +61,7 @@ const UserManagement = () => {
     } catch {
       console.log('Could not extract date from ObjectId');
     }
-    
+
     return 'No date';
   };
 
@@ -70,12 +70,12 @@ const UserManagement = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await adminAPI.getUsers();
-      
+
       if (response && response.users) {
         console.log('📋 Raw user data from backend:', response.users); // Debug log
-        
+
         const formattedUsers = response.users.map((user, index) => ({
           id: user._id || user.id || `user-${index}`,
           name: getUserName(user),
@@ -86,7 +86,7 @@ const UserManagement = () => {
         }));
 
         console.log('📋 Formatted users:', formattedUsers); // Debug log
-        
+
         setUsers(formattedUsers);
         setVisibleUsers(formattedUsers.map(user => ({ ...user, visible: false })));
       } else {
@@ -110,15 +110,15 @@ const UserManagement = () => {
       const animateUsers = () => {
         users.forEach((user, index) => {
           setTimeout(() => {
-            setVisibleUsers(prev => 
-              prev.map(u => 
+            setVisibleUsers(prev =>
+              prev.map(u =>
                 u.id === user.id ? { ...u, visible: true } : u
               )
             );
           }, index * 100);
         });
       };
-      
+
       setTimeout(animateUsers, 50);
     }
   }, [users, loading]);
@@ -144,10 +144,10 @@ const UserManagement = () => {
       }
 
       console.log('User deleted successfully');
-      
+
     } catch (error) {
       console.error('Error deleting user:', error);
-      
+
       // Revert UI changes if deletion failed
       fetchUsers(); // Reload users from server
       alert('Failed to delete user. Please try again.');
@@ -166,7 +166,7 @@ const UserManagement = () => {
             <p className="text-text-light text-sm sm:text-base mt-1">Manage platform users and their accounts</p>
           </div>
         </div>
-        
+
         <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
           <div className="bg-surface-800 rounded-xl p-4 sm:p-6">
             <div className="flex justify-center items-center py-16">
@@ -190,12 +190,12 @@ const UserManagement = () => {
             <p className="text-text-light text-sm sm:text-base mt-1">Manage platform users and their accounts</p>
           </div>
         </div>
-        
+
         <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
           <div className="bg-surface-800 rounded-xl p-4 sm:p-6">
             <div className="text-center py-8">
               <div className="text-red-400 mb-4">{error}</div>
-              <button 
+              <button
                 onClick={fetchUsers}
                 className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
               >
@@ -218,7 +218,7 @@ const UserManagement = () => {
           <p className="text-text-light text-sm sm:text-base mt-1">Manage platform users and their accounts</p>
         </div>
       </div>
-      
+
       <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
         <div className="bg-surface-800 rounded-xl p-4 sm:p-6">
           <div className="overflow-x-auto">
@@ -234,13 +234,12 @@ const UserManagement = () => {
                 </thead>
                 <tbody>
                   {visibleUsers.map((user, index) => (
-                    <tr 
+                    <tr
                       key={user.id}
-                      className={`border-b border-background-700 last:border-b-0 hover:bg-background-750 transition-all duration-500 ${
-                        user.visible 
-                          ? 'opacity-100 transform translate-y-0' 
+                      className={`border-b border-background-700 last:border-b-0 hover:bg-background-750 transition-all duration-500 ${user.visible
+                          ? 'opacity-100 transform translate-y-0'
                           : 'opacity-0 transform translate-y-4'
-                      }`}
+                        }`}
                       style={{
                         transitionDelay: user.visible ? `${index * 80}ms` : '0ms'
                       }}
@@ -259,7 +258,7 @@ const UserManagement = () => {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex space-x-2">
-                          <button 
+                          <button
                             onClick={() => deleteUser(user.id)}
                             className="text-red-400 hover:text-red-300 transition-colors text-xs sm:text-sm px-2 py-1 border border-red-400 rounded hover:bg-red-400 hover:bg-opacity-10"
                           >
@@ -272,7 +271,7 @@ const UserManagement = () => {
                 </tbody>
               </table>
             </div>
-            
+
             <div className="mt-4 text-center">
               <p className="text-text-light text-sm">
                 Total Users: {users.length}
@@ -282,7 +281,7 @@ const UserManagement = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes gradient-flow {
           0% {
             background-position: 0% 50%;

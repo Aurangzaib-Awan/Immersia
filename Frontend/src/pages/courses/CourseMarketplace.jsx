@@ -6,7 +6,7 @@ import { courseAPI } from '../../services/api';
 
 const CoursesMarketplace = () => {
   const navigate = useNavigate();
-  
+
   const [courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [filters, setFilters] = useState({
@@ -20,11 +20,11 @@ const CoursesMarketplace = () => {
   // Calculate total course duration from modules in weeks
   const calculateTotalWeeks = (modules) => {
     if (!modules || !modules.length) return 0;
-    
+
     const totalHours = modules.reduce((total, module) => {
       const moduleTime = parseInt(module.estimatedTime?.value) || 0;
       const unit = module.estimatedTime?.unit || 'minutes';
-      
+
       // Convert to hours
       switch (unit) {
         case 'minutes': return total + (moduleTime / 60);
@@ -58,9 +58,8 @@ const CoursesMarketplace = () => {
         setLoading(true);
         const response = await courseAPI.getCourses();
         const coursesArray = response.courses || response.data || response || [];
-        
-        console.log('Courses data:', coursesArray);
-        
+
+
         setCourses(coursesArray);
         setFilteredCourses(coursesArray);
       } catch (err) {
@@ -79,28 +78,28 @@ const CoursesMarketplace = () => {
   const handleFilterChange = useCallback((filterType, value) => {
     const newFilters = { ...filters, [filterType]: value };
     setFilters(newFilters);
-    
+
     let filtered = courses;
-    
+
     if (newFilters.searchQuery) {
-      filtered = filtered.filter(course => 
+      filtered = filtered.filter(course =>
         course.title?.toLowerCase().includes(newFilters.searchQuery.toLowerCase()) ||
         course.description?.toLowerCase().includes(newFilters.searchQuery.toLowerCase()) ||
         course.curator?.toLowerCase().includes(newFilters.searchQuery.toLowerCase())
       );
     }
-    
+
     if (newFilters.category) {
       filtered = filtered.filter(course => course.category === newFilters.category);
     }
-    
+
     if (newFilters.duration) {
       filtered = filtered.filter(course => {
         const courseWeeks = calculateTotalWeeks(course.modules);
         return courseWeeks <= parseInt(newFilters.duration);
       });
     }
-    
+
     setFilteredCourses(filtered);
   }, [filters, courses]);
 
@@ -127,7 +126,7 @@ const CoursesMarketplace = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-20">
             <div className="text-red-400 text-lg mb-4">{error}</div>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-lg transition-colors duration-300"
             >
@@ -201,7 +200,7 @@ const CoursesMarketplace = () => {
           {filteredCourses.map((course) => {
             const totalLessons = calculateTotalLessons(course.modules);
             const durationDisplay = formatDuration(course.modules);
-            
+
             return (
               <div
                 key={course.id}
@@ -212,7 +211,7 @@ const CoursesMarketplace = () => {
                   <span className="text-sm font-medium text-sky-400 bg-sky-500/10 px-3 py-1 rounded-full">
                     {course.category}
                   </span>
-                 
+
                 </div>
 
                 <h3 className="text-xl font-bold text-white mb-3 group-hover:text-sky-400 transition-colors duration-300">
@@ -238,7 +237,7 @@ const CoursesMarketplace = () => {
                   </div>
                 </div>
 
-                <button 
+                <button
                   onClick={(e) => {
                     e.stopPropagation();
                     handleCourseClick(course.id);

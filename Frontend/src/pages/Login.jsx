@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button.jsx";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI } from "@/services/api";
-import {XCircle } from "lucide-react";
-import { GoogleLogin } from '@react-oauth/google';
+import { XCircle } from "lucide-react";
 
-const SHOW_GOOGLE = false;
+
+
 
 function Login({ setUser }) {
     const [form, setForm] = useState({ email: "", password: "" });
@@ -47,11 +47,11 @@ function Login({ setUser }) {
 
         try {
             const data = await authAPI.login(form.email, form.password);
-            
+
             if (data.token && data.user) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
-                
+
                 if (setUser) {
                     setUser(data.user);
                 }
@@ -86,7 +86,7 @@ function Login({ setUser }) {
             }
         } catch (err) {
             console.error("Login error:", err);
-            
+
             // Handle different error types from backend
             if (err.response) {
                 const errorDetail = err.response.data?.detail;
@@ -109,39 +109,23 @@ function Login({ setUser }) {
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse) => {
-        try {
-            const token = credentialResponse.credential; // JWT from Google
-            const data = await authAPI.loginWithGoogle({ token }); // send to backend
-            if (data.access_token) {
-            localStorage.setItem("token", data.access_token);
-            if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
-            navigate("/skill");
-            }
-        } catch (err) {
-            console.error("Google login error:", err);
-        }
-    };
 
-    const handleGoogleFailure = (err) => {
-        console.error("Google login failed:", err);
-    };
 
     return (
         <main className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 py-8 px-4 sm:px-6">
             <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full max-w-sm sm:max-w-md">
                 <div className="bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800 relative">
-                    
+
                     {/* Cancel Button - Top Right Corner */}
-          <button
-            onClick={handleClose}
-            disabled={loading}
-            className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white transition-colors duration-200 z-10 disabled:opacity-50"
-            type="button"
-            aria-label="Cancel and go back"
-          >
-            <XCircle className="w-6 h-6 sm:w-7 sm:h-7" />
-          </button>
+                    <button
+                        onClick={handleClose}
+                        disabled={loading}
+                        className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white transition-colors duration-200 z-10 disabled:opacity-50"
+                        type="button"
+                        aria-label="Cancel and go back"
+                    >
+                        <XCircle className="w-6 h-6 sm:w-7 sm:h-7" />
+                    </button>
 
                     <div className="text-center mb-8">
                         <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
@@ -230,55 +214,9 @@ function Login({ setUser }) {
                             )}
                         </Button>
                     </form>
-                {SHOW_GOOGLE && (
-                    <>
-                    {/* Divider */}
-                    <div className="flex items-center my-6">
-                        <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
-                        <span className="mx-4 text-gray-500 text-sm">or continue with</span>
-                        <div className="flex-grow h-[1px] bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
-                    </div>
 
-                    {/* Google Sign In */}
-                    <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={handleGoogleFailure}
-                        variant="outline"
-                        disabled={loading}
-                        className="w-full py-3 text-gray-300 font-semibold rounded-lg border border-gray-600 hover:bg-gray-700 hover:text-white hover:border-gray-500 transition-all duration-300 disabled:opacity-50 text-base"
-                    >
-                        <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
-                            <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                            <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                            <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                            <path fill="CurrentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                        </svg>
-                        Sign in with Google
-                    </GoogleLogin>
-
-                    {/* Sign Up Link */}
-                    <div className="text-center text-sm text-gray-400 mt-6 pt-6 border-t border-gray-700">
-                        Don't have an account?{" "}
-                        <a
-                            href="/signup"
-                            className="font-semibold text-sky-400 hover:text-sky-300 hover:underline transition-colors duration-300"
-                        >
-                            Create account
-                        </a>
-                    </div>
-
-                    {/* Additional Links */}
-                    <div className="text-center mt-4">
-                        <a
-                            href="/forgot-password"
-                            className="text-sm text-gray-500 hover:text-gray-300 transition-colors duration-300"
-                        >
-                            Forgot your password?
-                        </a>
-                    </div>
-                    </>)}
                 </div>
-                
+
             </div>
         </main>
     );

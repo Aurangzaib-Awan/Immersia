@@ -11,7 +11,7 @@ db = client["immersia"]
 users_collection = db["users"]
 role_emails_collection = db["role_emails"]
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
 
 def verify_pwd(plain_pwd, hashed):
     return pwd_context.verify(plain_pwd, hashed)
