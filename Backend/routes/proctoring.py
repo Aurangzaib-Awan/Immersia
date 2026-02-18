@@ -388,11 +388,11 @@ def detect_suspicious_activity(buffer: FrameBuffer, pose_landmarks) -> Tuple[boo
     metrics["hand_face_dist_right"] = float(right_dist)
     
     # Hand near face detection (tight threshold = phone to ear)
-    if left_wrist.visibility > 0.5 and left_dist < 0.08:
+    if left_wrist.visibility > 0.5 and left_dist < 0.15:
         alerts.append("hand_near_face")
         max_confidence = max(max_confidence, 0.60)
     
-    if right_wrist.visibility > 0.5 and right_dist < 0.08:
+    if right_wrist.visibility > 0.5 and right_dist < 0.15:
         alerts.append("hand_near_face")
         max_confidence = max(max_confidence, 0.60)
     
@@ -406,9 +406,12 @@ def detect_suspicious_activity(buffer: FrameBuffer, pose_landmarks) -> Tuple[boo
         metrics["nose_shoulder_diff"] = float(diff)
         
         # Only trigger for extreme looking down (head significantly below shoulders)
-        if diff > 0.20:
+        if diff > 0.15:
+            # IMMEDIATE LOOKING DOWN ALERT
             alerts.append("looking_down")
+            confidences.append(activity_conf if 'activity_conf' in locals() else 0.55) # activity_conf isn't defined here, defaulting
             max_confidence = max(max_confidence, 0.55)
+            print(f"🚨 LOOKING DOWN DETECTED")
     
     if alerts:
         # Remove duplicates
@@ -442,7 +445,7 @@ def detect_electronic_devices(frame: np.ndarray, yolo_model) -> Tuple[List[Dict]
     
     try:
         # Run YOLO inference with optimized settings
-        results = yolo_model(frame, verbose=False, conf=0.5, imgsz=640)
+        results = yolo_model(frame, verbose=False, conf=0.3, imgsz=640)
         
         # COCO dataset class IDs for devices
         device_classes = {
@@ -633,29 +636,30 @@ async def process_frame(frame: np.ndarray, client_id: str, force_process: bool =
     buffer.clear_old_alerts(max_age=5.0)  # Clean up old alerts
     
     # Adaptive frame skipping for performance
-    # Skip every 3rd frame unless there are recent alerts
-    skip_frame = buffer.frame_count % 3 != 0 and not force_process
-    has_recent_alerts = len(buffer.alert_history) > 0
+    # TEMPORARILY DISABLED - Process every frame for testing
+    skip_frame = False  # Changed from: buffer.frame_count % 3 != 0
     
-    if skip_frame and not has_recent_alerts:
-        buffer.frame_count += 1
-        return {
-            "alert": "none",
-            "conf": 1.0,
-            "viz": "",
-            "behavior_status": "Focused on screen",
-            "devices_detected": [],
-            "details": {
-                "num_faces": 1,
-                "gaze_horizontal": 0.0,
-                "gaze_vertical": 0.0,
-                "ear": 0.3,
-                "processing_time_ms": 0.0,
-                "fps": buffer.get_avg_fps(),
-                "skipped": True
-            },
-            "timestamp": time.time()
-        }
+    # if skip_frame and not has_recent_alerts:
+    #     buffer.frame_count += 1
+    #     return { ... }
+    #     buffer.frame_count += 1
+    #     return {
+    #         "alert": "none",
+    #         "conf": 1.0,
+    #         "viz": "",
+    #         "behavior_status": "Focused on screen",
+    #         "devices_detected": [],
+    #         "details": {
+    #             "num_faces": 1,
+    #             "gaze_horizontal": 0.0,
+    #             "gaze_vertical": 0.0,
+    #             "ear": 0.3,
+    #             "processing_time_ms": 0.0,
+    #             "fps": buffer.get_avg_fps(),
+    #             "skipped": True
+    #         },
+    #         "timestamp": time.time()
+    #     }
     
     # Downscale for faster processing (320 width is sweet spot)
     img_h, img_w = frame.shape[:2]
@@ -711,12 +715,11 @@ async def process_frame(frame: np.ndarray, client_id: str, force_process: bool =
         gaze_h, gaze_v = detect_gaze_direction(face_landmarks, proc_w, proc_h)
         
         # FIXED: Temporal smoothing for gaze alerts (avoid false positives)
-        if abs(gaze_h) > 15 or abs(gaze_v) > 15:
-            buffer.add_alert("gaze_off_screen")
-            # Only trigger after 3 consecutive detections within 1 second
-            if buffer.should_trigger_alert("gaze_off_screen", required_count=3, time_window=1.0):
-                alerts.append("gaze_off_screen")
-                confidences.append(0.85)
+        # IMMEDIATE GAZE ALERT - No temporal smoothing
+        if abs(gaze_h) > 10 or abs(gaze_v) > 10:
+            alerts.append("gaze_off_screen")
+            confidences.append(0.85)
+            print(f"🚨 GAZE ALERT: H={gaze_h:.1f}° V={gaze_v:.1f}°")
         
         # Eye Aspect Ratio (blink detection)
         left_eye_points = np.array([[face_landmarks.landmark[idx].x * proc_w,
@@ -762,18 +765,14 @@ async def process_frame(frame: np.ndarray, client_id: str, force_process: bool =
     yolo_detections = []
     
     # FIXED: Run YOLO every 10th frame instead of every frame
-    run_yolo = buffer.frame_count % 10 == 0
+    # RUN YOLO EVERY FRAME FOR TESTING (detect all devices immediately)
+    run_yolo = True  # Changed from: buffer.frame_count % 10 == 0
     
-    if yolo_model is not None and run_yolo:
+    if yolo_model is not None:
         yolo_detections, dev_conf = detect_electronic_devices(frame, yolo_model)
-        buffer.last_yolo_detections = yolo_detections
-        buffer.last_yolo_frame = buffer.frame_count
+        # No caching - detect in real-time
     else:
-        # Use cached detections if recent (within 2 seconds = 10 frames)
-        if (buffer.frame_count - buffer.last_yolo_frame) < 10:
-            yolo_detections = buffer.last_yolo_detections
-        else:
-            yolo_detections = []
+        yolo_detections = []
     
     # Process YOLO detections
     if yolo_detections:
@@ -879,6 +878,15 @@ async def process_frame(frame: np.ndarray, client_id: str, force_process: bool =
         },
         "timestamp": time.time()
     }
+    
+    # DEBUG LOGGING - Print all detections
+    print(f"\n{'='*60}")
+    print(f"Frame #{buffer.frame_count}")
+    print(f"Faces: {num_faces}, Gaze: H={gaze_h:.1f}° V={gaze_v:.1f}°")
+    print(f"Devices: {devices_detected}")
+    print(f"Alerts: {alerts}")
+    print(f"Behavior: {behavior_status}")
+    print(f"{'='*60}\n")
     
     return response
 

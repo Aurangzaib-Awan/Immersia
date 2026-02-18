@@ -63,120 +63,41 @@ const Quiz = () => {
   // ========================================================================
   const handleAlert = useCallback((data) => {
     const alertType = data.alert;
-    const timestamp = data.timestamp || Date.now();
 
-    // Prevent duplicate processing of the same alert
-    const alertKey = `${alertType}-${timestamp}`;
-    if (processedAlertsRef.current.has(alertKey)) {
-      return;
-    }
-    processedAlertsRef.current.add(alertKey);
+    // SKIP 'none' alerts
+    if (alertType === 'none') return;
 
-    // Clean up old alert keys (keep last 50)
-    if (processedAlertsRef.current.size > 50) {
-      const entries = Array.from(processedAlertsRef.current);
-      processedAlertsRef.current = new Set(entries.slice(-50));
-    }
+    // IMMEDIATE PENALTY FOR ALL ALERTS
+    console.log('🚨 VIOLATION DETECTED:', alertType);
 
-    const isGazeAlert = alertType === 'gaze_off_screen';
+    const logEntry = {
+      time: new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }),
+      type: alertType,
+      behavior: data.behavior_status
+    };
 
-    // ====================================================================
-    // GAZE VIOLATION: 3-SECOND THRESHOLD
-    // ====================================================================
-    if (isGazeAlert) {
-      if (!gazeViolationStart) {
-        // First gaze violation detected - start timer
-        console.log('👁️ Gaze violation started');
-        setGazeViolationStart(Date.now());
+    setViolationLogs(prev => [logEntry, ...prev].slice(0, 50));
+    setCurrentViolation(alertType.replace(/_/g, ' '));
+    setShowViolationToast(true);
+    setTimeout(() => setShowViolationToast(false), 3000);
 
-        // Start continuous duration update
-        gazeTimerRef.current = setInterval(() => {
-          setGazeViolationDuration(prev => {
-            const duration = (Date.now() - gazeViolationStart) / 1000;
-            return duration;
-          });
-        }, 100); // Update every 100ms for smooth counter
+    // DEDUCT CHANCE IMMEDIATELY
+    setChances(prev => {
+      const next = Math.max(0, prev - 1);
+      console.log(`💔 Chances: ${prev} → ${next}`);
+      if (next === 0) {
+        console.log('❌ QUIZ TERMINATED');
+        setQuizTerminated(true);
+        setQuizStarted(false);
       }
-    } else {
-      // ================================================================
-      // NON-GAZE ALERT: Check if we need to penalize ongoing gaze violation
-      // ================================================================
-      if (gazeViolationStart) {
-        const elapsed = (Date.now() - gazeViolationStart) / 1000;
+      return next;
+    });
+  }, []);
 
-        if (elapsed >= 3) {
-          // Gaze violation exceeded 3 seconds - log it
-          console.log(`⚠️ Gaze violation completed: ${elapsed.toFixed(1)}s`);
-
-          const logEntry = {
-            time: new Date().toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit'
-            }),
-            type: 'gaze_off_screen_3s',
-            behavior: `Gaze deviation for ${elapsed.toFixed(1)}s`
-          };
-
-          setViolationLogs(prev => [logEntry, ...prev].slice(0, 50));
-          setCurrentViolation('Gaze away for 3+ seconds!');
-          setShowViolationToast(true);
-          setTimeout(() => setShowViolationToast(false), 3000);
-
-          // Deduct chance
-          setChances(prev => {
-            const next = Math.max(0, prev - 1);
-            if (next === 0) {
-              setQuizTerminated(true);
-              setQuizStarted(false);
-            }
-            return next;
-          });
-        }
-
-        // Reset gaze timer
-        setGazeViolationStart(null);
-        setGazeViolationDuration(0);
-        if (gazeTimerRef.current) {
-          clearInterval(gazeTimerRef.current);
-          gazeTimerRef.current = null;
-        }
-      }
-
-      // ================================================================
-      // IMMEDIATE ALERT PROCESSING (Critical violations)
-      // ================================================================
-      if (alertType !== 'none') {
-        console.log('🚨 Immediate violation:', alertType);
-
-        const logEntry = {
-          time: new Date().toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-          }),
-          type: alertType,
-          behavior: data.behavior_status
-        };
-
-        setViolationLogs(prev => [logEntry, ...prev].slice(0, 50));
-        setCurrentViolation(alertType.replace(/_/g, ' '));
-        setShowViolationToast(true);
-        setTimeout(() => setShowViolationToast(false), 3000);
-
-        // Deduct chance
-        setChances(prev => {
-          const next = Math.max(0, prev - 1);
-          if (next === 0) {
-            console.log('❌ Quiz terminated - no chances remaining');
-            setQuizTerminated(true);
-            setQuizStarted(false);
-          }
-          return next;
-        });
-      }
-    }
-  }, [gazeViolationStart]);
 
   // ========================================================================
   // GAZE TIMER CLEANUP
@@ -655,13 +576,13 @@ const Quiz = () => {
                       key={index}
                       onClick={() => handleAnswerSelect(currentQuestion, index)}
                       className={`w-full text-left p-5 rounded-2xl border transition-all duration-200 flex items-center gap-4 group ${answers[currentQuestion] === index
-                          ? 'border-sky-500 bg-sky-500/10 text-white'
-                          : 'border-gray-800 bg-gray-900/50 text-gray-400 hover:border-gray-700 hover:bg-gray-800'
+                        ? 'border-sky-500 bg-sky-500/10 text-white'
+                        : 'border-gray-800 bg-gray-900/50 text-gray-400 hover:border-gray-700 hover:bg-gray-800'
                         }`}
                     >
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${answers[currentQuestion] === index
-                          ? 'border-sky-500 bg-sky-500'
-                          : 'border-gray-600 group-hover:border-gray-500'
+                        ? 'border-sky-500 bg-sky-500'
+                        : 'border-gray-600 group-hover:border-gray-500'
                         }`}>
                         {answers[currentQuestion] === index && (
                           <div className="w-2 h-2 bg-white rounded-full" />

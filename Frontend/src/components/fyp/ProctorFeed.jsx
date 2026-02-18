@@ -231,7 +231,7 @@ const ProctorFeed = ({
                 autoPlay
                 playsInline
                 muted
-                className="w-full h-full object-cover grayscale opacity-40"
+                className="w-full h-full object-cover opacity-70"
             />
 
             {/* Hidden canvas for frame capture */}
