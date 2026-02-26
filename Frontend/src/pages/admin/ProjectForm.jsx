@@ -7,24 +7,24 @@ const MarkdownPreview = ({ content }) => {
     
     return text
       // Headers
-      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold text-white mt-4 mb-2">$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-white mt-5 mb-3">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-white mt-6 mb-4">$1</h1>')
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold text-[rgb(15,23,42)] mt-4 mb-2">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-[rgb(15,23,42)] mt-5 mb-3">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-[rgb(15,23,42)] mt-6 mb-4">$1</h1>')
       // Bold and Italic
-      .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-white">$1</strong>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-[rgb(15,23,42)]">$1</strong>')
       .replace(/\*(.*?)\*/gim, '<em class="italic">$1</em>')
       // Lists
-      .replace(/^- (.*$)/gim, '<li class="ml-4 text-gray-300">$1</li>')
+      .replace(/^- (.*$)/gim, '<li class="ml-4 text-[rgb(71,85,105)]">$1</li>')
       .replace(/(<li.*?<\/li>)/gims, '<ul class="list-disc ml-6 my-2">$1</ul>')
       // Line breaks
       .replace(/\n/g, '<br>')
       // Code
-      .replace(/`(.*?)`/g, '<code class="bg-gray-700 px-1 py-0.5 rounded text-sm font-mono">$1</code>');
+      .replace(/`(.*?)`/g, '<code class="bg-[rgb(241,245,249)] px-1 py-0.5 rounded text-sm font-mono">$1</code>');
   };
 
   return (
     <div 
-      className="prose prose-invert max-w-none text-gray-300 leading-relaxed"
+      className="prose prose-invert max-w-none text-[rgb(71,85,105)] leading-relaxed"
       dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
     />
   );
@@ -233,16 +233,16 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       {/* Main Modal with Gradient Border - ONLY outer div has gradient */}
-      <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full max-w-4xl max-h-[95vh] shadow-2xl">
-        <div className="bg-surface-800 rounded-xl p-6 max-h-[95vh] overflow-y-auto shadow-lg">
+      <div className="relative border border-[rgb(226,232,240)] rounded-xl w-full max-w-4xl max-h-[95vh]">
+        <div className="bg-white rounded-xl p-6 max-h-[95vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
             {/* Animated Title */}
-            <h2 className="text-xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
+            <h2 className="text-xl font-bold text-[rgb(37,99,235)]">
               {editProject ? 'Edit Project' : 'Add New Project'}
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white text-2xl transition-colors"
+              className="text-[rgb(148,163,184)] hover:text-[rgb(15,23,42)] text-2xl transition-colors"
             >
               ×
             </button>
@@ -250,13 +250,13 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Project Information - No gradient, only black shadow */}
-            <div className="bg-surface-800 rounded-xl p-6 border-2 border-black">
-              <h3 className="text-lg font-semibold text-white mb-4">Basic Project Information</h3>
+            <div className="bg-white rounded-xl p-6 border-2 border-black">
+              <h3 className="text-lg font-semibold text-[rgb(15,23,42)] mb-4">Basic Project Information</h3>
               
               <div className="space-y-4">
                 {/* Title */}
-                <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                  <label className="block text-white text-sm font-medium mb-2">
+                <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                  <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                     Project Title *
                   </label>
                   <input
@@ -264,17 +264,17 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    className={`w-full bg-gray-700 border ${
-                      errors.title ? 'border-red-500' : 'border-gray-600'
-                    } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                    className={`w-full bg-[rgb(241,245,249)] border ${
+                      errors.title ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                    } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                     placeholder="Enter project title"
                   />
                   {errors.title && <p className="text-red-400 text-sm mt-1">{errors.title}</p>}
                 </div>
 
                 {/* Description */}
-                <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                  <label className="block text-white text-sm font-medium mb-2">
+                <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                  <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                     Short Description *
                   </label>
                   <textarea
@@ -282,9 +282,9 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                     value={formData.description}
                     onChange={handleChange}
                     rows="2"
-                    className={`w-full bg-gray-700 border ${
-                      errors.description ? 'border-red-500' : 'border-gray-600'
-                    } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                    className={`w-full bg-[rgb(241,245,249)] border ${
+                      errors.description ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                    } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                     placeholder="Brief description of the project"
                   />
                   {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description}</p>}
@@ -292,8 +292,8 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
   {/* Category with Enhanced Dropdown and Search */}
-  <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-    <label className="block text-white text-sm font-medium mb-2">
+  <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+    <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
       Category *
     </label>
     <div className="relative">
@@ -307,17 +307,17 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
         }}
         onFocus={() => setShowCategoryDropdown(true)}
         onBlur={() => setTimeout(() => setShowCategoryDropdown(false), 200)}
-        className={`w-full bg-gray-700 border ${
-          errors.category ? 'border-red-500' : 'border-gray-600'
-        } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+        className={`w-full bg-[rgb(241,245,249)] border ${
+          errors.category ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+        } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
         placeholder="Type to search categories..."
       />
       
       {/* Enhanced Category Dropdown with Search Results */}
       {showCategoryDropdown && (
-        <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto shadow-xl">
+        <div className="absolute z-10 w-full mt-1 bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg max-h-60 overflow-y-auto">
           {/* Search results header */}
-          <div className="px-3 py-2 text-xs text-gray-400 border-b border-gray-700">
+          <div className="px-3 py-2 text-xs text-[rgb(148,163,184)] border-b border-[rgb(226,232,240)]">
             {filteredCategories.length > 0 
               ? `Found ${filteredCategories.length} categories` 
               : 'No categories found'
@@ -328,7 +328,7 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
           {filteredCategories.map((category, index) => (
             <div
               key={index}
-              className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-white transition-colors border-b border-gray-700 last:border-b-0 flex items-center justify-between"
+              className="px-4 py-3 hover:bg-[rgb(241,245,249)] cursor-pointer text-[rgb(15,23,42)] transition-colors border-b border-[rgb(226,232,240)] last:border-b-0 flex items-center justify-between"
               onMouseDown={(e) => {
                 e.preventDefault(); // Prevent input blur
                 handleCategorySelect(category);
@@ -336,7 +336,7 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
             >
               <span>{category}</span>
               {formData.category === category && (
-                <span className="text-sky-400 text-sm">✓</span>
+                <span className="text-[rgb(37,99,235)] text-sm">✓</span>
               )}
             </div>
           ))}
@@ -346,7 +346,7 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
            !topCategories.includes(formData.category) && 
            !filteredCategories.includes(formData.category) && (
             <div
-              className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-sky-400 transition-colors border-t border-gray-700 flex items-center"
+              className="px-4 py-3 hover:bg-[rgb(241,245,249)] cursor-pointer text-[rgb(37,99,235)] transition-colors border-t border-[rgb(226,232,240)] flex items-center"
               onMouseDown={(e) => {
                 e.preventDefault();
                 handleCategorySelect(formData.category);
@@ -363,14 +363,14 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
     
     {/* Quick category suggestions */}
     <div className="mt-3">
-      <div className="text-xs text-gray-400 mb-2">Popular categories:</div>
+      <div className="text-xs text-[rgb(148,163,184)] mb-2">Popular categories:</div>
       <div className="flex flex-wrap gap-2">
         {topCategories.slice(0, 4).map((category) => (
           <button
             type="button"
             key={category}
             onClick={() => handleCategorySelect(category)}
-            className="text-xs text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 px-2 py-1 rounded transition-colors"
+            className="text-xs text-[rgb(37,99,235)] bg-[rgb(37,99,235)]/10 hover:bg-[rgb(37,99,235)]/20 px-2 py-1 rounded transition-colors"
           >
             {category}
           </button>
@@ -381,8 +381,8 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                         
 
                   {/* Curator */}
-                  <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                    <label className="block text-white text-sm font-medium mb-2">
+                  <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                    <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                       Curator Name *
                     </label>
                     <input
@@ -390,9 +390,9 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                       name="curator"
                       value={formData.curator}
                       onChange={handleChange}
-                      className={`w-full bg-gray-700 border ${
-                        errors.curator ? 'border-red-500' : 'border-gray-600'
-                      } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                      className={`w-full bg-[rgb(241,245,249)] border ${
+                        errors.curator ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                      } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                       placeholder="Enter curator name"
                     />
                     {errors.curator && <p className="text-red-400 text-sm mt-1">{errors.curator}</p>}
@@ -401,15 +401,15 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Difficulty */}
-                  <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                    <label className="block text-white text-sm font-medium mb-2">
+                  <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                    <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                       Difficulty Level
                     </label>
                     <select
                       name="difficulty"
                       value={formData.difficulty}
                       onChange={handleChange}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      className="w-full bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                     >
                       {difficultyLevels.map((level, index) => (
                         <option key={index} value={level}>
@@ -420,15 +420,15 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                   </div>
 
                   {/* Duration */}
-                  <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                    <label className="block text-white text-sm font-medium mb-2">
+                  <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                    <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                       Estimated Duration
                     </label>
                     <select
                       name="duration"
                       value={formData.duration}
                       onChange={handleChange}
-                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                      className="w-full bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                     >
                       {durationOptions.map((duration, index) => (
                         <option key={index} value={duration}>
@@ -440,8 +440,8 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                 </div>
 
                 {/* Technologies - Allow any technology */}
-                <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                  <label className="block text-white text-sm font-medium mb-2">
+                <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                  <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                     Technologies Used *
                   </label>
                   <div className="space-y-3">
@@ -451,13 +451,13 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                         value={techInput}
                         onChange={(e) => handleTechInputChange(e.target.value)}
                         onKeyPress={handleTechKeyPress}
-                        className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                        className="w-full bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                         placeholder="Type technology and press Enter to add"
                       />
                       <button
                         type="button"
                         onClick={() => handleAddTechnology(techInput)}
-                        className="px-4 py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-colors whitespace-nowrap"
+                        className="px-4 py-3 bg-[rgb(29,78,216)] hover:bg-sky-700 text-[rgb(15,23,42)] rounded-lg transition-colors whitespace-nowrap"
                       >
                         Add Tech
                       </button>
@@ -468,13 +468,13 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                       {formData.technologies.map((tech, index) => (
                         <div
                           key={index}
-                          className="flex items-center space-x-1 bg-sky-500/20 text-sky-400 px-3 py-1 rounded-full text-sm"
+                          className="flex items-center space-x-1 bg-[rgb(37,99,235)]/20 text-[rgb(37,99,235)] px-3 py-1 rounded-full text-sm"
                         >
                           <span>{tech}</span>
                           <button
                             type="button"
                             onClick={() => handleRemoveTechnology(tech)}
-                            className="text-sky-400 hover:text-sky-300 ml-1"
+                            className="text-[rgb(37,99,235)] hover:text-[rgb(37,99,235)] ml-1"
                           >
                             ×
                           </button>
@@ -486,8 +486,8 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                 </div>
 
                 {/* Prerequisites */}
-                <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                  <label className="block text-white text-sm font-medium mb-2">
+                <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                  <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                     Prerequisites *
                   </label>
                   <div className="space-y-2">
@@ -497,7 +497,7 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                           type="text"
                           value={prereq}
                           onChange={(e) => handlePrerequisiteChange(index, e.target.value)}
-                          className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                          className="flex-1 bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                           placeholder="Enter prerequisite skill or knowledge"
                         />
                         {formData.prerequisites.length > 1 && (
@@ -514,7 +514,7 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                     <button
                       type="button"
                       onClick={addPrerequisite}
-                      className="px-3 py-2 border border-dashed border-gray-600 text-gray-400 rounded-lg hover:border-sky-400 hover:text-sky-400 transition-colors text-sm"
+                      className="px-3 py-2 border border-dashed border-[rgb(226,232,240)] text-[rgb(148,163,184)] rounded-lg hover:border-[rgb(37,99,235)] hover:text-[rgb(37,99,235)] transition-colors text-sm"
                     >
                       + Add Prerequisite
                     </button>
@@ -523,9 +523,9 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                 </div>
 
                 {/* Detailed Project Description with Markdown Support */}
-                <div className="bg-gray-800 rounded-lg p-4 shadow-md">
+                <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
                   <div className="flex justify-between items-center mb-2">
-                    <label className="block text-white text-sm font-medium">
+                    <label className="block text-[rgb(15,23,42)] text-sm font-medium">
                       Detailed Project Description *
                     </label>
                     
@@ -533,17 +533,17 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                     <div className="relative group">
                       <button
                         type="button"
-                        className="text-xs text-sky-400 hover:text-sky-300 transition-colors"
+                        className="text-xs text-[rgb(37,99,235)] hover:text-[rgb(37,99,235)] transition-colors"
                       >
                         Markdown Guide
                       </button>
-                      <div className="absolute right-0 top-6 w-64 bg-gray-900 border border-gray-600 rounded-lg p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                        <h4 className="font-medium text-white mb-2">Markdown Syntax</h4>
+                      <div className="absolute right-0 top-6 w-64 bg-[rgb(248,250,252)] border border-[rgb(226,232,240)] rounded-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
+                        <h4 className="font-medium text-[rgb(15,23,42)] mb-2">Markdown Syntax</h4>
                         <div className="space-y-1 text-xs">
                           {markdownGuide.map((item, index) => (
                             <div key={index} className="flex justify-between">
-                              <code className="text-sky-400">{item.syntax}</code>
-                              <span className="text-gray-400">{item.description}</span>
+                              <code className="text-[rgb(37,99,235)]">{item.syntax}</code>
+                              <span className="text-[rgb(148,163,184)]">{item.description}</span>
                             </div>
                           ))}
                         </div>
@@ -552,13 +552,13 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                   </div>
 
                   {/* Markdown Tabs */}
-                  <div className="flex border-b border-gray-600 mb-3">
+                  <div className="flex border-b border-[rgb(226,232,240)] mb-3">
                     <button
                       type="button"
                       className={`px-4 py-2 font-medium text-sm ${
                         activeTab === 'write' 
-                          ? 'border-b-2 border-sky-500 text-sky-500' 
-                          : 'text-gray-400 hover:text-gray-300'
+                          ? 'border-b-2 border-sky-500 text-[rgb(37,99,235)]' 
+                          : 'text-[rgb(148,163,184)] hover:text-[rgb(71,85,105)]'
                       }`}
                       onClick={() => setActiveTab('write')}
                     >
@@ -568,8 +568,8 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                       type="button"
                       className={`px-4 py-2 font-medium text-sm ${
                         activeTab === 'preview' 
-                          ? 'border-b-2 border-sky-500 text-sky-500' 
-                          : 'text-gray-400 hover:text-gray-300'
+                          ? 'border-b-2 border-sky-500 text-[rgb(37,99,235)]' 
+                          : 'text-[rgb(148,163,184)] hover:text-[rgb(71,85,105)]'
                       }`}
                       onClick={() => setActiveTab('preview')}
                     >
@@ -584,9 +584,9 @@ const ProjectForm = ({ onClose, onSaveProject, editProject = null }) => {
                       value={formData.project_description}
                       onChange={handleChange}
                       rows="8"
-                      className={`w-full bg-gray-700 border ${
-                        errors.project_description ? 'border-red-500' : 'border-gray-600'
-                      } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent font-mono text-sm`}
+                      className={`w-full bg-[rgb(241,245,249)] border ${
+                        errors.project_description ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                      } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent font-mono text-sm`}
                       placeholder="Provide detailed project requirements, features to implement, expected outcomes, success criteria, and any specific instructions...
 
 You can use Markdown formatting:
@@ -598,19 +598,19 @@ You can use Markdown formatting:
 `inline code`"
                     />
                   ) : (
-                    <div className="min-h-[200px] bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 overflow-y-auto max-h-64">
+                    <div className="min-h-[200px] bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg px-4 py-3 overflow-y-auto max-h-64">
                       {formData.project_description ? (
                         <MarkdownPreview content={formData.project_description} />
                       ) : (
-                        <p className="text-gray-400 italic">Nothing to preview yet. Start writing in the Write tab.</p>
+                        <p className="text-[rgb(148,163,184)] italic">Nothing to preview yet. Start writing in the Write tab.</p>
                       )}
                     </div>
                   )}
                   
                   {errors.project_description && <p className="text-red-400 text-sm mt-1">{errors.project_description}</p>}
-                  <p className="text-gray-400 text-xs mt-2">
+                  <p className="text-[rgb(148,163,184)] text-xs mt-2">
                     Include requirements, features to build, expected outputs, and success criteria. 
-                    <span className="text-sky-400"> Markdown is supported for rich formatting.</span>
+                    <span className="text-[rgb(37,99,235)]"> Markdown is supported for rich formatting.</span>
                   </p>
                 </div>
               </div>
@@ -621,13 +621,13 @@ You can use Markdown formatting:
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-4 py-2 border border-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-sm"
+                className="px-4 py-2 border border-[rgb(226,232,240)] text-[rgb(15,23,42)] rounded-lg hover:bg-[rgb(241,245,249)] transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300 shadow-lg"
+                className="bg-[rgb(37,99,235)] text-white px-4 py-2 rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
               >
                 {editProject ? 'Update Project' : 'Create Project'}
               </button>

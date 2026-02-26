@@ -14,29 +14,29 @@ const KanbanBoard = ({
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {columns.map(column => (
-          <div key={column.id} className="bg-surface-800 border border-gray-700 rounded-xl p-4">
+          <div key={column.id} className="bg-white border border-[rgb(226,232,240)] rounded-xl p-4">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
                 <div className={`w-3 h-3 rounded-full ${column.color}`}></div>
-                <h3 className="font-semibold text-white">{column.title}</h3>
-                <span className="text-gray-400 text-sm bg-gray-700 px-2 py-1 rounded">
+                <h3 className="font-semibold text-[rgb(15,23,42)]">{column.title}</h3>
+                <span className="text-[rgb(148,163,184)] text-sm bg-[rgb(241,245,249)] px-2 py-1 rounded">
                   {tasks[column.id].length}
                 </span>
               </div>
             </div>
 
             {/* Add Task Form - Each column has its own isolated input */}
-            <div className="mb-4 p-3 bg-gray-700/50 rounded-lg">
+            <div className="mb-4 p-3 bg-[rgb(248,250,252)] rounded-lg">
               <input
                 type="text"
                 placeholder="Task title..."
-                className="w-full bg-transparent border-none text-white placeholder-gray-400 mb-2 focus:outline-none"
+                className="w-full bg-transparent border-none text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] mb-2 focus:outline-none"
                 value={newTasks[column.id].title}
                 onChange={(e) => onInputChange(column.id, 'title', e.target.value)}
               />
               <textarea
                 placeholder="Description (optional)..."
-                className="w-full bg-transparent border-none text-gray-300 text-sm placeholder-gray-400 resize-none focus:outline-none"
+                className="w-full bg-transparent border-none text-[rgb(71,85,105)] text-sm placeholder-[rgb(148,163,184)] resize-none focus:outline-none"
                 rows="2"
                 value={newTasks[column.id].description}
                 onChange={(e) => onInputChange(column.id, 'description', e.target.value)}
@@ -44,7 +44,7 @@ const KanbanBoard = ({
               <div className="flex justify-end items-center mt-2">
                 <button
                   onClick={() => onAddTask(column.id)}
-                  className="text-sky-400 hover:text-sky-300 text-sm font-medium transition-colors duration-300 flex items-center gap-1"
+                  className="text-[rgb(37,99,235)] hover:text-[rgb(37,99,235)] text-sm font-medium transition-colors duration-300 flex items-center gap-1"
                 >
                   <Plus className="w-4 h-4" />
                   Add Task
@@ -56,7 +56,7 @@ const KanbanBoard = ({
               {tasks[column.id].map(task => (
                 <div
                   key={task.id}
-                  className="bg-gray-700/30 border border-gray-600 rounded-lg p-4 hover:border-sky-400/50 transition-all duration-300 cursor-pointer group"
+                  className="bg-[rgb(241,245,249)]/30 border border-[rgb(226,232,240)] rounded-lg p-4 hover:border-[rgb(37,99,235)]/50 transition-all duration-300 cursor-pointer group"
                   draggable
                   onDragStart={(e) => {
                     e.dataTransfer.setData('taskId', task.id);
@@ -64,21 +64,21 @@ const KanbanBoard = ({
                   }}
                 >
                   <div className="mb-2">
-                    <h4 className="font-medium text-white group-hover:text-sky-400 transition-colors duration-300">
+                    <h4 className="font-medium text-[rgb(15,23,42)] group-hover:text-[rgb(37,99,235)] transition-colors duration-300">
                       {task.title}
                     </h4>
                     {task.description && (
-                      <p className="text-gray-300 text-sm mt-2">{task.description}</p>
+                      <p className="text-[rgb(71,85,105)] text-sm mt-2">{task.description}</p>
                     )}
                   </div>
                   
-                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-600">
+                  <div className="flex justify-between items-center mt-3 pt-3 border-t border-[rgb(226,232,240)]">
                     <div className="flex gap-2">
                       {columns.filter(col => col.id !== column.id).map(nextColumn => (
                         <button
                           key={nextColumn.id}
                           onClick={() => onMoveTask(task.id, column.id, nextColumn.id)}
-                          className={`text-xs px-2 py-1 rounded ${nextColumn.color} text-white hover:opacity-80 transition-opacity duration-300`}
+                          className={`text-xs px-2 py-1 rounded ${nextColumn.color} text-[rgb(15,23,42)] hover:opacity-80 transition-opacity duration-300`}
                         >
                           Move to {nextColumn.title}
                         </button>
@@ -90,7 +90,7 @@ const KanbanBoard = ({
             </div>
 
             {tasks[column.id].length === 0 && (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-8 text-[rgb(148,163,184)]">
                 <div className="text-sm">No tasks yet. Add your first task!</div>
               </div>
             )}
@@ -103,7 +103,7 @@ const KanbanBoard = ({
         {columns.map(column => (
           <div
             key={column.id}
-            className="min-h-32 border-2 border-dashed border-gray-600 rounded-xl p-4 transition-all duration-300 hover:border-sky-400/50"
+            className="min-h-32 border-2 border-dashed border-[rgb(226,232,240)] rounded-xl p-4 transition-all duration-300 hover:border-[rgb(37,99,235)]/50"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();
@@ -114,7 +114,7 @@ const KanbanBoard = ({
               }
             }}
           >
-            <div className="text-center text-gray-400 text-sm">
+            <div className="text-center text-[rgb(148,163,184)] text-sm">
               Drop tasks here to move to {column.title}
             </div>
           </div>

@@ -224,7 +224,7 @@ const ProctorFeed = ({
     // RENDER
     // ========================================================================
     return (
-        <div className="relative w-full aspect-video bg-gray-900 rounded-lg overflow-hidden border border-gray-700 shadow-xl">
+        <div className="relative w-full aspect-video bg-[rgb(248,250,252)] rounded-lg overflow-hidden border border-[rgb(226,232,240)]">
             {/* Base video element (muted, dimmed) */}
             <video
                 ref={videoRef}
@@ -245,7 +245,7 @@ const ProctorFeed = ({
 
             {/* Camera inactive state */}
             {!isProctoring && !cameraError && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/80 text-gray-400 text-sm gap-3">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[rgb(248,250,252)]/80 text-[rgb(148,163,184)] text-sm gap-3">
                     <CameraOff className="w-10 h-10" />
                     <span>Camera inactive</span>
                 </div>
@@ -275,14 +275,14 @@ const ProctorFeed = ({
 
             {/* Frame count indicator (debug) */}
             {isProctoring && cameraReady && process.env.NODE_ENV === 'development' && (
-                <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[9px] font-mono text-gray-400">
+                <div className="absolute bottom-3 left-3 px-2 py-1 bg-black/60 backdrop-blur-sm rounded text-[9px] font-mono text-[rgb(148,163,184)]">
                     Frames: {frameCount}
                 </div>
             )}
 
             {/* Camera ready indicator */}
             {isProctoring && !cameraReady && !cameraError && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/90 text-gray-400 text-sm gap-3">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[rgb(248,250,252)]/90 text-[rgb(148,163,184)] text-sm gap-3">
                     <Camera className="w-10 h-10 animate-pulse" />
                     <span>Initializing camera...</span>
                 </div>

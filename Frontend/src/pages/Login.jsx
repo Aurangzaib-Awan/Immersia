@@ -112,15 +112,15 @@ function Login({ setUser }) {
 
 
     return (
-        <main className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 py-8 px-4 sm:px-6">
-            <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full max-w-sm sm:max-w-md">
-                <div className="bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800 relative">
+        <main className="flex justify-center items-center min-h-screen bg-[rgb(248,250,252)] py-8 px-4 sm:px-6">
+            <div className="border border-[rgb(226,232,240)] rounded-xl w-full max-w-sm sm:max-w-md">
+                <div className="bg-white rounded-xl p-6 sm:p-8 relative">
 
                     {/* Cancel Button - Top Right Corner */}
                     <button
                         onClick={handleClose}
                         disabled={loading}
-                        className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-white transition-colors duration-200 z-10 disabled:opacity-50"
+                        className="absolute top-3 right-3 sm:top-4 sm:right-4 text-[rgb(148,163,184)] hover:text-[rgb(15,23,42)] transition-colors duration-200 z-10 disabled:opacity-50"
                         type="button"
                         aria-label="Cancel and go back"
                     >
@@ -128,32 +128,32 @@ function Login({ setUser }) {
                     </button>
 
                     <div className="text-center mb-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
+                        <h1 className="text-3xl sm:text-4xl font-bold text-[rgb(37,99,235)] mb-2">
                             Welcome Back
                         </h1>
-                        <p className="text-gray-400 text-sm sm:text-base">
+                        <p className="text-[rgb(148,163,184)] text-sm sm:text-base">
                             Sign in to continue your journey
                         </p>
                     </div>
 
                     {/* Error Message Display */}
                     {error && (
-                        <div className="mb-6 p-3 bg-red-500/20 border border-red-400/30 rounded-lg">
-                            <p className="text-red-400 text-sm text-center">{error}</p>
+                        <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-red-600 text-sm text-center">{error}</p>
                         </div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Email Field */}
                         <div className="space-y-3">
-                            <Label htmlFor="email" className="text-gray-300 text-sm font-medium">Email Address *</Label>
+                            <Label htmlFor="email" className="text-[rgb(71,85,105)] text-sm font-medium">Email Address *</Label>
                             <Input
                                 type="email"
                                 id="email"
                                 name="email"
                                 value={form.email}
                                 onChange={handleChange}
-                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300"
+                                className="w-full bg-white border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)]/30 focus:border-[rgb(37,99,235)] transition-all duration-300"
                                 placeholder="Enter your email"
                                 disabled={loading}
                                 required
@@ -162,7 +162,7 @@ function Login({ setUser }) {
 
                         {/* Password Field with Eye Icon */}
                         <div className="space-y-3">
-                            <Label htmlFor="password" className="text-gray-300 text-sm font-medium">Password *</Label>
+                            <Label htmlFor="password" className="text-[rgb(71,85,105)] text-sm font-medium">Password *</Label>
                             <div className="relative">
                                 <Input
                                     type={showPassword ? "text" : "password"}
@@ -170,7 +170,7 @@ function Login({ setUser }) {
                                     name="password"
                                     value={form.password}
                                     onChange={handleChange}
-                                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300 pr-12"
+                                    className="w-full bg-white border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)]/30 focus:border-[rgb(37,99,235)] transition-all duration-300 pr-12"
                                     placeholder="Enter your password"
                                     disabled={loading}
                                     required
@@ -178,7 +178,7 @@ function Login({ setUser }) {
                                 <button
                                     type="button"
                                     onClick={togglePasswordVisibility}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[rgb(148,163,184)] hover:text-[rgb(71,85,105)] transition-colors duration-200"
                                     disabled={loading}
                                 >
                                     {showPassword ? (
@@ -199,7 +199,7 @@ function Login({ setUser }) {
                         <Button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-sky-600 hover:to-blue-700 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-base"
+                            className="w-full bg-[rgb(37,99,235)] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[rgb(29,78,216)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-base"
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center">

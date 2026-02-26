@@ -25,7 +25,7 @@ const Navbar = () => {
 
     return (
         <nav
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5 ${isScrolled ? 'bg-background/80 backdrop-blur-md shadow-sm' : 'bg-background'
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-white/5 ${isScrolled ? 'bg-white border-b border-[rgb(226,232,240)]' : 'bg-background'
                 }`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -79,7 +79,7 @@ const Navbar = () => {
 
             {/* Mobile Menu */}
             {isMobileMenuOpen && (
-                <div className="md:hidden absolute top-16 left-0 right-0 bg-background border-b border-border p-4 shadow-lg animate-in slide-in-from-top-2">
+                <div className="md:hidden absolute top-16 left-0 right-0 bg-background border-b border-border p-4 animate-in slide-in-from-top-2">
                     <div className="flex flex-col space-y-4">
                         {navLinks.map((link) => (
                             <Link

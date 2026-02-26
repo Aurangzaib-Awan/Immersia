@@ -105,11 +105,11 @@ const RecentActivity = () => {
 
   if (loading) {
     return (
-      <div className="bg-surface-800 rounded-xl shadow-lg p-6 border border-gray-700">
-        <h3 className="text-xl font-bold text-white mb-6">User Registration Trend</h3>
+      <div className="bg-white rounded-xl p-6 border border-[rgb(226,232,240)]">
+        <h3 className="text-xl font-bold text-[rgb(15,23,42)] mb-6">User Registration Trend</h3>
         <div className="flex justify-center items-center py-16">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
-          <span className="ml-3 text-gray-300">Loading user data...</span>
+          <span className="ml-3 text-[rgb(71,85,105)]">Loading user data...</span>
         </div>
       </div>
     );
@@ -117,13 +117,13 @@ const RecentActivity = () => {
 
   if (error) {
     return (
-      <div className="bg-surface-800 rounded-xl shadow-lg p-6 border border-gray-700">
-        <h3 className="text-xl font-bold text-white mb-6">User Registration Trend</h3>
+      <div className="bg-white rounded-xl p-6 border border-[rgb(226,232,240)]">
+        <h3 className="text-xl font-bold text-[rgb(15,23,42)] mb-6">User Registration Trend</h3>
         <div className="text-center py-8">
           <div className="text-red-400 mb-4">{error}</div>
           <button 
             onClick={fetchUserData} 
-            className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
+            className="bg-[rgb(29,78,216)] hover:bg-sky-700 text-[rgb(15,23,42)] px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
           >
             Retry
           </button>
@@ -133,12 +133,12 @@ const RecentActivity = () => {
   }
 
   return (
-    <div className="bg-surface-800 rounded-xl shadow-lg p-6 border border-gray-700">
+    <div className="bg-white rounded-xl p-6 border border-[rgb(226,232,240)]">
      
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
-          <h3 className="text-xl font-bold text-white">User Registration Trend</h3>
-          <p className="text-sm text-gray-400 mt-1">Monthly registration overview</p>
+          <h3 className="text-xl font-bold text-[rgb(15,23,42)]">User Registration Trend</h3>
+          <p className="text-sm text-[rgb(148,163,184)] mt-1">Monthly registration overview</p>
         </div>
         
         
@@ -147,7 +147,7 @@ const RecentActivity = () => {
             <select 
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 p-2.5 font-medium"
+              className="bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] text-[rgb(15,23,42)] text-sm rounded-lg focus:ring-[rgb(37,99,235)] focus:border-sky-500 p-2.5 font-medium"
             >
               {availableYears.map(year => (
                 <option key={year} value={year}>{year}</option>
@@ -157,17 +157,17 @@ const RecentActivity = () => {
         )}
       </div>
 
-      <div className="mt-6 pt-6 border-t border-gray-700">
+      <div className="mt-6 pt-6 border-t border-[rgb(226,232,240)]">
         <div className="grid grid-cols-2 gap-4 text-center">
-          <div className="bg-gray-700 rounded-lg p-4">
-            <div className="text-2xl font-bold text-white">{currentYearUsers}</div>
-            <div className="text-xs text-gray-400">Total in {selectedYear}</div>
+          <div className="bg-[rgb(241,245,249)] rounded-lg p-4">
+            <div className="text-2xl font-bold text-[rgb(15,23,42)]">{currentYearUsers}</div>
+            <div className="text-xs text-[rgb(148,163,184)]">Total in {selectedYear}</div>
           </div>
-          <div className="bg-gray-700 rounded-lg p-4">
-            <div className="text-2xl font-bold text-sky-400">
+          <div className="bg-[rgb(241,245,249)] rounded-lg p-4">
+            <div className="text-2xl font-bold text-[rgb(37,99,235)]">
               {graphData.length > 0 ? Math.max(...graphData.map(item => item.users)) : 0}
             </div>
-            <div className="text-xs text-gray-400">Peak Month</div>
+            <div className="text-xs text-[rgb(148,163,184)]">Peak Month</div>
           </div>
         </div>
       </div>
@@ -179,8 +179,8 @@ const RecentActivity = () => {
 const UserGraph = ({ data }) => {
   if (!data || data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-gray-400 bg-gray-700 rounded-lg">
-        <svg className="w-16 h-16 mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex flex-col items-center justify-center py-12 text-[rgb(148,163,184)] bg-[rgb(241,245,249)] rounded-lg">
+        <svg className="w-16 h-16 mb-4 text-[rgb(148,163,184)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
         <p>No registration data available</p>
@@ -205,7 +205,7 @@ const UserGraph = ({ data }) => {
   return (
     <div className="w-full">
       
-      <div className="flex items-end justify-between h-48 py-4 px-1 bg-gray-700/30 rounded-lg">
+      <div className="flex items-end justify-between h-48 py-4 px-1 bg-[rgb(241,245,249)]/30 rounded-lg">
         {data.map((item, index) => {
           const barHeight = calculateBarHeight(item.users);
           const hasUsers = item.users > 0;
@@ -218,7 +218,7 @@ const UserGraph = ({ data }) => {
                 className={`w-6 rounded-t-lg transition-all duration-300 relative group ${
                   hasUsers 
                     ? isPeakMonth
-                      ? 'bg-gradient-to-t from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 shadow-lg ring-2 ring-amber-400/50' 
+                      ? 'bg-gradient-to-t from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 ring-2 ring-amber-400/50' 
                       : 'bg-gradient-to-t from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-md'
                     : 'bg-gray-600 hover:bg-gray-500'
                 }`}
@@ -228,7 +228,7 @@ const UserGraph = ({ data }) => {
                 }}
               >
                
-                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10 shadow-lg border border-gray-700">
+                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-[rgb(248,250,252)] text-[rgb(15,23,42)] text-xs rounded py-1 px-2 whitespace-nowrap z-10 border border-[rgb(226,232,240)]">
                   <div className="font-semibold">{item.users} users</div>
                   <div>{item.month} {item.year}</div>
                   {isPeakMonth && <div className="text-amber-400 text-xs">Peak Month</div>}
@@ -254,8 +254,8 @@ const UserGraph = ({ data }) => {
                 hasUsers 
                   ? isPeakMonth 
                     ? 'text-amber-400' 
-                    : 'text-white' 
-                  : 'text-gray-500'
+                    : 'text-[rgb(15,23,42)]' 
+                  : 'text-[rgb(148,163,184)]'
               }`}>
                 {item.users}
               </div>
@@ -265,8 +265,8 @@ const UserGraph = ({ data }) => {
                 hasUsers 
                   ? isPeakMonth 
                     ? 'text-amber-300' 
-                    : 'text-gray-300' 
-                  : 'text-gray-500'
+                    : 'text-[rgb(71,85,105)]' 
+                  : 'text-[rgb(148,163,184)]'
               }`}>
                 {item.month}
               </div>
@@ -282,15 +282,15 @@ const UserGraph = ({ data }) => {
       <div className="flex justify-center items-center mt-4 space-x-4 text-xs">
         <div className="flex items-center">
           <div className="w-3 h-3 bg-gradient-to-t from-sky-500 to-blue-600 rounded-sm mr-2"></div>
-          <span className="text-gray-300">Registrations</span>
+          <span className="text-[rgb(71,85,105)]">Registrations</span>
         </div>
         <div className="flex items-center">
           <div className="w-3 h-3 bg-gradient-to-t from-amber-500 to-orange-600 rounded-sm mr-2"></div>
-          <span className="text-gray-300">Peak Month</span>
+          <span className="text-[rgb(71,85,105)]">Peak Month</span>
         </div>
         <div className="flex items-center">
           <div className="w-3 h-3 bg-gray-600 rounded-sm mr-2"></div>
-          <span className="text-gray-300">No Activity</span>
+          <span className="text-[rgb(71,85,105)]">No Activity</span>
         </div>
       </div>
 

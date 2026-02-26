@@ -108,14 +108,14 @@ const ChangePasswordForm = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50 overflow-y-auto py-8 px-4 sm:px-6">
       <div className="w-full max-w-sm sm:max-w-md my-auto">
-        <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full">
-          <div className="w-full bg-surface-800 rounded-xl p-6 sm:p-8 shadow-2xl border border-gray-800">
+        <div className="relative border border-[rgb(226,232,240)] rounded-xl w-full">
+          <div className="w-full bg-white rounded-xl p-6 sm:p-8 border border-[rgb(226,232,240)]">
 
             <div className="text-center mb-6">
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-2">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[rgb(37,99,235)] mb-2">
                 Change Password
               </h1>
-              <p className="text-gray-400 text-sm sm:text-base">
+              <p className="text-[rgb(148,163,184)] text-sm sm:text-base">
                 Update your security credentials
               </p>
             </div>
@@ -130,7 +130,7 @@ const ChangePasswordForm = ({ onClose }) => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Current Password Field */}
               <div className="space-y-2">
-                <label htmlFor="currentPassword" className="text-gray-300 text-sm font-medium block">
+                <label htmlFor="currentPassword" className="text-[rgb(71,85,105)] text-sm font-medium block">
                   Current Password *
                 </label>
                 <div className="relative">
@@ -140,7 +140,7 @@ const ChangePasswordForm = ({ onClose }) => {
                     name="currentPassword"
                     value={formData.currentPassword}
                     onChange={handleChange}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300 pr-12"
+                    className="w-full bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent transition-all duration-300 pr-12"
                     placeholder="Enter current password"
                     disabled={isSubmitting}
                     autoComplete="current-password"
@@ -148,7 +148,7 @@ const ChangePasswordForm = ({ onClose }) => {
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('current')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[rgb(148,163,184)] hover:text-[rgb(71,85,105)] transition-colors duration-200"
                     disabled={isSubmitting}
                   >
                     {showCurrentPassword ? (
@@ -168,7 +168,7 @@ const ChangePasswordForm = ({ onClose }) => {
 
               {/* New Password Field */}
               <div className="space-y-2">
-                <label htmlFor="newPassword" className="text-gray-300 text-sm font-medium block">
+                <label htmlFor="newPassword" className="text-[rgb(71,85,105)] text-sm font-medium block">
                   New Password *
                 </label>
                 <div className="relative">
@@ -178,7 +178,7 @@ const ChangePasswordForm = ({ onClose }) => {
                     name="newPassword"
                     value={formData.newPassword}
                     onChange={handleChange}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300 pr-12"
+                    className="w-full bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent transition-all duration-300 pr-12"
                     placeholder="Enter new password"
                     disabled={isSubmitting}
                     autoComplete="new-password"
@@ -186,7 +186,7 @@ const ChangePasswordForm = ({ onClose }) => {
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('new')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[rgb(148,163,184)] hover:text-[rgb(71,85,105)] transition-colors duration-200"
                     disabled={isSubmitting}
                   >
                     {showNewPassword ? (
@@ -206,7 +206,7 @@ const ChangePasswordForm = ({ onClose }) => {
 
               {/* Confirm Password Field */}
               <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-gray-300 text-sm font-medium block">
+                <label htmlFor="confirmPassword" className="text-[rgb(71,85,105)] text-sm font-medium block">
                   Confirm New Password *
                 </label>
                 <div className="relative">
@@ -216,7 +216,7 @@ const ChangePasswordForm = ({ onClose }) => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all duration-300 pr-12"
+                    className="w-full bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent transition-all duration-300 pr-12"
                     placeholder="Confirm new password"
                     disabled={isSubmitting}
                     autoComplete="new-password"
@@ -224,7 +224,7 @@ const ChangePasswordForm = ({ onClose }) => {
                   <button
                     type="button"
                     onClick={() => togglePasswordVisibility('confirm')}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors duration-200"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[rgb(148,163,184)] hover:text-[rgb(71,85,105)] transition-colors duration-200"
                     disabled={isSubmitting}
                   >
                     {showConfirmPassword ? (
@@ -243,9 +243,9 @@ const ChangePasswordForm = ({ onClose }) => {
               </div>
 
               {/* Password Requirements */}
-              <div className="bg-gray-700 rounded-lg p-3 border border-gray-600">
-                <p className="text-gray-300 text-sm font-medium mb-2">Password Requirements:</p>
-                <ul className="text-gray-400 text-xs space-y-1">
+              <div className="bg-[rgb(241,245,249)] rounded-lg p-3 border border-[rgb(226,232,240)]">
+                <p className="text-[rgb(71,85,105)] text-sm font-medium mb-2">Password Requirements:</p>
+                <ul className="text-[rgb(148,163,184)] text-xs space-y-1">
                   <li className="flex items-center">
                     <span className="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2"></span>
                     At least 6 characters long
@@ -266,14 +266,14 @@ const ChangePasswordForm = ({ onClose }) => {
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="w-full sm:w-auto px-6 py-3 border border-gray-600 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-all duration-300 disabled:opacity-50 font-medium text-sm sm:text-base order-2 sm:order-1"
+                  className="w-full sm:w-auto px-6 py-3 border border-[rgb(226,232,240)] text-[rgb(71,85,105)] rounded-lg hover:bg-[rgb(241,245,249)] hover:text-[rgb(15,23,42)] transition-all duration-300 disabled:opacity-50 font-medium text-sm sm:text-base order-2 sm:order-1"
                   disabled={isSubmitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-lg font-semibold hover:from-sky-600 hover:to-blue-700 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base order-1 sm:order-2"
+                  className="w-full sm:w-auto px-6 py-3 bg-[rgb(37,99,235)] text-white rounded-lg font-semibold hover:from-sky-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 text-sm sm:text-base order-1 sm:order-2"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (

@@ -308,17 +308,17 @@ const Quiz = () => {
   // ========================================================================
   if (quizTerminated) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center p-6">
-        <div className="max-w-md w-full bg-surface-800 border border-red-500/30 rounded-2xl p-8 text-center shadow-2xl animate-in fade-in zoom-in duration-300">
+      <div className="min-h-screen bg-[rgb(248,250,252)] flex items-center justify-center p-6">
+        <div className="max-w-md w-full bg-white border border-red-200 rounded-2xl p-8 text-center animate-in fade-in zoom-in duration-300">
           <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <ShieldX className="w-10 h-10 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Quiz Terminated</h1>
-          <p className="text-gray-400 mb-4">
+          <h1 className="text-2xl font-bold text-[rgb(15,23,42)] mb-2">Quiz Terminated</h1>
+          <p className="text-[rgb(71,85,105)] mb-4">
             Too many integrity violations were detected.
           </p>
-          <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-6">
-            <p className="text-red-400 text-sm font-medium">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <p className="text-red-600 text-sm font-medium">
               This attempt has been flagged and will be reviewed by your instructor.
             </p>
           </div>
@@ -341,14 +341,14 @@ const Quiz = () => {
     const passed = percentage >= 70;
 
     return (
-      <div className="min-h-screen bg-gray-950 text-white p-6">
+      <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)] p-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white">Quiz Completed</h1>
-            <p className="text-gray-400">Your assessment results are ready</p>
+            <h1 className="text-3xl font-bold text-[rgb(15,23,42)]">Quiz Completed</h1>
+            <p className="text-[rgb(71,85,105)]">Your assessment results are ready</p>
           </div>
 
-          <div className="bg-surface-800 border border-gray-800 rounded-2xl p-8 text-center shadow-xl">
+          <div className="bg-white border border-[rgb(226,232,240)] rounded-2xl p-8 text-center">
             <div className={`w-24 h-24 rounded-full ${passed ? 'bg-green-500/10' : 'bg-red-500/10'} flex items-center justify-center mx-auto mb-6 border ${passed ? 'border-green-500/30' : 'border-red-500/30'}`}>
               {passed ? (
                 <CheckCircle className="w-12 h-12 text-green-500" />
@@ -360,41 +360,41 @@ const Quiz = () => {
             <h2 className="text-2xl font-bold mb-2">
               {passed ? 'Assessment Passed ✓' : 'Assessment Not Passed'}
             </h2>
-            <div className="text-5xl font-bold mb-6 text-white">{percentage}%</div>
+            <div className="text-5xl font-bold mb-6 text-[rgb(15,23,42)]">{percentage}%</div>
 
             <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="p-4 bg-gray-900/50 rounded-xl border border-gray-800">
-                <div className="text-2xl font-bold text-green-500">{correct}</div>
-                <div className="text-[10px] uppercase font-bold text-gray-500">Correct</div>
+              <div className="p-4 bg-[rgb(248,250,252)] rounded-xl border border-[rgb(226,232,240)]">
+                <div className="text-2xl font-bold text-green-600">{correct}</div>
+                <div className="text-[10px] uppercase font-bold text-[rgb(148,163,184)]">Correct</div>
               </div>
-              <div className="p-4 bg-gray-900/50 rounded-xl border border-gray-800">
+              <div className="p-4 bg-[rgb(248,250,252)] rounded-xl border border-[rgb(226,232,240)]">
                 <div className="text-2xl font-bold text-red-500">{total - correct}</div>
-                <div className="text-[10px] uppercase font-bold text-gray-500">Incorrect</div>
+                <div className="text-[10px] uppercase font-bold text-[rgb(148,163,184)]">Incorrect</div>
               </div>
-              <div className="p-4 bg-gray-900/50 rounded-xl border border-gray-800">
-                <div className="text-2xl font-bold text-sky-500">{total}</div>
-                <div className="text-[10px] uppercase font-bold text-gray-500">Total</div>
+              <div className="p-4 bg-[rgb(248,250,252)] rounded-xl border border-[rgb(226,232,240)]">
+                <div className="text-2xl font-bold text-[rgb(37,99,235)]">{total}</div>
+                <div className="text-[10px] uppercase font-bold text-[rgb(148,163,184)]">Total</div>
               </div>
             </div>
 
             {/* Proctoring Summary */}
-            <div className="bg-gray-900/50 border border-gray-800 rounded-xl p-4 mb-6">
-              <h3 className="text-sm font-bold text-gray-400 mb-3">Proctoring Summary</h3>
+            <div className="bg-[rgb(248,250,252)] border border-[rgb(226,232,240)] rounded-xl p-4 mb-6">
+              <h3 className="text-sm font-bold text-[rgb(148,163,184)] mb-3">Proctoring Summary</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-gray-500">Integrity Score:</span>
-                  <span className="ml-2 font-bold text-white">{chances}/3</span>
+                  <span className="text-[rgb(148,163,184)]">Integrity Score:</span>
+                  <span className="ml-2 font-bold text-[rgb(15,23,42)]">{chances}/3</span>
                 </div>
                 <div>
-                  <span className="text-gray-500">Violations:</span>
-                  <span className="ml-2 font-bold text-white">{violationLogs.length}</span>
+                  <span className="text-[rgb(148,163,184)]">Violations:</span>
+                  <span className="ml-2 font-bold text-[rgb(15,23,42)]">{violationLogs.length}</span>
                 </div>
               </div>
             </div>
 
             <button
               onClick={handleBackToWorkspace}
-              className="bg-white text-black font-bold py-3 px-8 rounded-xl hover:bg-gray-200 transition-all"
+              className="bg-[rgb(37,99,235)] text-white font-bold py-3 px-8 rounded-xl hover:bg-[rgb(29,78,216)] transition-all"
             >
               Back to Workspace
             </button>
@@ -409,21 +409,21 @@ const Quiz = () => {
   // ========================================================================
   if (!quizStarted) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-[rgb(248,250,252)] flex items-center justify-center p-6">
         <div className="max-w-2xl w-full">
           <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-white mb-4">Course Assessment</h1>
-            <p className="text-gray-400">Please review the instructions before starting</p>
+            <h1 className="text-4xl font-bold text-[rgb(15,23,42)] mb-4">Course Assessment</h1>
+            <p className="text-[rgb(71,85,105)]">Please review the instructions before starting</p>
           </div>
 
-          <div className="bg-surface-800 border border-gray-800 rounded-3xl p-8 shadow-2xl">
+          <div className="bg-white border border-[rgb(226,232,240)] rounded-3xl p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div>
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-[rgb(15,23,42)] mb-4 flex items-center gap-2">
                   <PlayCircle className="w-5 h-5 text-sky-500" />
                   Quiz Info
                 </h3>
-                <ul className="space-y-3 text-sm text-gray-400">
+                <ul className="space-y-3 text-sm text-[rgb(71,85,105)]">
                   <li className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4" /> {quizQuestions.length} questions
                   </li>
@@ -439,11 +439,11 @@ const Quiz = () => {
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-[rgb(15,23,42)] mb-4 flex items-center gap-2">
                   <ShieldAlert className="w-5 h-5 text-red-500" />
                   AI Proctoring Rules
                 </h3>
-                <ul className="space-y-2 text-sm text-gray-400">
+                <ul className="space-y-2 text-sm text-[rgb(71,85,105)]">
                   <li className="flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-yellow-500" />
                     <span>Keep your face visible and centered</span>
@@ -489,22 +489,22 @@ const Quiz = () => {
   const currentQ = quizQuestions[currentQuestion];
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)]">
       {/* Header */}
-      <div className="h-16 border-b border-gray-800 bg-gray-950/50 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-50">
+      <div className="h-16 border-b border-[rgb(226,232,240)] bg-white flex items-center justify-between px-6 sticky top-0 z-50">
         <div className="flex items-center gap-4">
-          <div className="px-3 py-1 bg-gray-800 rounded-lg text-xs font-bold text-gray-400">
+          <div className="px-3 py-1 bg-[rgb(241,245,249)] rounded-lg text-xs font-bold text-[rgb(148,163,184)]">
             SECURE EXAM MODE
           </div>
-          <div className="h-4 w-px bg-gray-800" />
-          <h2 className="text-sm font-medium text-gray-300">
+          <div className="h-4 w-px bg-[rgb(226,232,240)]" />
+          <h2 className="text-sm font-medium text-[rgb(71,85,105)]">
             Question {currentQuestion + 1} of {quizQuestions.length}
           </h2>
         </div>
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-gray-500" />
-            <span className="text-sm font-mono text-gray-400">
+            <Clock className="w-4 h-4 text-[rgb(148,163,184)]" />
+            <span className="text-sm font-mono text-[rgb(71,85,105)]">
               {quizStartTime ? Math.floor((Date.now() - quizStartTime) / 60000) : 0}:
               {quizStartTime ? String(Math.floor(((Date.now() - quizStartTime) % 60000) / 1000)).padStart(2, '0') : '00'}
             </span>
@@ -515,7 +515,7 @@ const Quiz = () => {
                 handleBackToWorkspace();
               }
             }}
-            className="text-gray-500 hover:text-white transition-colors"
+            className="text-[rgb(148,163,184)] hover:text-[rgb(15,23,42)] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -553,7 +553,7 @@ const Quiz = () => {
                   <span className="text-xs font-bold uppercase">Gaze Timer</span>
                   <span className="text-sm font-mono">{gazeViolationDuration.toFixed(1)}s / 3.0s</span>
                 </div>
-                <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                <div className="w-full bg-[rgb(226,232,240)] rounded-full h-2 overflow-hidden">
                   <div
                     className="bg-yellow-500 h-full transition-all duration-100"
                     style={{ width: `${Math.min(100, (gazeViolationDuration / 3) * 100)}%` }}
@@ -565,9 +565,9 @@ const Quiz = () => {
 
           {/* Center Column: Quiz Content */}
           <div className="lg:col-span-6 space-y-6">
-            <div className="bg-surface-800 border border-gray-800 rounded-3xl p-8 shadow-xl min-h-[400px] flex flex-col">
+            <div className="bg-white border border-[rgb(226,232,240)] rounded-3xl p-8 min-h-[400px] flex flex-col">
               <div className="flex-1">
-                <h2 className="text-2xl font-bold text-white mb-8 leading-tight">
+                <h2 className="text-2xl font-bold text-[rgb(15,23,42)] mb-8 leading-tight">
                   {currentQ.question}
                 </h2>
                 <div className="space-y-4">
@@ -576,13 +576,13 @@ const Quiz = () => {
                       key={index}
                       onClick={() => handleAnswerSelect(currentQuestion, index)}
                       className={`w-full text-left p-5 rounded-2xl border transition-all duration-200 flex items-center gap-4 group ${answers[currentQuestion] === index
-                        ? 'border-sky-500 bg-sky-500/10 text-white'
-                        : 'border-gray-800 bg-gray-900/50 text-gray-400 hover:border-gray-700 hover:bg-gray-800'
+                        ? 'border-[rgb(37,99,235)] bg-blue-50 text-[rgb(15,23,42)]'
+                        : 'border-[rgb(226,232,240)] bg-[rgb(248,250,252)] text-[rgb(71,85,105)] hover:border-[rgb(148,163,184)] hover:bg-[rgb(241,245,249)]'
                         }`}
                     >
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${answers[currentQuestion] === index
-                        ? 'border-sky-500 bg-sky-500'
-                        : 'border-gray-600 group-hover:border-gray-500'
+                        ? 'border-[rgb(37,99,235)] bg-[rgb(37,99,235)]'
+                        : 'border-[rgb(226,232,240)] group-hover:border-[rgb(148,163,184)]'
                         }`}>
                         {answers[currentQuestion] === index && (
                           <div className="w-2 h-2 bg-white rounded-full" />
@@ -594,11 +594,11 @@ const Quiz = () => {
                 </div>
               </div>
 
-              <div className="flex justify-between items-center mt-12 pt-8 border-t border-gray-800">
+              <div className="flex justify-between items-center mt-12 pt-8 border-t border-[rgb(226,232,240)]">
                 <button
                   onClick={handlePrevious}
                   disabled={currentQuestion === 0}
-                  className="px-6 py-3 rounded-xl font-bold text-gray-500 hover:text-white disabled:opacity-0 transition-all"
+                  className="px-6 py-3 rounded-xl font-bold text-[rgb(148,163,184)] hover:text-[rgb(15,23,42)] disabled:opacity-0 transition-all"
                 >
                   Previous
                 </button>
@@ -608,14 +608,14 @@ const Quiz = () => {
                     <button
                       onClick={handleSubmitQuiz}
                       disabled={isSubmitting}
-                      className="bg-white text-black font-bold py-3 px-10 rounded-xl hover:bg-gray-200 transition-all disabled:opacity-50"
+                      className="bg-[rgb(37,99,235)] text-white font-bold py-3 px-10 rounded-xl hover:bg-[rgb(29,78,216)] transition-all disabled:opacity-50"
                     >
                       {isSubmitting ? 'Submitting...' : 'Complete Assessment'}
                     </button>
                   ) : (
                     <button
                       onClick={handleNext}
-                      className="bg-white text-black font-bold py-3 px-10 rounded-xl hover:bg-gray-200 transition-all"
+                      className="bg-[rgb(37,99,235)] text-white font-bold py-3 px-10 rounded-xl hover:bg-[rgb(29,78,216)] transition-all"
                     >
                       Next Question
                     </button>
@@ -643,7 +643,7 @@ const Quiz = () => {
       {/* Violation Toast */}
       {showViolationToast && (
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-10 duration-300">
-          <div className="bg-red-600/90 backdrop-blur-md border border-red-500 text-white px-8 py-4 rounded-2xl shadow-[0_0_30px_rgba(239,68,68,0.4)] flex items-center gap-4">
+          <div className="bg-red-600 border border-red-500 text-white px-8 py-4 rounded-2xl flex items-center gap-4">
             <ShieldAlert className="w-8 h-8 animate-bounce" />
             <div>
               <div className="text-xs font-black uppercase tracking-[0.2em] opacity-80">

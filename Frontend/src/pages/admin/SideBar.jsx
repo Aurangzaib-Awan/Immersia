@@ -30,12 +30,12 @@ const Sidebar = () => {
             </div>
 
             {/* Sidebar */}
-            <div className={`w-16 lg:w-64 bg-surface-800 shadow-lg transition-all duration-300 fixed lg:relative h-screen z-40 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+            <div className={`w-16 lg:w-64 bg-white transition-all duration-300 fixed lg:relative h-screen z-40 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
                 }`}>
                 <div className="p-4 lg:p-6">
                     {/* Animated Title */}
                     <div className="flex justify-center lg:justify-start">
-                        <h1 className="text-3xl lg:text-4xl font-bold text-center lg:text-left bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
+                        <h1 className="text-3xl lg:text-4xl font-bold text-center lg:text-left bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 bg-[length:200%_100%] text-transparent bg-clip-text">
                             <span className="lg:hidden">I</span>
                             <span className="hidden lg:inline">Immersia.</span>
                         </h1>
@@ -49,14 +49,14 @@ const Sidebar = () => {
                             to={item.path}
                             onClick={closeMobileSidebar}
                             className={`flex flex-col lg:flex-row items-center justify-center lg:justify-start px-2 lg:px-6 py-3 transition-colors group ${location.pathname === item.path
-                                    ? 'bg-primary-500 text-text-white'
-                                    : 'text-text-gray hover:bg-background-700 hover:text-text-white'
+                                    ? 'bg-[rgb(37,99,235)] text-text-white'
+                                    : 'text-text-gray hover:bg-background-700 hover:text-text-[rgb(15,23,42)]'
                                 }`}
                         >
                             <span className={`text-lg ${location.pathname === item.path
-                                    ? 'text-white'
+                                    ? 'text-[rgb(15,23,42)]'
                                     : 'text-primary-400'
-                                } group-hover:text-white`}>
+                                } group-hover:text-[rgb(15,23,42)]`}>
                                 {item.icon}
                             </span>
                             <span className="text-xs lg:text-base mt-1 lg:mt-0 lg:ml-3 text-center">

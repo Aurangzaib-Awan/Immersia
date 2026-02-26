@@ -134,14 +134,14 @@ const ContentManagement = () => {
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 sm:mb-6 gap-4">
         <div>
           {/* Animated Title */}
-          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
+          <h1 className="text-xl sm:text-2xl font-bold text-[rgb(37,99,235)]">
             Content Management
           </h1>
           <p className="text-text-light text-sm sm:text-base mt-1">Manage your courses and learning materials</p>
         </div>
         <button 
           onClick={handleAddNewCourse}
-          className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300 flex items-center space-x-2 text-sm sm:text-base shadow-lg"
+          className="bg-[rgb(37,99,235)] text-white px-3 sm:px-4 py-2 rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300 flex items-center space-x-2 text-sm sm:text-base"
         >
           <span>+</span>
           <span>Add New Course</span>
@@ -149,14 +149,14 @@ const ContentManagement = () => {
       </div>
 
       {/* Search Bar with Blue Gradient Border */}
-      <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow mb-4 sm:mb-6">
-        <div className="bg-surface-800 rounded-xl">
+      <div className="relative border border-[rgb(226,232,240)] rounded-xl mb-4 sm:mb-6">
+        <div className="bg-white rounded-xl">
           <input
             type="text"
             placeholder="Search courses by title, description, curator, or category..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-surface-800 border-0 rounded-xl px-4 py-3 text-text-white placeholder-text-light focus:outline-none focus:ring-0 text-sm sm:text-base"
+            className="w-full bg-white border-0 rounded-xl px-4 py-3 text-text-[rgb(15,23,42)] placeholder-text-light focus:outline-none focus:ring-0 text-sm sm:text-base"
           />
         </div>
       </div>
@@ -180,7 +180,7 @@ const ContentManagement = () => {
             return (
               <div 
                 key={course.id}
-                className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow"
+                className="relative border border-[rgb(226,232,240)] rounded-xl"
                 style={{
                   animationDelay: `${index * 0.1}s`,
                   animationDuration: '0.6s',
@@ -189,43 +189,43 @@ const ContentManagement = () => {
                   animationTimingFunction: 'ease-out'
                 }}
               >
-                <div className="bg-surface-800 rounded-xl p-4 sm:p-6 hover:bg-surface-750 transition-all duration-300">
+                <div className="bg-white rounded-xl p-4 sm:p-6 hover:bg-surface-750 transition-all duration-300">
                   <div className="flex flex-col lg:flex-row justify-between items-start gap-3 sm:gap-4">
                     {/* Course Info */}
                     <div className="flex-1">
                       <div className="mb-3">
-                        <h3 className="text-lg sm:text-xl font-semibold text-text-white">{course.title}</h3>
+                        <h3 className="text-lg sm:text-xl font-semibold text-text-[rgb(15,23,42)]">{course.title}</h3>
                       </div>
                       
                       <p className="text-text-gray text-sm sm:text-base mb-3 sm:mb-4">{course.description}</p>
                       
                       <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-text-light text-xs sm:text-sm">
                         <div className="flex items-center space-x-1">
-                          <span className="text-sky-400">📚</span>
+                          <span className="text-[rgb(37,99,235)]">📚</span>
                           <span>{totalLessons} Lessons</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <span className="text-sky-400">📦</span>
+                          <span className="text-[rgb(37,99,235)]">📦</span>
                           <span>{totalModules} Modules</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <span className="text-sky-400">👥</span>
+                          <span className="text-[rgb(37,99,235)]">👥</span>
                           <span>{course.students || 0} Students</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <span className="text-sky-400">⏱️</span>
+                          <span className="text-[rgb(37,99,235)]">⏱️</span>
                           <span>{totalDuration}</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <span className="text-sky-400">📁</span>
+                          <span className="text-[rgb(37,99,235)]">📁</span>
                           <span>{course.category}</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <span className="text-sky-400">👨‍🏫</span>
+                          <span className="text-[rgb(37,99,235)]">👨‍🏫</span>
                           <span>{course.curator}</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          <span className="text-sky-400">📅</span>
+                          <span className="text-[rgb(37,99,235)]">📅</span>
                           <span>{formatDate(course.created_at)}</span>
                         </div>
                       </div>
@@ -235,7 +235,7 @@ const ContentManagement = () => {
                     <div className="flex items-center space-x-2 sm:space-x-3 self-stretch sm:self-auto">
                       <button 
                         onClick={() => handleEditCourse(course)}
-                        className="text-sky-400 hover:text-sky-300 transition-colors px-2 sm:px-3 py-1 sm:py-1 border border-sky-400 rounded-lg text-xs sm:text-sm hover:bg-sky-400 hover:bg-opacity-10"
+                        className="text-[rgb(37,99,235)] hover:text-[rgb(37,99,235)] transition-colors px-2 sm:px-3 py-1 sm:py-1 border border-sky-400 rounded-lg text-xs sm:text-sm hover:bg-[rgb(37,99,235)] hover:bg-opacity-10"
                       >
                         Edit
                       </button>

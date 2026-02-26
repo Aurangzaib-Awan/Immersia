@@ -65,13 +65,13 @@ const StatsGrid = () => {
         {[1, 2, 3].map((item) => (
           <div 
             key={item}
-            className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow"
+            className="relative border border-[rgb(226,232,240)] rounded-xl"
           >
-            <div className="bg-surface-800 rounded-xl p-4 sm:p-6">
+            <div className="bg-white rounded-xl p-4 sm:p-6">
               <div className="animate-pulse">
-                <div className="h-4 bg-gray-700 rounded w-1/2 mb-3"></div>
-                <div className="h-8 bg-gray-700 rounded w-1/3 mb-2"></div>
-                <div className="h-3 bg-gray-700 rounded w-1/4"></div>
+                <div className="h-4 bg-[rgb(241,245,249)] rounded w-1/2 mb-3"></div>
+                <div className="h-8 bg-[rgb(241,245,249)] rounded w-1/3 mb-2"></div>
+                <div className="h-3 bg-[rgb(241,245,249)] rounded w-1/4"></div>
               </div>
             </div>
           </div>
@@ -85,12 +85,12 @@ const StatsGrid = () => {
       {stats.map((stat) => (
         <div 
           key={stat.id}
-          className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow"
+          className="relative border border-[rgb(226,232,240)] rounded-xl"
         >
-          <div className="bg-surface-800 rounded-xl p-4 sm:p-6 hover:bg-surface-750 transition-all duration-300 cursor-pointer group">
+          <div className="bg-white rounded-xl p-4 sm:p-6 hover:bg-surface-750 transition-all duration-300 cursor-pointer group">
             <h3 className="text-text-light text-xs sm:text-sm font-medium mb-2">{stat.title}</h3>
             <div className="flex items-baseline justify-between">
-              <p className="text-xl sm:text-2xl font-bold text-text-white group-hover:text-sky-400 transition-colors duration-300">
+              <p className="text-xl sm:text-2xl font-bold text-text-[rgb(15,23,42)] group-hover:text-[rgb(37,99,235)] transition-colors duration-300">
                 {stat.value}
               </p>
             </div>

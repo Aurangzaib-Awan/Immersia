@@ -94,9 +94,9 @@ function AppRoutes({ user, setUser }) {
       <Route
         path="/projects/:projectId"
         element={
-          <PublicRoute>
+          <ProtectedRoute user={user}>
             <ProjectDetail user={user} />
-          </PublicRoute>
+          </ProtectedRoute>
         }
       />
 
@@ -112,9 +112,9 @@ function AppRoutes({ user, setUser }) {
       <Route
         path="/courses/:courseId"
         element={
-          <PublicRoute>
+          <ProtectedRoute user={user}>
             <CourseDetail user={user} />
-          </PublicRoute>
+          </ProtectedRoute>
         }
       />
 

@@ -8,11 +8,11 @@ const AdminRoute = ({ user, children }) => {
   if (!user) {
     return <div>Redirecting to login...</div>;
   }
-  
+
   if (!user.is_admin) {
     return <div>Access denied. Redirecting...</div>;
   }
-  
+
   return children;
 };
 
@@ -20,11 +20,11 @@ const UserRoute = ({ user, children }) => {
   if (!user) {
     return <div>Redirecting to login...</div>;
   }
-  
+
   if (user.is_admin) {
     return <div>Admins cannot access user pages. Redirecting...</div>;
   }
-  
+
   return children;
 };
 
@@ -36,7 +36,7 @@ function App() {
     const initializeApp = async () => {
       const token = localStorage.getItem('token');
       const userData = localStorage.getItem('user');
-      
+
       if (token && userData) {
         setTimeout(() => {
           setUser(JSON.parse(userData));
@@ -52,8 +52,8 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="min-h-screen bg-[rgb(248,250,252)] flex items-center justify-center">
+        <div className="text-[rgb(15,23,42)]">Loading...</div>
       </div>
     );
   }

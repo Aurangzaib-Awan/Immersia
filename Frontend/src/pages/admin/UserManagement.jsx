@@ -160,18 +160,18 @@ const UserManagement = () => {
       <div>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
+            <h1 className="text-xl sm:text-2xl font-bold text-[rgb(37,99,235)]">
               User Management
             </h1>
             <p className="text-text-light text-sm sm:text-base mt-1">Manage platform users and their accounts</p>
           </div>
         </div>
 
-        <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-          <div className="bg-surface-800 rounded-xl p-4 sm:p-6">
+        <div className="relative border border-[rgb(226,232,240)] rounded-xl">
+          <div className="bg-white rounded-xl p-4 sm:p-6">
             <div className="flex justify-center items-center py-16">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
-              <span className="ml-3 text-gray-300">Loading users...</span>
+              <span className="ml-3 text-[rgb(71,85,105)]">Loading users...</span>
             </div>
           </div>
         </div>
@@ -184,20 +184,20 @@ const UserManagement = () => {
       <div>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
+            <h1 className="text-xl sm:text-2xl font-bold text-[rgb(37,99,235)]">
               User Management
             </h1>
             <p className="text-text-light text-sm sm:text-base mt-1">Manage platform users and their accounts</p>
           </div>
         </div>
 
-        <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-          <div className="bg-surface-800 rounded-xl p-4 sm:p-6">
+        <div className="relative border border-[rgb(226,232,240)] rounded-xl">
+          <div className="bg-white rounded-xl p-4 sm:p-6">
             <div className="text-center py-8">
               <div className="text-red-400 mb-4">{error}</div>
               <button
                 onClick={fetchUsers}
-                className="bg-sky-600 hover:bg-sky-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
+                className="bg-[rgb(29,78,216)] hover:bg-sky-700 text-[rgb(15,23,42)] px-6 py-2 rounded-lg transition-colors duration-200 font-medium"
               >
                 Try Again
               </button>
@@ -212,19 +212,19 @@ const UserManagement = () => {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
+          <h1 className="text-xl sm:text-2xl font-bold text-[rgb(37,99,235)]">
             User Management
           </h1>
           <p className="text-text-light text-sm sm:text-base mt-1">Manage platform users and their accounts</p>
         </div>
       </div>
 
-      <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow">
-        <div className="bg-surface-800 rounded-xl p-4 sm:p-6">
+      <div className="relative border border-[rgb(226,232,240)] rounded-xl">
+        <div className="bg-white rounded-xl p-4 sm:p-6">
           <div className="overflow-x-auto">
             <div className="max-h-80 overflow-y-auto overflow-x-visible">
               <table className="w-full min-w-full">
-                <thead className="sticky top-0 bg-surface-800 z-10 border-b border-background-700">
+                <thead className="sticky top-0 bg-white z-10 border-b border-background-700">
                   <tr>
                     <th className="text-left py-3 px-4 text-text-light font-medium text-sm sm:text-base w-1/4">Name</th>
                     <th className="text-left py-3 px-4 text-text-light font-medium text-sm sm:text-base hidden sm:table-cell w-1/4">Email</th>
@@ -244,7 +244,7 @@ const UserManagement = () => {
                         transitionDelay: user.visible ? `${index * 80}ms` : '0ms'
                       }}
                     >
-                      <td className="py-3 px-4 text-text-white text-sm sm:text-base">
+                      <td className="py-3 px-4 text-text-[rgb(15,23,42)] text-sm sm:text-base">
                         <div className="flex flex-col">
                           <span className="font-medium">{user.name}</span>
                           <span className="text-text-light text-xs sm:hidden">{user.email}</span>

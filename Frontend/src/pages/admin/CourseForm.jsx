@@ -444,16 +444,16 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       {/* Main Modal with Gradient Border */}
-      <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full max-w-4xl max-h-[95vh] shadow-2xl">
-        <div className="bg-surface-800 rounded-xl p-6 max-h-[95vh] overflow-y-auto shadow-lg">
+      <div className="relative border border-[rgb(226,232,240)] rounded-xl w-full max-w-4xl max-h-[95vh]">
+        <div className="bg-white rounded-xl p-6 max-h-[95vh] overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
             {/* Animated Title */}
-            <h2 className="text-xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text">
+            <h2 className="text-xl font-bold text-[rgb(37,99,235)]">
               {editCourse ? 'Edit Course' : 'Add New Course'}
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white text-2xl transition-colors"
+              className="text-[rgb(148,163,184)] hover:text-[rgb(15,23,42)] text-2xl transition-colors"
             >
               ×
             </button>
@@ -461,13 +461,13 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Course Information */}
-            <div className="bg-surface-800 rounded-xl p-6 border-2 border-black">
-              <h3 className="text-lg font-semibold text-white mb-4">Basic Course Information</h3>
+            <div className="bg-white rounded-xl p-6 border-2 border-black">
+              <h3 className="text-lg font-semibold text-[rgb(15,23,42)] mb-4">Basic Course Information</h3>
               
               <div className="space-y-4">
                 {/* Title */}
-                <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                  <label className="block text-white text-sm font-medium mb-2">
+                <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                  <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                     Course Title *
                   </label>
                   <input
@@ -475,17 +475,17 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    className={`w-full bg-gray-700 border ${
-                      errors.title ? 'border-red-500' : 'border-gray-600'
-                    } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                    className={`w-full bg-[rgb(241,245,249)] border ${
+                      errors.title ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                    } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                     placeholder="Enter course title"
                   />
                   {errors.title && <p className="text-red-400 text-sm mt-1">{errors.title}</p>}
                 </div>
 
                 {/* Description */}
-                <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                  <label className="block text-white text-sm font-medium mb-2">
+                <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                  <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                     Description *
                   </label>
                   <textarea
@@ -493,9 +493,9 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                     value={formData.description}
                     onChange={handleChange}
                     rows="3"
-                    className={`w-full bg-gray-700 border ${
-                      errors.description ? 'border-red-500' : 'border-gray-600'
-                    } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                    className={`w-full bg-[rgb(241,245,249)] border ${
+                      errors.description ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                    } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                     placeholder="Enter course description"
                   />
                   {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description}</p>}
@@ -503,8 +503,8 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Category with Dropdown */}
-                  <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                    <label className="block text-white text-sm font-medium mb-2">
+                  <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                    <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                       Category *
                     </label>
                     <div className="relative">
@@ -515,19 +515,19 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                         onChange={handleCategoryInput}
                         onFocus={() => setShowCategoryDropdown(true)}
                         onBlur={() => setTimeout(() => setShowCategoryDropdown(false), 200)}
-                        className={`w-full bg-gray-700 border ${
-                          errors.category ? 'border-red-500' : 'border-gray-600'
-                        } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                        className={`w-full bg-[rgb(241,245,249)] border ${
+                          errors.category ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                        } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                         placeholder="Select or search category"
                       />
                       
                       {/* Category Dropdown */}
                       {showCategoryDropdown && (
-                        <div className="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto shadow-xl">
+                        <div className="absolute z-10 w-full mt-1 bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg max-h-60 overflow-y-auto">
                           {filteredCategories.map((category, index) => (
                             <div
                               key={index}
-                              className="px-4 py-3 hover:bg-gray-700 cursor-pointer text-white transition-colors border-b border-gray-700 last:border-b-0"
+                              className="px-4 py-3 hover:bg-[rgb(241,245,249)] cursor-pointer text-[rgb(15,23,42)] transition-colors border-b border-[rgb(226,232,240)] last:border-b-0"
                               onMouseDown={() => handleCategorySelect(category)}
                             >
                               {category}
@@ -540,8 +540,8 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                   </div>
 
                   {/* Curator */}
-                  <div className="bg-gray-800 rounded-lg p-4 shadow-md">
-                    <label className="block text-white text-sm font-medium mb-2">
+                  <div className="bg-[rgb(241,245,249)] rounded-lg p-4 shadow-md">
+                    <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                       Curator Name *
                     </label>
                     <input
@@ -549,9 +549,9 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                       name="curator"
                       value={formData.curator}
                       onChange={handleChange}
-                      className={`w-full bg-gray-700 border ${
-                        errors.curator ? 'border-red-500' : 'border-gray-600'
-                      } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                      className={`w-full bg-[rgb(241,245,249)] border ${
+                        errors.curator ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                      } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                       placeholder="Enter curator name"
                     />
                     {errors.curator && <p className="text-red-400 text-sm mt-1">{errors.curator}</p>}
@@ -561,22 +561,22 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
             </div>
 
             {/* Modules Section */}
-            <div className="bg-surface-800 rounded-xl p-6 border-2 border-black">
+            <div className="bg-white rounded-xl p-6 border-2 border-black">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-white">Course Modules</h3>
+                <h3 className="text-lg font-semibold text-[rgb(15,23,42)]">Course Modules</h3>
                 <button
                   type="button"
                   onClick={addModule}
-                  className="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300 shadow-lg"
+                  className="px-4 py-2 bg-[rgb(37,99,235)] text-white rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
                 >
                   + Add Module
                 </button>
               </div>
 
               {formData.modules.map((module, moduleIndex) => (
-                <div key={moduleIndex} className="bg-gray-800 rounded-lg p-4 mb-4 shadow-md">
+                <div key={moduleIndex} className="bg-[rgb(241,245,249)] rounded-lg p-4 mb-4 shadow-md">
                   <div className="flex justify-between items-start mb-4">
-                    <h4 className="text-md font-semibold text-white">Module {moduleIndex + 1}</h4>
+                    <h4 className="text-md font-semibold text-[rgb(15,23,42)]">Module {moduleIndex + 1}</h4>
                     {formData.modules.length > 1 && (
                       <button
                         type="button"
@@ -591,16 +591,16 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                   <div className="space-y-4">
                     {/* Module Title */}
                     <div>
-                      <label className="block text-white text-sm font-medium mb-2">
+                      <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                         Module Title *
                       </label>
                       <input
                         type="text"
                         value={module.title}
                         onChange={(e) => handleModuleChange(moduleIndex, 'title', e.target.value)}
-                        className={`w-full bg-gray-700 border ${
-                          errors[`module-${moduleIndex}-title`] ? 'border-red-500' : 'border-gray-600'
-                        } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                        className={`w-full bg-[rgb(241,245,249)] border ${
+                          errors[`module-${moduleIndex}-title`] ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                        } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                         placeholder="Enter module title"
                       />
                       {errors[`module-${moduleIndex}-title`] && (
@@ -610,16 +610,16 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
 
                     {/* Module Description */}
                     <div>
-                      <label className="block text-white text-sm font-medium mb-2">
+                      <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                         Module Description *
                       </label>
                       <textarea
                         value={module.description}
                         onChange={(e) => handleModuleChange(moduleIndex, 'description', e.target.value)}
                         rows="2"
-                        className={`w-full bg-gray-700 border ${
-                          errors[`module-${moduleIndex}-description`] ? 'border-red-500' : 'border-gray-600'
-                        } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                        className={`w-full bg-[rgb(241,245,249)] border ${
+                          errors[`module-${moduleIndex}-description`] ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                        } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                         placeholder="Enter module description"
                       />
                       {errors[`module-${moduleIndex}-description`] && (
@@ -629,7 +629,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
 
                     {/* Module Estimated Time */}
                     <div>
-                      <label className="block text-white text-sm font-medium mb-2">
+                      <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                         Estimated Time *
                       </label>
                       <div className="flex gap-2">
@@ -637,15 +637,15 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                           type="text"
                           value={module.estimatedTime.value}
                           onChange={(e) => handleModuleTimeChange(moduleIndex, 'value', e.target.value)}
-                          className={`w-1/3 bg-gray-700 border ${
-                            errors[`module-${moduleIndex}-estimatedTime`] ? 'border-red-500' : 'border-gray-600'
-                          } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                          className={`w-1/3 bg-[rgb(241,245,249)] border ${
+                            errors[`module-${moduleIndex}-estimatedTime`] ? 'border-red-500' : 'border-[rgb(226,232,240)]'
+                          } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                           placeholder="e.g., 2"
                         />
                         <select
                           value={module.estimatedTime.unit}
                           onChange={(e) => handleModuleTimeChange(moduleIndex, 'unit', e.target.value)}
-                          className="w-2/3 bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                          className="w-2/3 bg-[rgb(241,245,249)] border border-[rgb(226,232,240)] rounded-lg px-4 py-3 text-[rgb(15,23,42)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                         >
                           {durationUnits.map((unit, index) => (
                             <option key={index} value={unit}>
@@ -660,22 +660,22 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                     </div>
 
                     {/* Lessons Section */}
-                    <div className="border-t border-gray-700 pt-4">
+                    <div className="border-t border-[rgb(226,232,240)] pt-4">
                       <div className="flex justify-between items-center mb-4">
-                        <h5 className="text-md font-semibold text-white">Lessons</h5>
+                        <h5 className="text-md font-semibold text-[rgb(15,23,42)]">Lessons</h5>
                         <button
                           type="button"
                           onClick={() => addLesson(moduleIndex)}
-                          className="px-4 py-2 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300 shadow-lg text-sm"
+                          className="px-4 py-2 bg-[rgb(37,99,235)] text-white rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300 text-sm"
                         >
                           + Add Lesson
                         </button>
                       </div>
 
                       {module.lessons.map((lesson, lessonIndex) => (
-                        <div key={lessonIndex} className="bg-gray-700 rounded-lg p-4 mb-4 shadow-md">
+                        <div key={lessonIndex} className="bg-[rgb(241,245,249)] rounded-lg p-4 mb-4 shadow-md">
                           <div className="flex justify-between items-start mb-4">
-                            <h6 className="text-sm font-semibold text-white">Lesson {lessonIndex + 1}</h6>
+                            <h6 className="text-sm font-semibold text-[rgb(15,23,42)]">Lesson {lessonIndex + 1}</h6>
                             {module.lessons.length > 1 && (
                               <button
                                 type="button"
@@ -690,7 +690,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                           <div className="space-y-4">
                             {/* Lesson Title */}
                             <div>
-                              <label className="block text-white text-sm font-medium mb-2">
+                              <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                                 Lesson Title *
                               </label>
                               <input
@@ -699,7 +699,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                                 onChange={(e) => handleLessonChange(moduleIndex, lessonIndex, 'title', e.target.value)}
                                 className={`w-full bg-gray-600 border ${
                                   errors[`module-${moduleIndex}-lesson-${lessonIndex}-title`] ? 'border-red-500' : 'border-gray-500'
-                                } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                                } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                                 placeholder="Enter lesson title"
                               />
                               {errors[`module-${moduleIndex}-lesson-${lessonIndex}-title`] && (
@@ -711,13 +711,13 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
 
                             {/* Lesson Type */}
                             <div>
-                              <label className="block text-white text-sm font-medium mb-2">
+                              <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                                 Lesson Type
                               </label>
                               <select
                                 value={lesson.type}
                                 onChange={(e) => handleLessonChange(moduleIndex, lessonIndex, 'type', e.target.value)}
-                                className="w-full bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                className="w-full bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-[rgb(15,23,42)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                               >
                                 {lessonTypes.map((type, index) => (
                                   <option key={index} value={type}>
@@ -729,7 +729,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
 
                             {/* Lesson Description */}
                             <div>
-                              <label className="block text-white text-sm font-medium mb-2">
+                              <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                                 Lesson Description *
                               </label>
                               <textarea
@@ -738,7 +738,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                                 rows="2"
                                 className={`w-full bg-gray-600 border ${
                                   errors[`module-${moduleIndex}-lesson-${lessonIndex}-description`] ? 'border-red-500' : 'border-gray-500'
-                                } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                                } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                                 placeholder="Enter lesson description"
                               />
                               {errors[`module-${moduleIndex}-lesson-${lessonIndex}-description`] && (
@@ -750,7 +750,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
 
                             {/* Lesson Duration */}
                             <div>
-                              <label className="block text-white text-sm font-medium mb-2">
+                              <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                                 Duration *
                               </label>
                               <div className="flex gap-2">
@@ -760,13 +760,13 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                                   onChange={(e) => handleLessonDurationChange(moduleIndex, lessonIndex, 'value', e.target.value)}
                                   className={`w-1/3 bg-gray-600 border ${
                                     errors[`module-${moduleIndex}-lesson-${lessonIndex}-duration`] ? 'border-red-500' : 'border-gray-500'
-                                  } rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent`}
+                                  } rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent`}
                                   placeholder="e.g., 15"
                                 />
                                 <select
                                   value={lesson.duration.unit}
                                   onChange={(e) => handleLessonDurationChange(moduleIndex, lessonIndex, 'unit', e.target.value)}
-                                  className="w-2/3 bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                  className="w-2/3 bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-[rgb(15,23,42)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                                 >
                                   {durationUnits.map((unit, index) => (
                                     <option key={index} value={unit}>
@@ -784,7 +784,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
 
                             {/* Learning Objectives */}
                             <div>
-                              <label className="block text-white text-sm font-medium mb-2">
+                              <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                                 Learning Objectives *
                               </label>
                               <div className="space-y-2">
@@ -794,7 +794,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                                       type="text"
                                       value={objective}
                                       onChange={(e) => handleLearningObjectiveChange(moduleIndex, lessonIndex, objectiveIndex, e.target.value)}
-                                      className="flex-1 bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                      className="flex-1 bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                                       placeholder="Enter learning objective"
                                     />
                                     {lesson.learningObjectives.length > 1 && (
@@ -811,7 +811,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                                 <button
                                   type="button"
                                   onClick={() => addLearningObjective(moduleIndex, lessonIndex)}
-                                  className="px-3 py-2 border border-dashed border-gray-600 text-gray-400 rounded-lg hover:border-sky-400 hover:text-sky-400 transition-colors text-sm"
+                                  className="px-3 py-2 border border-dashed border-[rgb(226,232,240)] text-[rgb(148,163,184)] rounded-lg hover:border-[rgb(37,99,235)] hover:text-[rgb(37,99,235)] transition-colors text-sm"
                                 >
                                   + Add Objective
                                 </button>
@@ -825,7 +825,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
 
                             {/* Resources */}
                             <div>
-                              <label className="block text-white text-sm font-medium mb-2">
+                              <label className="block text-[rgb(15,23,42)] text-sm font-medium mb-2">
                                 Learning Resources *
                               </label>
                               <div className="space-y-3">
@@ -836,7 +836,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                                         type="text"
                                         value={resource.title}
                                         onChange={(e) => handleResourceChange(moduleIndex, lessonIndex, resourceIndex, 'title', e.target.value)}
-                                        className="flex-1 bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                        className="flex-1 bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                                         placeholder="Resource title (e.g., 'React Official Documentation')"
                                       />
                                       {lesson.resources.length > 1 && (
@@ -853,7 +853,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                                       type="url"
                                       value={resource.url}
                                       onChange={(e) => handleResourceChange(moduleIndex, lessonIndex, resourceIndex, 'url', e.target.value)}
-                                      className="w-full bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
+                                      className="w-full bg-gray-600 border border-gray-500 rounded-lg px-4 py-3 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-2 focus:ring-[rgb(37,99,235)] focus:border-transparent"
                                       placeholder="https://example.com/resource"
                                     />
                                   </div>
@@ -862,7 +862,7 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
                                 <button
                                   type="button"
                                   onClick={() => addResource(moduleIndex, lessonIndex)}
-                                  className="px-3 py-2 border border-dashed border-gray-600 text-gray-400 rounded-lg hover:border-sky-400 hover:text-sky-400 transition-colors text-sm"
+                                  className="px-3 py-2 border border-dashed border-[rgb(226,232,240)] text-[rgb(148,163,184)] rounded-lg hover:border-[rgb(37,99,235)] hover:text-[rgb(37,99,235)] transition-colors text-sm"
                                 >
                                   + Add Another Resource
                                 </button>
@@ -887,13 +887,13 @@ const CourseForm = ({ onClose, onSaveCourse, editCourse = null }) => {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-4 py-2 border border-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-sm"
+                className="px-4 py-2 border border-[rgb(226,232,240)] text-[rgb(15,23,42)] rounded-lg hover:bg-[rgb(241,245,249)] transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="bg-gradient-to-r from-sky-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300 shadow-lg"
+                className="bg-[rgb(37,99,235)] text-white px-4 py-2 rounded-lg hover:from-sky-600 hover:to-blue-700 transition-all duration-300"
               >
                 {editCourse ? 'Update Course' : 'Create Course'}
               </button>

@@ -1,12 +1,13 @@
 // components/ProjectDetail.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Clock, Users, ChevronRight, BookOpen } from 'lucide-react';
 import { projectAPI } from '../../services/api';
 
 const ProjectDetail = ({ user }) => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,25 +15,25 @@ const ProjectDetail = ({ user }) => {
   // Function to render markdown to HTML
   const renderMarkdown = (text) => {
     if (!text) return '';
-    
+
     return text
       // Headers
-      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold text-white mt-6 mb-3">$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-white mt-7 mb-4">$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-white mt-8 mb-5">$1</h1>')
+      .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold text-[rgb(15,23,42)] mt-6 mb-3">$1</h3>')
+      .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-[rgb(15,23,42)] mt-7 mb-4">$1</h2>')
+      .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-[rgb(15,23,42)] mt-8 mb-5">$1</h1>')
       // Bold and Italic
-      .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-white">$1</strong>')
-      .replace(/\*(.*?)\*/gim, '<em class="italic text-gray-300">$1</em>')
+      .replace(/\*\*(.*?)\*\*/gim, '<strong class="font-bold text-[rgb(15,23,42)]">$1</strong>')
+      .replace(/\*(.*?)\*/gim, '<em class="italic text-[rgb(71,85,105)]">$1</em>')
       // Lists
-      .replace(/^- (.*$)/gim, '<li class="ml-6 text-gray-300 mb-1">$1</li>')
+      .replace(/^- (.*$)/gim, '<li class="ml-6 text-[rgb(71,85,105)] mb-1">$1</li>')
       .replace(/(<li.*?<\/li>)/gims, '<ul class="list-disc mb-4">$1</ul>')
       // Line breaks
       .replace(/\n\n/g, '</p><p class="mb-4">')
       .replace(/\n/g, '<br>')
       // Code
-      .replace(/`(.*?)`/g, '<code class="bg-gray-700 px-2 py-1 rounded text-sm font-mono text-sky-300">$1</code>')
+      .replace(/`(.*?)`/g, '<code class="bg-[rgb(241,245,249)] px-2 py-1 rounded text-sm font-mono text-[rgb(37,99,235)]">$1</code>')
       // Wrap in paragraph if no other block elements
-      .replace(/^(?!<[hu])(.*)$/gim, '<p class="mb-4 text-gray-300 leading-relaxed">$1</p>');
+      .replace(/^(?!<[hu])(.*)$/gim, '<p class="mb-4 text-[rgb(71,85,105)] leading-relaxed">$1</p>');
   };
 
   // Fetch project details from backend
@@ -42,21 +43,21 @@ const ProjectDetail = ({ user }) => {
         setLoading(true);
         // Get all projects and find the specific one
         const response = await projectAPI.getProjects();
-        
+
         // Handle different response formats (same as ProjectsMarketplace)
         const projectsArray = response.projects || response.data || response || [];
-        
+
         console.log('Projects array in ProjectDetail:', projectsArray); // Debug log
-        
+
         // Make sure projectId comparison works (convert to string if needed)
-        const foundProject = projectsArray.find(p => 
+        const foundProject = projectsArray.find(p =>
           p.id.toString() === projectId || p.id === projectId
         );
-        
+
         if (!foundProject) {
           throw new Error('Project not found');
         }
-        
+
         setProject(foundProject);
       } catch (err) {
         setError('Failed to load project details. Please try again later.');
@@ -71,17 +72,17 @@ const ProjectDetail = ({ user }) => {
 
   const getDifficultyColor = (level) => {
     switch (level) {
-      case 'Beginner': return 'text-green-400 bg-green-500/20';
-      case 'Intermediate': return 'text-yellow-400 bg-yellow-500/20';
-      case 'Advanced': return 'text-red-400 bg-red-500/20';
-      default: return 'text-gray-400 bg-gray-500/20';
+      case 'Beginner': return 'text-green-700 bg-green-50';
+      case 'Intermediate': return 'text-yellow-700 bg-yellow-50';
+      case 'Advanced': return 'text-red-700 bg-red-50';
+      default: return 'text-[rgb(148,163,184)] bg-[rgb(241,245,249)]';
     }
   };
 
   const handleStartProject = () => {
     if (!user) {
       // Redirect to login if not authenticated
-      navigate('/login');
+      navigate('/login', { state: { from: location } });
       return;
     }
     // Navigate to workspace if authenticated
@@ -90,11 +91,11 @@ const ProjectDetail = ({ user }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 text-white p-6">
+      <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)] p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-20">
-            <div className="w-16 h-16 border-4 border-sky-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-300 text-lg">Loading project details...</p>
+            <div className="w-16 h-16 border-4 border-[rgb(37,99,235)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-[rgb(71,85,105)] text-lg">Loading project details...</p>
           </div>
         </div>
       </div>
@@ -103,13 +104,13 @@ const ProjectDetail = ({ user }) => {
 
   if (error || !project) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 text-white p-6">
+      <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)] p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-20">
-            <div className="text-red-400 text-lg mb-4">{error || 'Project not found'}</div>
-            <Link 
+            <div className="text-red-500 text-lg mb-4">{error || 'Project not found'}</div>
+            <Link
               to="/projects"
-              className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-lg transition-colors duration-300 inline-block"
+              className="bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white px-6 py-3 rounded-lg transition-colors duration-300 inline-block"
             >
               Back to Projects
             </Link>
@@ -120,29 +121,28 @@ const ProjectDetail = ({ user }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-surface-900 to-gray-900 text-white">
-      <div className="bg-surface-800 border-b border-gray-700">
+    <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)]">
+      <div className="bg-white border-b border-[rgb(226,232,240)]">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <nav className="flex items-center space-x-2 text-sm text-gray-400 mb-6">
-            <Link to="/projects" className="hover:text-sky-400 transition-colors duration-300">
+          <nav className="flex items-center space-x-2 text-sm text-[rgb(148,163,184)] mb-6">
+            <Link to="/projects" className="hover:text-[rgb(37,99,235)] transition-colors duration-300">
               Projects
             </Link>
             <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-300">{project.category}</span>
+            <span className="text-[rgb(71,85,105)]">{project.category}</span>
           </nav>
 
           <div className="flex flex-col lg:flex-row justify-between items-start gap-8">
             <div className="flex-1">
-              <span className="text-sm font-medium text-sky-400 bg-sky-500/10 px-3 py-1 rounded-full mb-4 inline-block">
+              <span className="text-sm font-medium text-[rgb(37,99,235)] bg-blue-50 px-3 py-1 rounded-full mb-4 inline-block">
                 {project.category}
               </span>
-              {/* Title with flowing gradient text */}
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow text-transparent bg-clip-text mb-4">
+              <h1 className="text-4xl font-bold text-[rgb(37,99,235)] mb-4">
                 {project.title}
               </h1>
-              <p className="text-xl text-gray-300 mb-6">{project.description}</p>
+              <p className="text-xl text-[rgb(71,85,105)] mb-6">{project.description}</p>
 
-              <div className="flex flex-wrap gap-6 text-sm text-gray-400">
+              <div className="flex flex-wrap gap-6 text-sm text-[rgb(148,163,184)]">
                 <div className="flex items-center gap-2">
                   <Clock className="w-5 h-5" />
                   <span>{project.duration}</span>
@@ -154,45 +154,47 @@ const ProjectDetail = ({ user }) => {
               </div>
             </div>
 
-            {/* Sidebar with flowing gradient border */}
-            <div className="relative p-[2px] rounded-xl bg-gradient-to-r from-sky-400 via-blue-600 to-sky-400 bg-[length:200%_100%] animate-gradient-flow w-full lg:w-80">
-              <div className="bg-surface-800 rounded-xl p-6 h-full">
+            {/* Sidebar */}
+            <div className="border border-[rgb(226,232,240)] rounded-xl w-full lg:w-80">
+              <div className="bg-white rounded-xl p-6 h-full">
                 <div className="text-center mb-6">
                   <span className={`text-sm font-medium px-4 py-2 rounded-full ${getDifficultyColor(project.difficulty)}`}>
                     {project.difficulty}
                   </span>
                 </div>
-                
-                <button 
+
+                <button
                   onClick={handleStartProject}
-                  className="w-full bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 mb-4"
+                  className="w-full bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 mb-4"
                 >
                   {user ? "Start Project" : "Login to Start Project"}
                 </button>
 
                 {!user && (
-                  <div className="text-center text-sm text-gray-400 mb-4">
+                  <div className="text-center text-sm text-[rgb(148,163,184)] mb-4">
                     <p>You need to be logged in to start this project</p>
                     <div className="flex gap-2 mt-3">
-                      <Link 
-                        to="/login" 
-                        className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded transition-colors duration-300 text-center"
+                      <Link
+                        to="/login"
+                        state={{ from: location }}
+                        className="flex-1 bg-[rgb(241,245,249)] hover:bg-[rgb(226,232,240)] text-[rgb(15,23,42)] py-2 px-4 rounded-lg transition-colors duration-300 text-center"
                       >
                         Login
                       </Link>
-                      <Link 
-                        to="/signup" 
-                        className="flex-1 bg-sky-500 hover:bg-sky-600 text-white py-2 px-4 rounded transition-colors duration-300 text-center"
+                      <Link
+                        to="/signup"
+                        state={{ from: location }}
+                        className="flex-1 bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white py-2 px-4 rounded-lg transition-colors duration-300 text-center"
                       >
-                        Sign Up
+                        Register
                       </Link>
                     </div>
                   </div>
                 )}
 
-                <div className="mt-6 pt-6 border-t border-gray-700">
-                  <div className="text-sm text-gray-400">
-                    <div className="font-medium text-gray-300 mb-2">Curated by:</div>
+                <div className="mt-6 pt-6 border-t border-[rgb(226,232,240)]">
+                  <div className="text-sm text-[rgb(148,163,184)]">
+                    <div className="font-medium text-[rgb(71,85,105)] mb-2">Curated by:</div>
                     <div>{project.curator}</div>
                   </div>
                 </div>
@@ -205,28 +207,28 @@ const ProjectDetail = ({ user }) => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            <section className="bg-surface-800 border border-gray-700 rounded-xl p-6">
-              <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
-                <BookOpen className="w-6 h-6 text-sky-400" />
+            <section className="bg-white border border-[rgb(226,232,240)] rounded-xl p-6">
+              <h2 className="text-2xl font-bold text-[rgb(15,23,42)] mb-4 flex items-center gap-3">
+                <BookOpen className="w-6 h-6 text-[rgb(37,99,235)]" />
                 Project Description
               </h2>
-              <div 
-                className="markdown-content text-gray-300 leading-relaxed"
-                dangerouslySetInnerHTML={{ 
-                  __html: renderMarkdown(project.project_description || project.description) 
+              <div
+                className="markdown-content text-[rgb(71,85,105)] leading-relaxed"
+                dangerouslySetInnerHTML={{
+                  __html: renderMarkdown(project.project_description || project.description)
                 }}
               />
             </section>
           </div>
 
           <div className="space-y-6">
-            <section className="bg-surface-800 border border-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-white mb-4">Technologies Used</h3>
+            <section className="bg-white border border-[rgb(226,232,240)] rounded-xl p-6">
+              <h3 className="text-lg font-bold text-[rgb(15,23,42)] mb-4">Technologies Used</h3>
               <div className="flex flex-wrap gap-2">
                 {project.technologies?.map((tech, index) => (
                   <span
                     key={index}
-                    className="text-sm text-sky-400 bg-sky-500/10 px-3 py-2 rounded-lg border border-sky-400/20"
+                    className="text-sm text-[rgb(37,99,235)] bg-blue-50 px-3 py-2 rounded-lg border border-[rgb(37,99,235)]/20"
                   >
                     {tech}
                   </span>
@@ -234,12 +236,12 @@ const ProjectDetail = ({ user }) => {
               </div>
             </section>
 
-            <section className="bg-surface-800 border border-gray-700 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-white mb-4">Prerequisites</h3>
+            <section className="bg-white border border-[rgb(226,232,240)] rounded-xl p-6">
+              <h3 className="text-lg font-bold text-[rgb(15,23,42)] mb-4">Prerequisites</h3>
               <div className="space-y-2">
                 {project.prerequisites?.map((prereq, index) => (
-                  <div key={index} className="flex items-center gap-3 text-gray-300">
-                    <div className="w-2 h-2 bg-sky-400 rounded-full"></div>
+                  <div key={index} className="flex items-center gap-3 text-[rgb(71,85,105)]">
+                    <div className="w-2 h-2 bg-[rgb(37,99,235)] rounded-full"></div>
                     <span>{prereq}</span>
                   </div>
                 ))}
@@ -248,7 +250,7 @@ const ProjectDetail = ({ user }) => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
