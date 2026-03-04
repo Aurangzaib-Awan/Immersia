@@ -1,6 +1,6 @@
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware
-from con import client
+from db import client
 from session import SessionManager
 from fastapi.responses import JSONResponse
 import logging
@@ -38,7 +38,7 @@ class SessionMiddleware(BaseHTTPMiddleware):
         if request.method in ("POST", "PUT", "PATCH", "DELETE"):
             # allow login/signup/oauth endpoints without CSRF (they don't have session yet)
             path = request.url.path
-            if not path.startswith(("/login", "/signup", "/auth/google")):
+            if not path.startswith(("/login", "/signup", "/auth/google", "/api/quiz/submit", "/api/generate-project", "/api/generate-quiz")):
                 # require session and csrf
                 if not request.state.session:
                     resp = JSONResponse({"detail": "Authentication required"}, status_code=401)

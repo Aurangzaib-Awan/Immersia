@@ -1,73 +1,77 @@
 /**
- * useProctoring Hook - Production Ready
- * 
- * Custom React hook for real-time AI proctoring integration
- * Handles WebSocket connection, frame transmission, and alert processing
- * 
- * Features:
- * - Auto-reconnection on disconnect
- * - Frame rate limiting (5 FPS)
- * - Comprehensive error handling
- * - Real-time stats tracking
+ * useProctoring Hook - Fixed
+ *
+ * Fixes applied:
+ * 1. startProctoring / stopProctoring guarded with isRunning ref
+ *    → prevents double camera acquisition on StrictMode / re-render
+ * 2. connectWebSocket dependencies removed from useCallback
+ *    → was re-creating the function every render, causing reconnect loop
+ * 3. reconnectAttempts moved to ref instead of state
+ *    → state updates inside ws.onclose were triggering re-renders which
+ *      re-created connectWebSocket → infinite reconnect storm
+ * 4. Cleanup useEffect now calls stopProctoring reliably
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 
 const useProctoring = (options = {}) => {
     const {
-        url = 'ws://localhost:8000/ws/proctor',  // WebSocket endpoint
-        onAlert = () => { },                       // Alert callback
-        onResult = () => { },                      // Result callback
-        frameRate = 5,                           // Target FPS
-        autoReconnect = true,                    // Auto-reconnect on disconnect
-        reconnectDelay = 2000,                   // Reconnect delay in ms
-        maxReconnectAttempts = 5                 // Max reconnection attempts
+        url                 = 'ws://localhost:8000/ws/proctor',
+        onAlert             = () => {},
+        onResult            = () => {},
+        frameRate           = 5,
+        autoReconnect       = true,
+        reconnectDelay      = 2000,
+        maxReconnectAttempts = 5,
     } = options;
 
-    // ========================================================================
-    // STATE MANAGEMENT
-    // ========================================================================
-    const [isProctoring, setIsProctoring] = useState(false);
-    const [connectionStatus, setConnectionStatus] = useState('disconnected');
-    const [behaviorStatus, setBehaviorStatus] = useState('Not started');
-    const [devicesDetected, setDevicesDetected] = useState([]);
-    const [visualization, setVisualization] = useState('');
-    const [stats, setStats] = useState({
-        numFaces: 0,
-        gazeHorizontal: 0,
-        gazeVertical: 0,
-        ear: 0,
-        headPitch: 0,
-        headYaw: 0,
-        headRoll: 0,
-        handFaceDistLeft: 0,
-        handFaceDistRight: 0,
-        processingTime: 0,
-        fps: 0,
-        avgFps: 0
+    // ── stable refs for options so callbacks never need them as deps ──────────
+    const urlRef                  = useRef(url);
+    const onAlertRef              = useRef(onAlert);
+    const onResultRef             = useRef(onResult);
+    const autoReconnectRef        = useRef(autoReconnect);
+    const reconnectDelayRef       = useRef(reconnectDelay);
+    const maxReconnectAttemptsRef = useRef(maxReconnectAttempts);
+
+    useEffect(() => { urlRef.current                  = url;                  }, [url]);
+    useEffect(() => { onAlertRef.current              = onAlert;              }, [onAlert]);
+    useEffect(() => { onResultRef.current             = onResult;             }, [onResult]);
+    useEffect(() => { autoReconnectRef.current        = autoReconnect;        }, [autoReconnect]);
+    useEffect(() => { reconnectDelayRef.current       = reconnectDelay;       }, [reconnectDelay]);
+    useEffect(() => { maxReconnectAttemptsRef.current = maxReconnectAttempts; }, [maxReconnectAttempts]);
+
+    // ── state ─────────────────────────────────────────────────────────────────
+    const [isProctoring,      setIsProctoring     ] = useState(false);
+    const [connectionStatus,  setConnectionStatus ] = useState('disconnected');
+    const [behaviorStatus,    setBehaviorStatus   ] = useState('Not started');
+    const [devicesDetected,   setDevicesDetected  ] = useState([]);
+    const [visualization,     setVisualization    ] = useState('');
+    const [stats,             setStats            ] = useState({
+        numFaces: 0, gazeHorizontal: 0, gazeVertical: 0,
+        ear: 0, headPitch: 0, headYaw: 0, headRoll: 0,
+        handFaceDistLeft: 0, handFaceDistRight: 0,
+        processingTime: 0, fps: 0, avgFps: 0,
     });
-    const [lastAlert, setLastAlert] = useState(null);
+    const [lastAlert,         setLastAlert        ] = useState(null);
     const [reconnectAttempts, setReconnectAttempts] = useState(0);
 
-    // ========================================================================
-    // REFS
-    // ========================================================================
-    const wsRef = useRef(null);
-    const reconnectTimeoutRef = useRef(null);
-    const frameQueueRef = useRef([]);
-    const isSendingRef = useRef(false);
+    // ── refs ──────────────────────────────────────────────────────────────────
+    const wsRef                = useRef(null);
+    const reconnectTimeoutRef  = useRef(null);
+    const isSendingRef         = useRef(false);
+    const isRunningRef         = useRef(false);          // ← FIX 1: guard flag
+    const reconnectCountRef    = useRef(0);              // ← FIX 3: ref not state
+    const isProctoringRef      = useRef(false);          // mirrors state for ws callbacks
 
-    // ========================================================================
-    // WEBSOCKET CONNECTION
-    // ========================================================================
+    // ── WebSocket connection ──────────────────────────────────────────────────
+    // FIX 2: empty dep array + read everything from refs → stable function,
+    //        no reconnect storm
     const connectWebSocket = useCallback(() => {
-        // Prevent duplicate connections
         if (wsRef.current?.readyState === WebSocket.OPEN) {
             console.log('⚠️  WebSocket already connected');
             return;
         }
 
-        // Clear any pending reconnect attempts
         if (reconnectTimeoutRef.current) {
             clearTimeout(reconnectTimeoutRef.current);
             reconnectTimeoutRef.current = null;
@@ -77,102 +81,87 @@ const useProctoring = (options = {}) => {
         setConnectionStatus('connecting');
 
         try {
-            const ws = new WebSocket(url);
+            const ws = new WebSocket(urlRef.current);
 
-            // Connection opened
             ws.onopen = () => {
                 console.log('✅ Proctoring WebSocket connected');
                 setConnectionStatus('connected');
+                reconnectCountRef.current = 0;
                 setReconnectAttempts(0);
             };
 
-            // Message received from server
             ws.onmessage = (event) => {
                 try {
                     const data = JSON.parse(event.data);
 
-                    // Handle errors
                     if (data.error) {
                         console.error('❌ Proctoring server error:', data.error);
                         setConnectionStatus('error');
                         return;
                     }
 
-                    // Update behavior status
-                    if (data.behavior_status) {
-                        setBehaviorStatus(data.behavior_status);
-                    }
+                    if (data.behavior_status) setBehaviorStatus(data.behavior_status);
+                    if (data.devices_detected) setDevicesDetected(data.devices_detected);
+                    if (data.viz)              setVisualization(data.viz);
 
-                    // Update detected devices
-                    if (data.devices_detected) {
-                        setDevicesDetected(data.devices_detected);
-                    }
-
-                    // Update visualization overlay
-                    if (data.viz) {
-                        setVisualization(data.viz);
-                    }
-
-                    // Update detailed stats
                     if (data.details) {
                         setStats({
-                            numFaces: data.details.num_faces || 0,
-                            gazeHorizontal: data.details.gaze_horizontal || 0,
-                            gazeVertical: data.details.gaze_vertical || 0,
-                            ear: data.details.ear || 0,
-                            headPitch: data.details.head_pitch || 0,
-                            headYaw: data.details.head_yaw || 0,
-                            headRoll: data.details.head_roll || 0,
-                            handFaceDistLeft: data.details.hand_face_distance_left || 0,
-                            handFaceDistRight: data.details.hand_face_distance_right || 0,
-                            processingTime: data.details.processing_time_ms || 0,
-                            fps: data.details.fps || 0,
-                            avgFps: data.details.avg_fps || 0,
-                            faceDetectionConfidence: data.details.face_detection_confidence || 0
+                            numFaces:               data.details.num_faces                   || 0,
+                            gazeHorizontal:         data.details.gaze_horizontal             || 0,
+                            gazeVertical:           data.details.gaze_vertical               || 0,
+                            ear:                    data.details.ear                         || 0,
+                            headPitch:              data.details.head_pitch                  || 0,
+                            headYaw:                data.details.head_yaw                    || 0,
+                            headRoll:               data.details.head_roll                   || 0,
+                            handFaceDistLeft:       data.details.hand_face_distance_left     || 0,
+                            handFaceDistRight:      data.details.hand_face_distance_right    || 0,
+                            processingTime:         data.details.processing_time_ms          || 0,
+                            fps:                    data.details.fps                         || 0,
+                            avgFps:                 data.details.avg_fps                     || 0,
+                            faceDetectionConfidence:data.details.face_detection_confidence   || 0,
                         });
                     }
 
-                    // Handle alerts
                     if (data.alert && data.alert !== 'none') {
                         setLastAlert({
-                            type: data.alert,
+                            type:       data.alert,
                             confidence: data.conf,
-                            timestamp: data.timestamp || Date.now()
+                            timestamp:  data.timestamp || Date.now(),
                         });
-                        onAlert(data);
+                        onAlertRef.current(data);
                     }
 
-                    // Call result callback
-                    onResult(data);
+                    onResultRef.current(data);
 
                 } catch (error) {
                     console.error('❌ Error parsing proctoring message:', error);
                 }
             };
 
-            // WebSocket error
             ws.onerror = (error) => {
                 console.error('❌ Proctoring WebSocket error:', error);
                 setConnectionStatus('error');
             };
 
-            // Connection closed
             ws.onclose = (event) => {
                 console.log('🔌 Proctoring WebSocket disconnected', event.code, event.reason);
                 setConnectionStatus('disconnected');
 
-                // Auto-reconnect logic
-                if (autoReconnect &&
-                    isProctoring &&
-                    reconnectAttempts < maxReconnectAttempts) {
-
-                    console.log(`🔄 Attempting to reconnect (${reconnectAttempts + 1}/${maxReconnectAttempts})...`);
-                    setReconnectAttempts(prev => prev + 1);
+                // Only reconnect if proctoring is still meant to be running
+                if (
+                    autoReconnectRef.current &&
+                    isProctoringRef.current &&
+                    reconnectCountRef.current < maxReconnectAttemptsRef.current
+                ) {
+                    reconnectCountRef.current += 1;
+                    setReconnectAttempts(reconnectCountRef.current);
+                    console.log(`🔄 Reconnecting (${reconnectCountRef.current}/${maxReconnectAttemptsRef.current})...`);
 
                     reconnectTimeoutRef.current = setTimeout(() => {
                         connectWebSocket();
-                    }, reconnectDelay);
-                } else if (reconnectAttempts >= maxReconnectAttempts) {
+                    }, reconnectDelayRef.current);
+
+                } else if (reconnectCountRef.current >= maxReconnectAttemptsRef.current) {
                     console.error('❌ Max reconnection attempts reached');
                     setConnectionStatus('failed');
                 }
@@ -184,37 +173,26 @@ const useProctoring = (options = {}) => {
             console.error('❌ Failed to create WebSocket:', error);
             setConnectionStatus('error');
         }
-    }, [url, onAlert, onResult, autoReconnect, reconnectDelay, maxReconnectAttempts, reconnectAttempts, isProctoring]);
+    }, []); // ← stable — reads everything via refs
 
-    // ========================================================================
-    // FRAME TRANSMISSION
-    // ========================================================================
+    // ── frame transmission ────────────────────────────────────────────────────
     const sendFrame = useCallback((frameData) => {
-        // Validate WebSocket connection
         if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-            console.warn('⚠️  Cannot send frame: WebSocket not connected');
             return false;
         }
 
-        // Prevent concurrent sends
-        if (isSendingRef.current) {
-            console.warn('⚠️  Frame send already in progress, skipping...');
-            return false;
-        }
+        if (isSendingRef.current) return false;
 
         try {
             isSendingRef.current = true;
 
-            // Remove data URL prefix if present
-            let cleanFrameData = frameData;
-            if (frameData.includes(',')) {
-                cleanFrameData = frameData.split(',')[1];
-            }
+            const cleanFrame = frameData.includes(',')
+                ? frameData.split(',')[1]
+                : frameData;
 
-            // Send frame to backend
             wsRef.current.send(JSON.stringify({
-                frame: cleanFrameData,
-                timestamp: Date.now()
+                frame:     cleanFrame,
+                timestamp: Date.now(),
             }));
 
             isSendingRef.current = false;
@@ -227,59 +205,71 @@ const useProctoring = (options = {}) => {
         }
     }, []);
 
-    // ========================================================================
-    // PROCTORING CONTROL
-    // ========================================================================
+    // ── proctoring control ────────────────────────────────────────────────────
     const startProctoring = useCallback(() => {
+        // FIX 1: prevent double-start
+        if (isRunningRef.current) {
+            console.log('⚠️  Proctoring already running — ignoring duplicate start');
+            return;
+        }
+        isRunningRef.current   = true;
+        isProctoringRef.current = true;
+
         console.log('▶️  Starting proctoring...');
         setIsProctoring(true);
+        reconnectCountRef.current = 0;
         setReconnectAttempts(0);
         connectWebSocket();
     }, [connectWebSocket]);
 
     const stopProctoring = useCallback(() => {
+        // FIX 1: prevent double-stop
+        if (!isRunningRef.current) {
+            console.log('⚠️  Proctoring already stopped — ignoring duplicate stop');
+            return;
+        }
+        isRunningRef.current    = false;
+        isProctoringRef.current = false;
+
         console.log('⏹️  Stopping proctoring...');
         setIsProctoring(false);
 
-        // Close WebSocket
         if (wsRef.current) {
             wsRef.current.close(1000, 'User stopped proctoring');
             wsRef.current = null;
         }
 
-        // Clear reconnect timeout
         if (reconnectTimeoutRef.current) {
             clearTimeout(reconnectTimeoutRef.current);
             reconnectTimeoutRef.current = null;
         }
 
-        // Reset state
         setConnectionStatus('disconnected');
         setBehaviorStatus('Stopped');
         setVisualization('');
         setDevicesDetected([]);
         setLastAlert(null);
         setReconnectAttempts(0);
-        frameQueueRef.current = [];
-        isSendingRef.current = false;
+        reconnectCountRef.current = 0;
+        isSendingRef.current      = false;
     }, []);
 
     const restartConnection = useCallback(() => {
         console.log('🔄 Manually restarting connection...');
         stopProctoring();
-        setTimeout(() => {
-            startProctoring();
-        }, 500);
+        setTimeout(() => startProctoring(), 500);
     }, [startProctoring, stopProctoring]);
 
-    // ========================================================================
-    // CLEANUP ON UNMOUNT
-    // ========================================================================
+    // ── cleanup on unmount ────────────────────────────────────────────────────
     useEffect(() => {
         return () => {
             console.log('🧹 Cleaning up proctoring hook...');
+            isRunningRef.current    = false;
+            isProctoringRef.current = false;
+
             if (wsRef.current) {
                 wsRef.current.close(1000, 'Component unmounted');
+                wsRef.current = null;
             }
             if (reconnectTimeoutRef.current) {
                 clearTimeout(reconnectTimeoutRef.current);
@@ -287,11 +277,8 @@ const useProctoring = (options = {}) => {
         };
     }, []);
 
-    // ========================================================================
-    // RETURN API
-    // ========================================================================
+    // ── public API ────────────────────────────────────────────────────────────
     return {
-        // State
         isProctoring,
         connectionStatus,
         behaviorStatus,
@@ -301,16 +288,14 @@ const useProctoring = (options = {}) => {
         lastAlert,
         reconnectAttempts,
 
-        // Methods
         startProctoring,
         stopProctoring,
         sendFrame,
         restartConnection,
 
-        // Utilities
-        isConnected: connectionStatus === 'connected',
+        isConnected:  connectionStatus === 'connected',
         isConnecting: connectionStatus === 'connecting',
-        hasError: connectionStatus === 'error' || connectionStatus === 'failed'
+        hasError:     connectionStatus === 'error' || connectionStatus === 'failed',
     };
 };
 

@@ -13,6 +13,7 @@ import MentorDashboard from "./pages/mentorReview/MentorDashboard.jsx";
 
 // PROJECT-BASED LEARNING COMPONENTS
 import ProjectsMarketplace from "./pages/projects/ProjectsMarketplace.jsx";
+import GenerateProjectPage from "./pages/projects/GenerateProjectPage.jsx";
 import ProjectDetail from "./pages/projects/ProjectDetail";
 import ProjectWorkspace from "./pages/projects/ProjectWorkspace";
 import ProjectSubmission from "./pages/projects/ProjectSubmission";
@@ -22,6 +23,7 @@ import CoursesMarketplace from "./pages/courses/CourseMarketplace.jsx";
 import CourseDetail from "./pages/courses/CourseDetail.jsx";
 import CourseWorkspace from "./pages/courses/CourseWorkspace.jsx";
 import Quiz from "./pages/courses/Quiz";
+import QuizLauncher from "./components/QuizLauncher";
 
 // Admin Components
 import RootLayout from "./pages/admin/RootLayout.jsx";
@@ -90,6 +92,14 @@ function AppRoutes({ user, setUser }) {
           <PublicRoute>
             <ProjectsMarketplace user={user} />
           </PublicRoute>
+        }
+      />
+      <Route
+        path="/generate-project"
+        element={
+          <ProtectedRoute user={user}>
+            <GenerateProjectPage user={user} />
+          </ProtectedRoute>
         }
       />
       <Route
@@ -192,6 +202,16 @@ function AppRoutes({ user, setUser }) {
           </ProtectedRoute>
         }
       />
+
+      {/* route allowing quiz generation for a user project */}
+      <Route
+        path="/project-quiz/:projectId"
+        element={
+          <ProtectedRoute user={user}>
+            <QuizLauncher userId={user?.id || user?._id} />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/projects/:projectId/submit"
         element={
@@ -210,11 +230,13 @@ function AppRoutes({ user, setUser }) {
           </ProtectedRoute>
         }
       />
+
+      {/* ✅ FIX: Pass userId to Quiz so submit works */}
       <Route
         path="/courses/:courseId/quiz"
         element={
           <ProtectedRoute user={user}>
-            <Quiz />
+            <Quiz userId={user?.id || user?._id} />
           </ProtectedRoute>
         }
       />

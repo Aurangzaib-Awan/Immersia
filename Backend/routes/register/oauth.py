@@ -1,7 +1,7 @@
 # oauth.py
 from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import RedirectResponse
-from con import client
+from db import client
 import os
 import requests
 from dotenv import load_dotenv

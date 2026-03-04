@@ -1,8 +1,8 @@
 /**
  * Quiz Component - Production Ready
- * 
+ *
  * Secure quiz interface with AI proctoring integration
- * 
+ *
  * Features:
  * - 3-strike integrity system
  * - Real-time AI monitoring
@@ -11,6 +11,8 @@
  * - Violation logging
  * - Auto-termination on 0 chances
  * - Results calculation
+ * - CSRF token support (fixes 401 on submit)
+ * - Local scoring fallback when no quizId (course quiz)
  */
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -29,7 +31,16 @@ import ProctorFeed from '../../components/fyp/ProctorFeed';
 import ProctorStats from '../../components/fyp/ProctorStats';
 import useProctoring from '../../hooks/useProctoring';
 
-const Quiz = () => {
+// ============================================================================
+// CSRF TOKEN HELPER
+// Reads csrf_token from browser cookies (set by backend on login)
+// ============================================================================
+const getCsrfToken = () => {
+  const match = document.cookie.match(/csrf_token=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+};
+
+const Quiz = ({ questions: propQuestions, quizId, userId }) => {
   const { courseId } = useParams();
   const navigate = useNavigate();
 
@@ -40,6 +51,7 @@ const Quiz = () => {
   const [answers, setAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionResult, setSubmissionResult] = useState(null);
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizTerminated, setQuizTerminated] = useState(false);
   const [quizStartTime, setQuizStartTime] = useState(null);
@@ -67,7 +79,6 @@ const Quiz = () => {
     // SKIP 'none' alerts
     if (alertType === 'none') return;
 
-    // IMMEDIATE PENALTY FOR ALL ALERTS
     console.log('🚨 VIOLATION DETECTED:', alertType);
 
     const logEntry = {
@@ -98,12 +109,10 @@ const Quiz = () => {
     });
   }, []);
 
-
   // ========================================================================
   // GAZE TIMER CLEANUP
   // ========================================================================
   useEffect(() => {
-    // Check if gaze violation has exceeded 3 seconds
     if (gazeViolationStart) {
       const elapsed = (Date.now() - gazeViolationStart) / 1000;
 
@@ -125,7 +134,6 @@ const Quiz = () => {
         setShowViolationToast(true);
         setTimeout(() => setShowViolationToast(false), 3000);
 
-        // Deduct chance
         setChances(prev => {
           const next = Math.max(0, prev - 1);
           if (next === 0) {
@@ -136,7 +144,6 @@ const Quiz = () => {
           return next;
         });
 
-        // Reset gaze timer
         setGazeViolationStart(null);
         setGazeViolationDuration(0);
         if (gazeTimerRef.current) {
@@ -168,7 +175,7 @@ const Quiz = () => {
   // ========================================================================
   // QUIZ DATA
   // ========================================================================
-  const quizQuestions = [
+  const quizQuestions = propQuestions || [
     {
       id: 1,
       question: "What is the main purpose of React components?",
@@ -266,19 +273,91 @@ const Quiz = () => {
   };
 
   // ========================================================================
-  // QUIZ CONTROL
+  // QUIZ SUBMIT
+  // - If no quizId: score locally (course quiz with hardcoded questions)
+  // - If quizId exists: submit to backend (project quiz from Gemini)
   // ========================================================================
   const handleSubmitQuiz = async () => {
     setIsSubmitting(true);
     stopProctoring();
 
-    // Simulate submission delay
-    setTimeout(() => {
-      setIsSubmitting(false);
+    // Build user_answers array
+    const user_answers = quizQuestions.map((q, idx) => {
+      const answerIndex = answers[idx];
+      let selected_letter = null;
+      if (typeof answerIndex === 'number') {
+        selected_letter = String.fromCharCode(65 + answerIndex); // 0->A, 1->B, etc.
+      }
+      return {
+        question_id: q.id,
+        selected_answer: selected_letter
+      };
+    });
+
+    // ✅ NO quizId = course quiz → score locally, no backend call needed
+    if (!quizId) {
+      console.log('ℹ️ No quizId — using local scoring for course quiz');
+      const calc = calculateScore();
+      setSubmissionResult({
+        score: calc.correct,
+        total: calc.total,
+        results: quizQuestions.map((q, idx) => ({
+          question_id: q.id,
+          is_correct: answers[idx] === q.correctAnswer,
+          explanation: q.explanation || ""
+        }))
+      });
       setShowResults(true);
-    }, 2000);
+      setIsSubmitting(false);
+      return;
+    }
+
+    // ✅ Has quizId = project quiz → submit to backend
+    try {
+      const csrfToken = getCsrfToken();
+
+      if (!csrfToken) {
+        console.warn('⚠️ CSRF token not found in cookies - request may be rejected');
+      }
+
+      const res = await fetch("http://localhost:8000/api/quiz/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrfToken && { "x-csrf-token": csrfToken }),
+        },
+        credentials: "include",
+        body: JSON.stringify({ quiz_id: quizId, user_id: userId, user_answers }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        console.error('❌ Submit failed:', res.status, errorData);
+
+        if (res.status === 401) {
+          alert("Session expired. Please log in again.");
+          navigate('/login');
+          return;
+        }
+
+        throw new Error(errorData.detail || `Server error: ${res.status}`);
+      }
+
+      const data = await res.json();
+      setSubmissionResult(data);
+      setShowResults(true);
+
+    } catch (err) {
+      console.error('❌ Quiz submission error:', err);
+      alert(`Quiz submission failed: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  // ========================================================================
+  // QUIZ CONTROL
+  // ========================================================================
   const handleStartQuiz = () => {
     console.log('▶️ Starting quiz');
     setQuizStartTime(Date.now());
@@ -303,16 +382,13 @@ const Quiz = () => {
     };
   }, [stopProctoring]);
 
-
   // ========================================================================
   // COPY & TAB SWITCH DETECTION
-  // - Penalize user by 1 chance when they copy from the page or switch tabs
-  // - Uses built-in `copy` event and `visibilitychange` (document.hidden)
   // ========================================================================
   useEffect(() => {
     if (!quizStarted) return;
 
-    const handleCopyEvent = (e) => {
+    const handleCopyEvent = () => {
       console.log('📋 Copy detected during quiz');
       handleAlert({ alert: 'copy_detected', behavior_status: 'copy_event' });
     };
@@ -367,7 +443,23 @@ const Quiz = () => {
   // RENDER: RESULTS
   // ========================================================================
   if (showResults) {
-    const { correct, total, percentage } = calculateScore();
+    let correct, total, percentage, resultsList;
+    if (submissionResult) {
+      correct = submissionResult.score;
+      total = submissionResult.total;
+      percentage = Math.round((correct / total) * 100);
+      resultsList = submissionResult.results;
+    } else {
+      const calc = calculateScore();
+      correct = calc.correct;
+      total = calc.total;
+      percentage = calc.percentage;
+      resultsList = quizQuestions.map((q, idx) => ({
+        question_id: q.id,
+        is_correct: answers[idx] === q.correctAnswer,
+        explanation: q.explanation || ""
+      }));
+    }
     const passed = percentage >= 70;
 
     return (
@@ -421,6 +513,37 @@ const Quiz = () => {
                 </div>
               </div>
             </div>
+
+            {/* Per-question feedback */}
+            {resultsList && (
+              <div className="mb-6">
+                <h3 className="text-lg font-bold mb-2">Question Feedback</h3>
+                <ul className="space-y-4">
+                  {resultsList.map((r, idx) => {
+                    const question = quizQuestions.find(q => q.id === r.question_id);
+                    return (
+                      <li key={idx} className="p-4 border rounded text-left">
+                        <div className="font-semibold">
+                          Q{idx + 1}: {question?.question}
+                        </div>
+                        <div>
+                          {r.is_correct ? (
+                            <span className="text-green-600">Correct</span>
+                          ) : (
+                            <span className="text-red-600">Incorrect</span>
+                          )}
+                        </div>
+                        {r.explanation && (
+                          <div className="mt-1 text-sm text-gray-700">
+                            Explanation: {r.explanation}
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
 
             <button
               onClick={handleBackToWorkspace}
@@ -606,13 +729,13 @@ const Quiz = () => {
                       key={index}
                       onClick={() => handleAnswerSelect(currentQuestion, index)}
                       className={`w-full text-left p-5 rounded-2xl border transition-all duration-200 flex items-center gap-4 group ${answers[currentQuestion] === index
-                        ? 'border-[rgb(37,99,235)] bg-blue-50 text-[rgb(15,23,42)]'
-                        : 'border-[rgb(226,232,240)] bg-[rgb(248,250,252)] text-[rgb(71,85,105)] hover:border-[rgb(148,163,184)] hover:bg-[rgb(241,245,249)]'
+                          ? 'border-[rgb(37,99,235)] bg-blue-50 text-[rgb(15,23,42)]'
+                          : 'border-[rgb(226,232,240)] bg-[rgb(248,250,252)] text-[rgb(71,85,105)] hover:border-[rgb(148,163,184)] hover:bg-[rgb(241,245,249)]'
                         }`}
                     >
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${answers[currentQuestion] === index
-                        ? 'border-[rgb(37,99,235)] bg-[rgb(37,99,235)]'
-                        : 'border-[rgb(226,232,240)] group-hover:border-[rgb(148,163,184)]'
+                          ? 'border-[rgb(37,99,235)] bg-[rgb(37,99,235)]'
+                          : 'border-[rgb(226,232,240)] group-hover:border-[rgb(148,163,184)]'
                         }`}>
                         {answers[currentQuestion] === index && (
                           <div className="w-2 h-2 bg-white rounded-full" />
@@ -637,7 +760,7 @@ const Quiz = () => {
                   {currentQuestion === quizQuestions.length - 1 ? (
                     <button
                       onClick={handleSubmitQuiz}
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || Object.keys(answers).length < quizQuestions.length}
                       className="bg-[rgb(37,99,235)] text-white font-bold py-3 px-10 rounded-xl hover:bg-[rgb(29,78,216)] transition-all disabled:opacity-50"
                     >
                       {isSubmitting ? 'Submitting...' : 'Complete Assessment'}

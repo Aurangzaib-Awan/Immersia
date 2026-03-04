@@ -1,5 +1,25 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+import os
+import logging
+import json
+from bson import ObjectId
+
+# Suppress TensorFlow and Mediapipe debug output BEFORE importing any ML libraries
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress TensorFlow INFO and WARNING messages
+os.environ['MEDIAPIPE_LOG_LEVEL'] = '2'   # Suppress Mediapipe debug output
+os.environ['GLOG_minloglevel'] = '2'      # Suppress Glog messages
+
+
+# Custom JSON encoder to handle MongoDB ObjectId fields
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, ObjectId):
+            return str(obj)
+        return super().default(obj)
+
 from routes.register import signup 
 from routes.course import courseRoute
 from routes.register import login
@@ -7,13 +27,30 @@ from routes.project import projectRoute
 from routes.admin import admin
 from routes import proctoring
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+
+# Set Mediapipe and TensorFlow logging to WARNING level to suppress graph dumps
+logging.getLogger("mediapipe").setLevel(logging.WARNING)
+logging.getLogger("tensorflow").setLevel(logging.WARNING)
+
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:5174"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

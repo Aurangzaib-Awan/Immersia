@@ -1,5 +1,5 @@
 from passlib.context import CryptContext
-from con import client
+from db import client
 
 pwd_context = CryptContext(schemes=["argon2", "bcrypt"], deprecated="auto")
 

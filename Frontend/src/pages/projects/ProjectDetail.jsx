@@ -89,6 +89,14 @@ const ProjectDetail = ({ user }) => {
     navigate(`/projects/${projectId}/workspace`);
   };
 
+  const handleTakeQuiz = () => {
+    if (!user) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+    navigate(`/project-quiz/${projectId}`);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)] p-6">
@@ -169,6 +177,15 @@ const ProjectDetail = ({ user }) => {
                 >
                   {user ? "Start Project" : "Login to Start Project"}
                 </button>
+
+                {user && (
+                  <button
+                    onClick={handleTakeQuiz}
+                    className="w-full bg-[rgb(16,185,129)] hover:bg-[rgb(5,150,105)] text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 mb-4"
+                  >
+                    Take Quiz
+                  </button>
+                )}
 
                 {!user && (
                   <div className="text-center text-sm text-[rgb(148,163,184)] mb-4">

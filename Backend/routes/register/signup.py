@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request, Response
 from models.user import User
-from con import client
+from db import client
 from passlib.context import CryptContext
  
 
@@ -24,7 +24,8 @@ async def create_user(request: Request, response: Response, user: User):
         user_dict = user.model_dump()
         user_dict["password"] = hash_password(user_dict["password"])
 
-        users_collection.insert_one(user_dict)
+        result = users_collection.insert_one(user_dict)
+        new_id = str(result.inserted_id)
 
         # Create server-managed session (cookie-based)
         sm = request.state.session_manager
@@ -35,6 +36,7 @@ async def create_user(request: Request, response: Response, user: User):
 
         return {
             "user": {
+                "id": new_id,
                 "fullname": user_dict["fullname"],
                 "email": user_dict["email"],
                 "role": "student",

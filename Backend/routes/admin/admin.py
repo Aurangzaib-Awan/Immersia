@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Header
 from pydantic import BaseModel
-from con import client
+from db import client
 from bson import ObjectId
 import bcrypt
 from jose import JWTError, jwt

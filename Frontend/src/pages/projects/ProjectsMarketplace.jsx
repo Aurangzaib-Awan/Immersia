@@ -94,6 +94,14 @@ const ProjectsMarketplace = ({ user }) => {
     navigate(`/projects/${projectId}`);
   };
 
+  const handleGenerateClick = () => {
+    if (!user) {
+      navigate('/signup', { state: { from: { pathname: '/generate-project' } } });
+      return;
+    }
+    navigate('/generate-project');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)] p-6">
@@ -135,6 +143,12 @@ const ProjectsMarketplace = ({ user }) => {
           <p className="text-[rgb(71,85,105)] text-lg">
             Build real-world projects, collaborate with peers, and showcase your skills
           </p>
+          <button
+            onClick={handleGenerateClick}
+            className="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
+          >
+            Generate Custom Project
+          </button>
         </div>
 
         {/* Filter section */}

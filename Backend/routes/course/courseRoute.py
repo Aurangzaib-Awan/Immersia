@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from con import client
+from db import client
 from models.course import Course
 from datetime import datetime, timezone
 from bson import ObjectId
