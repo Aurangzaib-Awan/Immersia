@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import careerPaths from '../data/mindmap.json';
+import { useOnboarding } from '../context/OnboardingContext'; // add for context
+
 
 function Mindmap() {
   const [searchParams] = useSearchParams();
@@ -8,6 +10,8 @@ function Mindmap() {
   const careerId = searchParams.get('career');
   const [selectedTopics, setSelectedTopics] = useState(new Set());
   const [careerData, setCareerData] = useState(null);
+  const { updateOnboarding } = useOnboarding();
+
 
   useEffect(() => {
     if (careerId && careerPaths[careerId]) {
@@ -33,19 +37,19 @@ function Mindmap() {
   const handleContinue = () => {
     if (!careerData) return;
 
-    const allTopics = careerData.categories.flatMap(category =>
-      category.topics.map(topic => topic.id)
-    );
+    const allTopics = careerData.categories.flatMap(cat => cat.topics);
 
-    const unknownTopics = allTopics.filter(topicId => !selectedTopics.has(topicId));
+    const knownTopicNames = allTopics
+      .filter(topic => selectedTopics.has(topic.id))
+      .map(topic => topic.name);
 
-    const unknownTopicNames = unknownTopics.map(topicId => {
-      const topic = careerData.categories.flatMap(cat => cat.topics).find(t => t.id === topicId);
-      return topic ? topic.name : topicId;
-    });
+    const unknownTopicNames = allTopics
+      .filter(topic => !selectedTopics.has(topic.id))
+      .map(topic => topic.name);
 
-    console.log('Topics to learn:', unknownTopicNames);
-    navigate('/divide', { state: { unknownTopics: unknownTopicNames } });
+    updateOnboarding({ knownTopics: knownTopicNames, unknownTopics: unknownTopicNames }); // 👈 save to context
+
+    navigate('/divide'); // 👈 no more location.state needed
   };
 
   if (!careerId) {

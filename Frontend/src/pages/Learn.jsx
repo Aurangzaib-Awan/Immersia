@@ -1,9 +1,8 @@
 function Learn()
 {
-    return(
-    <>
-    <h1>Learn</h1>
-    </>
-    )
+
+    return(<>
+<p>Learn Page</p>
+</>)
 }
 export default Learn;

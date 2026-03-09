@@ -1,12 +1,25 @@
+import os
+import logging
+import json
+import asyncio
+
+from middleware import session_manager
+from seed_accounts import ensure_seed_accounts
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-
-import os
-import logging
-import json
 from bson import ObjectId
+
+from routes import user
+from routes.register import signup 
+from routes.course import courseRoute
+from routes.register import login
+from routes.project import projectRoute 
+from routes.admin import admin
+from routes import proctoring
+from routes.talent import talentRoute
+
 
 # Suppress TensorFlow and Mediapipe debug output BEFORE importing any ML libraries
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress TensorFlow INFO and WARNING messages
@@ -21,13 +34,7 @@ class CustomJSONEncoder(json.JSONEncoder):
             return str(obj)
         return super().default(obj)
 
-from routes.register import signup 
-from routes.course import courseRoute
-from routes.register import login
-from routes.project import projectRoute 
-from routes.admin import admin
-from routes import proctoring
-from routes.talent import talentRoute
+
 
 # Configure logging
 logging.basicConfig(
@@ -60,9 +67,6 @@ app.add_middleware(
 from middleware import SessionMiddleware
 app.add_middleware(SessionMiddleware)
 
-import asyncio
-from middleware import session_manager
-from seed_accounts import ensure_seed_accounts
 
 
 @app.on_event("startup")
@@ -92,6 +96,8 @@ app.include_router(projectRoute.router)
 app.include_router(admin.router)
 app.include_router(proctoring.router)
 app.include_router(talentRoute.router)
+app.include_router(user.router, prefix="/users")
+
 
 if __name__ == "__main__":
     import uvicorn

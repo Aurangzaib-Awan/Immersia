@@ -1,5 +1,6 @@
 // routes/AppRoutes.jsx
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
+
 import Home from "./pages/Home.jsx";
 import Signup from "./pages/Signup.jsx";
 import Login from "./pages/Login.jsx";
@@ -11,30 +12,36 @@ import Mindmap from "./pages/MindMap.jsx";
 import Divide from "./pages/Divide.jsx";
 import MentorDashboard from "./pages/mentorReview/MentorDashboard.jsx";
 
-// PROJECT-BASED LEARNING COMPONENTS
+import { OnboardingProvider } from "./context/OnboardingContext";
+
+// PROJECT-BASED LEARNING
 import ProjectsMarketplace from "./pages/projects/ProjectsMarketplace.jsx";
 import GenerateProjectPage from "./pages/projects/GenerateProjectPage.jsx";
 import ProjectDetail from "./pages/projects/ProjectDetail";
 import ProjectWorkspace from "./pages/projects/ProjectWorkspace";
 import ProjectSubmission from "./pages/projects/ProjectSubmission";
 
-// COURSE-BASED LEARNING COMPONENTS
+// COURSE-BASED LEARNING
 import CoursesMarketplace from "./pages/courses/CourseMarketplace.jsx";
 import CourseDetail from "./pages/courses/CourseDetail.jsx";
 import CourseWorkspace from "./pages/courses/CourseWorkspace.jsx";
 import Quiz from "./pages/courses/Quiz";
 import QuizLauncher from "./components/QuizLauncher";
 
-// Admin Components
+// ADMIN
 import RootLayout from "./pages/admin/RootLayout.jsx";
-import Dashboard from "./pages/admin//Dashboard";
-import UserManagement from "./pages/admin//UserManagement";
+import Dashboard from "./pages/admin/Dashboard";
+import UserManagement from "./pages/admin/UserManagement";
 import ContentManagement from "./pages/admin/ContentManagement";
 import ProjectManagement from "./pages/admin/ProjectManagement";
 
-// Protected Route Components
+
+// =========================
+// PROTECTED ROUTE
+// =========================
 const ProtectedRoute = ({ user, children, adminOnly = false }) => {
   const location = useLocation();
+
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
@@ -46,28 +53,41 @@ const ProtectedRoute = ({ user, children, adminOnly = false }) => {
   return children;
 };
 
-// Guest Route Component - Only for non-authenticated users
+
+// =========================
+// GUEST ONLY ROUTE
+// =========================
 const GuestOnlyRoute = ({ user, children }) => {
   if (user) {
-    // Redirect based on role
     if (user.is_admin) return <Navigate to="/admin" replace />;
     if (user.is_hr) return <Navigate to="/talent" replace />;
     if (user.is_mentor) return <Navigate to="/mentor-dashboard" replace />;
+
     return <Navigate to="/skill" replace />;
   }
+
   return children;
 };
 
-// Public Route Component - Allows access without authentication
+
+// =========================
+// PUBLIC ROUTE
+// =========================
 const PublicRoute = ({ children }) => {
   return children;
 };
 
+
+// =========================
+// APP ROUTES
+// =========================
 function AppRoutes({ user, setUser }) {
   return (
     <Routes>
-      {/* Public Routes */}
+
+      {/* PUBLIC ROUTES */}
       <Route path="/" element={<Home user={user} />} />
+
       <Route
         path="/signup"
         element={
@@ -76,6 +96,7 @@ function AppRoutes({ user, setUser }) {
           </GuestOnlyRoute>
         }
       />
+
       <Route
         path="/login"
         element={
@@ -85,7 +106,8 @@ function AppRoutes({ user, setUser }) {
         }
       />
 
-      {/* Public Project Routes - Accessible without login */}
+
+      {/* PROJECT MARKETPLACE */}
       <Route
         path="/projects"
         element={
@@ -94,6 +116,7 @@ function AppRoutes({ user, setUser }) {
           </PublicRoute>
         }
       />
+
       <Route
         path="/generate-project"
         element={
@@ -102,6 +125,7 @@ function AppRoutes({ user, setUser }) {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/projects/:projectId"
         element={
@@ -111,7 +135,8 @@ function AppRoutes({ user, setUser }) {
         }
       />
 
-      {/* Public Course Routes - Accessible without login */}
+
+      {/* COURSES */}
       <Route
         path="/courses"
         element={
@@ -120,6 +145,7 @@ function AppRoutes({ user, setUser }) {
           </PublicRoute>
         }
       />
+
       <Route
         path="/courses/:courseId"
         element={
@@ -129,7 +155,8 @@ function AppRoutes({ user, setUser }) {
         }
       />
 
-      {/* User Routes - Protected but not admin only */}
+
+      {/* LEARNING */}
       <Route
         path="/learn"
         element={
@@ -140,7 +167,7 @@ function AppRoutes({ user, setUser }) {
       />
 
 
-      {/* === FIXED: Single Talent Route === */}
+      {/* TALENT */}
       <Route
         path="/talent"
         element={
@@ -150,7 +177,6 @@ function AppRoutes({ user, setUser }) {
         }
       />
 
-      {/* Protected Talent Profile Route for HR */}
       <Route
         path="/talent/:talentId"
         element={
@@ -159,6 +185,9 @@ function AppRoutes({ user, setUser }) {
           </ProtectedRoute>
         }
       />
+
+
+      {/* MENTOR DASHBOARD */}
       <Route
         path="/mentor-dashboard"
         element={
@@ -168,32 +197,39 @@ function AppRoutes({ user, setUser }) {
         }
       />
 
-      <Route
-        path="/skill"
-        element={
-          <ProtectedRoute user={user}>
-            <Skills />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/mindmap"
-        element={
-          <ProtectedRoute user={user}>
-            <Mindmap />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/divide"
-        element={
-          <ProtectedRoute user={user}>
-            <Divide />
-          </ProtectedRoute>
-        }
-      />
 
-      {/* PROTECTED Project Workspace Routes - Require authentication */}
+      {/* ONBOARDING ROUTES */}
+      <Route element={<OnboardingProvider />}>
+        <Route
+          path="/skill"
+          element={
+            <ProtectedRoute user={user}>
+              <Skills />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/mindmap"
+          element={
+            <ProtectedRoute user={user}>
+              <Mindmap />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/divide"
+          element={
+            <ProtectedRoute user={user}>
+              <Divide />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+
+
+      {/* PROJECT WORKSPACE */}
       <Route
         path="/projects/:projectId/workspace"
         element={
@@ -203,7 +239,6 @@ function AppRoutes({ user, setUser }) {
         }
       />
 
-      {/* route allowing quiz generation for a user project */}
       <Route
         path="/project-quiz/:projectId"
         element={
@@ -212,6 +247,7 @@ function AppRoutes({ user, setUser }) {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/projects/:projectId/submit"
         element={
@@ -221,7 +257,8 @@ function AppRoutes({ user, setUser }) {
         }
       />
 
-      {/* PROTECTED Course Workspace Routes - Require authentication */}
+
+      {/* COURSE WORKSPACE */}
       <Route
         path="/courses/:courseId/workspace"
         element={
@@ -231,7 +268,6 @@ function AppRoutes({ user, setUser }) {
         }
       />
 
-      {/* ✅ FIX: Pass userId to Quiz so submit works */}
       <Route
         path="/courses/:courseId/quiz"
         element={
@@ -241,7 +277,8 @@ function AppRoutes({ user, setUser }) {
         }
       />
 
-      {/* Admin Routes - Protected and admin only */}
+
+      {/* ADMIN */}
       <Route
         path="/admin"
         element={
@@ -256,8 +293,10 @@ function AppRoutes({ user, setUser }) {
         <Route path="projects" element={<ProjectManagement />} />
       </Route>
 
-      {/* Default redirect */}
+
+      {/* DEFAULT */}
       <Route path="*" element={<Navigate to="/" replace />} />
+
     </Routes>
   );
 }

@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useOnboarding } from '../context/OnboardingContext'; //add this for saving context
+
 
 function Roadmaps() {
   const [selectedRole, setSelectedRole] = useState("");
   const navigate = useNavigate();
+  const { updateOnboarding } = useOnboarding();
+
 
   const roles = [
     "ML Engineer",
@@ -26,6 +30,7 @@ function Roadmaps() {
   const handleContinue = () => {
     if (selectedRole) {
       const careerId = selectedRole.toLowerCase().replace(/\s+/g, '-');
+      updateOnboarding({ selectedCareer: careerId }); // 👈 save to context
       navigate(`/mindmap?career=${careerId}`);
     }
   };

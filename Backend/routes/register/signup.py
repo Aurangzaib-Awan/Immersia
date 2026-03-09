@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request, Response
-from models.user import User
+from models.register_model import Register_Model
 from db import client
 from passlib.context import CryptContext
  
@@ -14,7 +14,7 @@ def hash_password(pwd: str):
     return pwd_context.hash(pwd)
 
 @router.post("/signup")
-async def create_user(request: Request, response: Response, user: User):
+async def create_user(request: Request, response: Response, user: Register_Model):
     try:
         # If already in database → stop
         if users_collection.find_one({"email": user.email}):

@@ -1,31 +1,51 @@
 // pages/Divide.jsx
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useOnboarding } from '../context/OnboardingContext';
+
 
 function Divide() {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { onboardingData, updateOnboarding } = useOnboarding();
+  const unknownTopics = onboardingData.unknownTopics;
 
-  const unknownTopics = location.state?.unknownTopics || [];
+  const handleCourseLearning = async () => {
+  updateOnboarding({ learningStyle: 'course' });
+  await saveOnboardingData('course');
+};
 
-  const handleCourseLearning = () => {
-    console.log('Course Learning selected with topics:', unknownTopics);
-    navigate('/courses', {
-      state: {
-        unknownTopics,
-        skillGaps: unknownTopics
-      }
+const handleProjectBasedLearning = async () => {
+  updateOnboarding({ learningStyle: 'project' });
+  await saveOnboardingData('project');
+};
+  const saveOnboardingData = async (learningStyle) => {
+  try {
+    const payload = {
+      selectedCareer: onboardingData.selectedCareer,
+      knownTopics: onboardingData.knownTopics,
+      unknownTopics: onboardingData.unknownTopics,
+      learningStyle,
+    };
+
+    const response = await fetch('http://localhost:8000/users/me', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload),
     });
-  };
 
-  const handleProjectBasedLearning = () => {
-    console.log('Project Based Learning selected with topics:', unknownTopics);
-    navigate('/projects', {
-      state: {
-        unknownTopics,
-        skillGaps: unknownTopics
-      }
-    });
-  };
+    if (!response.ok) throw new Error('Failed to save onboarding data');
+
+    // Navigate after successful save
+    if (learningStyle === 'course') {
+      navigate('/courses');
+    } else {
+      navigate('/projects');
+    }
+
+  } catch (err) {
+    console.error('Onboarding save failed:', err);
+  }
+};
 
   return (
     <div className="min-h-screen bg-[rgb(248,250,252)] py-12 px-4 sm:px-6 lg:px-8">
