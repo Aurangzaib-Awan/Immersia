@@ -11,6 +11,8 @@ import Skills from "./pages/Skills.jsx";
 import Mindmap from "./pages/MindMap.jsx";
 import Divide from "./pages/Divide.jsx";
 import MentorDashboard from "./pages/mentorReview/MentorDashboard.jsx";
+import AgenticRecommendations from './pages/AgenticRecommendations.jsx';
+
 
 import { OnboardingProvider } from "./context/OnboardingContext";
 
@@ -293,6 +295,15 @@ function AppRoutes({ user, setUser }) {
         <Route path="projects" element={<ProjectManagement />} />
       </Route>
 
+      {/* Ai Agent recommnedations route  */}
+      <Route
+        path="/agentic-recommendations"
+        element={
+          <ProtectedRoute user={user}>
+            <AgenticRecommendations />
+          </ProtectedRoute>
+        }
+      />
 
       {/* DEFAULT */}
       <Route path="*" element={<Navigate to="/" replace />} />

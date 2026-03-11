@@ -20,12 +20,13 @@ def store_project(user_id: str, project: Dict, user_projects_collection: Collect
 
     doc = {
         "user_id": user_id,
-        "project_id": project.get("project_id"),
-        "project_title": project.get("project_title", "Untitled Project"),
-        "project_description": project.get("project_description", ""),
-        "skills_learned": project.get("skills_learned", []),
+        "project_id": project.get("_id"),
+        "project_title": project.get("title", "Untitled Project"),       
+        "project_description": project.get("description", ""),           
+        "skills": project.get("technologies", []),                    
+        "skillsLearned": [],                                             
         "tasks": project.get("tasks", []),
-        "learning_outcomes": project.get("learning_outcomes", ""),  # optional
+        "learning_outcomes": "",
         "status": "pending"
     }
 

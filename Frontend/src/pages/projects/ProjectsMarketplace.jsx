@@ -1,12 +1,11 @@
 // components/ProjectsMarketplace.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Search, Clock, Users, Sparkles, ArrowRight, Zap } from 'lucide-react';
+import { useNavigate,} from 'react-router-dom';
+import { Search, Clock, Users, Sparkles, ArrowRight, Zap, Target } from 'lucide-react';
 import { projectAPI } from '../../services/api';
 
 const ProjectsMarketplace = ({ user }) => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -87,6 +86,14 @@ const ProjectsMarketplace = ({ user }) => {
       return;
     }
     navigate('/generate-project');
+  };
+
+  const handleAgenticRecommendationsClick = () => {
+    if (!user) {
+      navigate('/signup', { state: { from: { pathname: '/agentic-recommendations' } } });
+      return;
+    }
+    navigate('/agentic-recommendations');
   };
 
   if (loading) {
@@ -173,15 +180,25 @@ const ProjectsMarketplace = ({ user }) => {
                 </div>
               </div>
 
-              {/* Right: CTA button */}
-              <button
-                onClick={handleGenerateClick}
-                className="flex-shrink-0 flex items-center gap-2 bg-white text-[rgb(37,99,235)] font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-all duration-200 shadow-md hover:shadow-lg group"
-              >
-                <Zap className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                {user ? 'Generate My Project' : 'Get Started Free'}
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
-              </button>
+              {/* Right: CTA buttons */}
+              <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleGenerateClick}
+                  className="flex items-center gap-2 bg-white text-[rgb(37,99,235)] font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-all duration-200 shadow-md hover:shadow-lg group"
+                >
+                  <Zap className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                  {user ? 'Generate My Project' : 'Get Started Free'}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
+                </button>
+                <button
+                  onClick={handleAgenticRecommendationsClick}
+                  className="flex items-center gap-2 bg-white/10 text-white border border-white/20 font-semibold px-6 py-3 rounded-xl hover:bg-white/20 transition-all duration-200 shadow-md hover:shadow-lg group backdrop-blur-sm"
+                >
+                  <Target className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                  Agentic Recommendations
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

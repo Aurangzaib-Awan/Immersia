@@ -6,6 +6,7 @@ from pymongo.collection import Collection
 from groq import Groq
 from dotenv import load_dotenv
 
+from utils.agent_nodes.skill_gap_node import select_target_skills
 from utils.agent_nodes import (
     state,
     user_profile_node,
@@ -13,7 +14,7 @@ from utils.agent_nodes import (
     skill_gap_node,
     project_recommendation_node,
     store_user_project_node,
-    update_knowledge_node
+    update_knowledge_node    #check this 
 )
 from pymongo import MongoClient
 
@@ -39,6 +40,8 @@ def run_learning_cycle(user_id: str):
         5. Store project
     """
 
+    state.clear_state()
+
     # 1️⃣ Fetch user profile
     user_profile = user_profile_node.get_user_profile(user_id, users_collection)
     if not user_profile:
@@ -60,11 +63,13 @@ def run_learning_cycle(user_id: str):
         return
 
     # 4️⃣ Recommend next project
+    selected_skills = select_target_skills(target_skills, user_profile.get("knownTopics", []), groq_client)
+
     recommended_project = project_recommendation_node.recommend_project(
-    target_skills,
-    user_profile,
-    projects_collection,
-    groq_client
+        selected_skills,
+        user_profile,
+        projects_collection,
+        groq_client
     )
     state.set_state("recommended_project", recommended_project)  # raw
 

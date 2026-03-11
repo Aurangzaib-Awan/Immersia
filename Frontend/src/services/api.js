@@ -239,3 +239,10 @@ export const adminAPI = {
     }),
   }),
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Agent API
+// ─────────────────────────────────────────────────────────────────────────────
+export const agentAPI = {
+  getRecommendation: async () => apiRequest('/agent/recommend'),
+};

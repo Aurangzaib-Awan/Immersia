@@ -7,6 +7,7 @@ from groq import Groq
 from dotenv import load_dotenv
 from typing import List, Dict
 from pymongo.collection import Collection
+from datetime import datetime, timezone
 
 load_dotenv()
 
@@ -80,6 +81,26 @@ def recommend_project(
         # Parse JSON safely
         try:
             generated_project = json.loads(clean_text)
+            project_doc = {
+            "title": generated_project.get("title"),
+            "description": generated_project.get("description"),
+            "project_description": generated_project.get("description"),
+            "technologies": generated_project.get("technologies", []),
+            "tasks": generated_project.get("tasks", []),
+            "category": user_profile.get("selectedCareer", "General"),
+            "curator": "AI Generated",
+            "difficulty": "Beginner",
+            "duration": "2-4 weeks",
+            "prerequisites": target_skills,
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc),
+        }
+        
+            inserted = projects_collection.insert_one(project_doc)
+            generated_project["_id"] = str(inserted.inserted_id)
+
+            return generated_project
+        
         except json.JSONDecodeError:
             # fallback in case LLM returns invalid JSON
             generated_project = {

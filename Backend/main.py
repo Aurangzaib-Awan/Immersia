@@ -19,7 +19,7 @@ from routes.project import projectRoute
 from routes.admin import admin
 from routes import proctoring
 from routes.talent import talentRoute
-
+from routes import agent
 
 # Suppress TensorFlow and Mediapipe debug output BEFORE importing any ML libraries
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'  # Suppress TensorFlow INFO and WARNING messages
@@ -97,6 +97,8 @@ app.include_router(admin.router)
 app.include_router(proctoring.router)
 app.include_router(talentRoute.router)
 app.include_router(user.router, prefix="/users")
+app.include_router(agent.router, prefix="/agent")
+
 
 
 if __name__ == "__main__":
