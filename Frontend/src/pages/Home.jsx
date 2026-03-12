@@ -96,7 +96,7 @@ const Home = ({ user }) => {
             </div>
             <div className="space-y-3">
               <button
-                onClick={() => { setShowRegisterModal(false); navigate('/login', { state: { from: { pathname: '/' } } }); }}
+                onClick={() => { setShowRegisterModal(false); navigate('/login'); }}
                 className="w-full py-3 px-6 rounded-lg font-bold text-[rgb(15,23,42)] bg-[rgb(241,245,249)] hover:bg-[rgb(226,232,240)] transition-colors duration-300 text-base"
               >
                 Login

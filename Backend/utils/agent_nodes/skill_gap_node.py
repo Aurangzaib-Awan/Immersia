@@ -2,37 +2,42 @@
 
 import json
 import re
-from groq import Groq
 from typing import List, Dict, Set
+
 
 def calculate_skill_gap(user_profile: Dict, completed_projects: List[Dict]) -> List[str]:
     """
     Calculate the user's target skills (skills yet to learn).
-    
+
     Args:
         user_profile: dict with 'knownTopics' and 'unknownTopics'
-        completed_projects: list of dicts, each with 'skills_learned'
-    
+        completed_projects: list of UserProject dicts with status == "completed"
+
     Returns:
         List of target skills still to learn
     """
     unknown_topics: Set[str] = set(user_profile.get("unknownTopics", []))
-    
-    # Collect all skills already learned from completed projects
-    learned_skills: Set[str] = set()
-    for proj in completed_projects:
-        learned_skills.update(proj.get("skills_learned", []))
-    
-    # Skill gap = unknownTopics - learned_skills
-    target_skills = list(unknown_topics - learned_skills)
-    
-    return target_skills
 
-def select_target_skills(unknown_topics: List[str], known_topics: List[str], groq_client: Groq) -> List[str]:
+    covered_skills: Set[str] = set()
+    for proj in completed_projects:
+        # Use 'skills' (targeted) as source of truth — skillsLearned is never populated
+        covered_skills.update(proj.get("skills", []))
+
+    return list(unknown_topics - covered_skills)
+
+
+def select_target_skills(
+    unknown_topics: List[str],
+    known_topics: List[str],
+    groq_client  # avoid hard Groq import just for type hint
+) -> List[str]:
     """
-    Uses Groq to intelligently select how many and which unknown skills
-    to target next based on their difficulty.
+    Uses Groq to select which unknown skills to target next,
+    based on difficulty and what the user already knows.
     """
+    if not unknown_topics:
+        return []
+
     prompt = f"""
     A student knows these topics: {known_topics}
     They still need to learn: {unknown_topics}
@@ -42,6 +47,7 @@ def select_target_skills(unknown_topics: List[str], known_topics: List[str], gro
     - If the next skill is foundational or basic, select 2-3 skills
     - If the next skill is advanced or complex, select only 1 skill
     - Always pick the easiest unknown skills first
+    - Only return skills from the "still need to learn" list — do not invent new ones
     - Return ONLY a JSON array of selected skill names, nothing else
 
     Example output: ["Machine Learning Basics", "Supervised Learning"]
@@ -50,21 +56,25 @@ def select_target_skills(unknown_topics: List[str], known_topics: List[str], gro
     chat = groq_client.chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
-            {"role": "system", "content": "Return only a JSON array of skill names."},
+            {"role": "system", "content": "Return only a JSON array of skill names. No markdown, no explanation."},
             {"role": "user", "content": prompt}
         ],
         temperature=0.2
     )
 
     response_text = chat.choices[0].message.content
-    clean = re.sub(r"^```(?:json)?\s*|\s*```$", "", response_text.strip(), flags=re.MULTILINE).strip()
+    clean = re.sub(
+        r"^```(?:json)?\s*|\s*```$", "", response_text.strip(), flags=re.MULTILINE
+    ).strip()
 
     try:
         selected = json.loads(clean)
         if isinstance(selected, list):
-            return selected
+            # Filter out any hallucinated skills not in the original list
+            valid = [s for s in selected if s in unknown_topics]
+            return valid if valid else unknown_topics[:1]
     except json.JSONDecodeError:
+        # Groq returned non-JSON — fall back to first unknown topic
         pass
 
-    # Fallback: return first unknown topic only
     return unknown_topics[:1]

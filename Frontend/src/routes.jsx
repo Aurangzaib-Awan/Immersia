@@ -65,7 +65,7 @@ const GuestOnlyRoute = ({ user, children }) => {
     if (user.is_hr) return <Navigate to="/talent" replace />;
     if (user.is_mentor) return <Navigate to="/mentor-dashboard" replace />;
 
-    return <Navigate to="/skill" replace />;
+    return <Navigate to="/projects" replace />;
   }
 
   return children;

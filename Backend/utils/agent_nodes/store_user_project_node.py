@@ -1,16 +1,23 @@
 # utils/agent_nodes/store_user_project_node.py
 
-from typing import Dict
+from typing import Dict, List
 from pymongo.collection import Collection
 
-def store_project(user_id: str, project: Dict, user_projects_collection: Collection) -> bool:
+
+def store_project(
+    user_id: str,
+    project: Dict,
+    user_projects_collection: Collection,
+    target_skills: List[str] = []   # ✅ actual skills being targeted, not technologies
+) -> bool:
     """
-    Stores the recommended or generated project for a user in UserProjects collection.
+    Stores the recommended project for a user in the UserProjects collection.
 
     Args:
-        user_id: the MongoDB user ID
-        project: dict representing the project
+        user_id:                  MongoDB user ID
+        project:                  project dict from recommendation node
         user_projects_collection: MongoDB UserProjects collection
+        target_skills:            skills selected by select_target_skills (not technologies)
 
     Returns:
         True if inserted successfully, False otherwise
@@ -19,15 +26,15 @@ def store_project(user_id: str, project: Dict, user_projects_collection: Collect
         return False
 
     doc = {
-        "user_id": user_id,
-        "project_id": project.get("_id"),
-        "project_title": project.get("title", "Untitled Project"),       
-        "project_description": project.get("description", ""),           
-        "skills": project.get("technologies", []),                    
-        "skillsLearned": [],                                             
-        "tasks": project.get("tasks", []),
-        "learning_outcomes": "",
-        "status": "pending"
+        "user_id":             user_id,
+        "project_id":          project.get("_id"),
+        "project_title":       project.get("title", "Untitled Project"),
+        "project_description": project.get("description", ""),
+        "skills":              target_skills,           # ✅ targeted skills (e.g. ["NLP", "RNNs"])
+        "skillsLearned":       [],
+        "tasks":               project.get("tasks", []),
+        "learning_outcomes":   project.get("learning_outcomes", ""),
+        "status":              "pending"
     }
 
     try:

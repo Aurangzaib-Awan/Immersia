@@ -71,11 +71,11 @@ function Login({ setUser }) {
                         navigate("/mentor-dashboard");
                     }
                 } else {
-                    // Normal users (students) go to skills section or return URL
+                    // Normal users (students) go to projects marketplace or return URL
                     if (from) {
                         navigate(from);
                     } else {
-                        navigate("/skill");
+                        navigate("/projects");
                     }
                 }
             } else {

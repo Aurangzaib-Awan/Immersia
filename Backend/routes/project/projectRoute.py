@@ -11,6 +11,7 @@ import logging
 from utils.serializer import serialize_doc
 import re, json
 import random
+from utils.agent_nodes.update_knowledge_node import update_user_knowledge
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,8 @@ user_projects_collection    = db["user_projects"]
 project_quizzes_collection  = db["project_quizzes"]
 submissions_collection      = db["project_submissions"]
 certificates_collection     = db["certificates"]
+users_collection = db["users"]
+
 
 
 # ============================================================================
@@ -849,29 +852,6 @@ async def get_all_submissions():
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-# ============================================================================
-# MENTOR APPROVE
-# ============================================================================
-@router.post("/api/submissions/{submission_id}/approve")
-async def approve_submission(submission_id: str, body: MentorActionRequest):
-    try:
-        doc = submissions_collection.find_one({"_id": ObjectId(submission_id)})
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid submission_id")
-    if not doc:
-        raise HTTPException(status_code=404, detail="Submission not found")
-
-    submissions_collection.update_one(
-        {"_id": ObjectId(submission_id)},
-        {"$set": {
-            "status":      "approved",
-            "reviewed_at": datetime.now(timezone.utc),
-            "mentor_id":   body.mentor_id,
-            "reason":      body.reason,
-        }}
-    )
-    certificate = maybe_issue_certificate(doc.get("user_id", ""), doc.get("project_id", ""))
-    return {"message": "Submission approved", "certificate": certificate}
 
 
 # ============================================================================
@@ -942,3 +922,69 @@ async def get_user_projects(user_id: str):
         return {"projects": projects}
     except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
+    
+# ============================================================================
+# MENTOR APPROVE  —  drop-in replacement for the existing approve_submission
+# ============================================================================
+# Add this import at the top of projectRoute.py alongside the other imports:
+#
+#   from utils.agent_nodes.update_knowledge_node import update_user_knowledge
+#
+# Also add this collection alongside the others at the top:
+#
+#   users_collection = db["users"]
+# ============================================================================
+
+@router.post("/api/submissions/{submission_id}/approve")
+async def approve_submission(submission_id: str, body: MentorActionRequest):
+    try:
+        doc = submissions_collection.find_one({"_id": ObjectId(submission_id)})
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid submission_id")
+    if not doc:
+        raise HTTPException(status_code=404, detail="Submission not found")
+
+    user_id    = doc.get("user_id", "")
+    project_id = doc.get("project_id", "")
+
+    print(f"[approve] user_id: {user_id}")
+    print(f"[approve] project_id: {project_id}")
+    print(f"[approve] looking for user_project with _id: {project_id}")
+
+    # 1. Mark submission as approved
+    submissions_collection.update_one(
+        {"_id": ObjectId(submission_id)},
+        {"$set": {
+            "status":      "approved",
+            "reviewed_at": datetime.now(timezone.utc),
+            "mentor_id":   body.mentor_id,
+            "reason":      body.reason,
+        }}
+    )
+
+    # 2. Mark the user_project as completed
+    try:
+        user_projects_collection.update_one(
+            {"project_id": project_id},
+            {"$set": {
+                "status":       "completed",
+                "completed_at": datetime.now(timezone.utc),
+            }}
+        )
+    except Exception as e:
+        logger.warning(f"Could not mark user_project {project_id} as completed: {e}")
+
+    # 3. Move targeted skills from unknownTopics → knownTopics on the User doc
+    try:
+        user_proj = user_projects_collection.find_one({"project_id": project_id})
+        if user_proj:
+            skills_to_promote = user_proj.get("skills", [])  # targeted skills
+            if skills_to_promote:
+                update_user_knowledge(user_id, skills_to_promote, users_collection)
+    except Exception as e:
+        logger.warning(f"Could not update knowledge for user {user_id}: {e}")
+
+    # 4. Issue certificate if quiz also passed
+    certificate = maybe_issue_certificate(user_id, project_id)
+
+    return {"message": "Submission approved", "certificate": certificate}
