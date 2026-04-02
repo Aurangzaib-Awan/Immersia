@@ -116,13 +116,13 @@ const Home = ({ user }) => {
       <section className="relative bg-[rgb(248,250,252)] py-20 sm:py-28 px-4 sm:px-6 border-b border-[rgb(226,232,240)]">
         <div className="max-w-7xl mx-auto text-center">
           {/* Master Your Skills */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center text-[rgb(37,99,235)] mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-[rgb(37,99,235)] mb-6">
             Master In-Demand Skills
           </h1>
-          <p className="text-xl sm:text-2xl md:text-3xl text-[rgb(71,85,105)] mb-8 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-[rgb(71,85,105)] mb-8 max-w-4xl mx-auto leading-relaxed">
             Learn from Industry Experts, Build Real Projects
           </p>
-          <p className="text-lg sm:text-xl text-[rgb(148,163,184)] mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-[rgb(148,163,184)] mb-12 max-w-3xl mx-auto leading-relaxed">
             Choose your learning journey: master concepts through structured courses,
             or dive into real-world projects. Get certified, evaluated by industry experts,
             and discovered by top companies.

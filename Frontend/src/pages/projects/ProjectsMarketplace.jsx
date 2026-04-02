@@ -135,10 +135,10 @@ const ProjectsMarketplace = ({ user }) => {
         <div className="mb-10">
           {/* Title row */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-[rgb(37,99,235)] mb-3">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[rgb(37,99,235)] mb-3">
               Project Marketplace
             </h1>
-            <p className="text-[rgb(71,85,105)] text-lg">
+            <p className="text-sm sm:text-base md:text-lg text-[rgb(71,85,105)]">
               Build real-world projects, collaborate with peers, and showcase your skills
             </p>
           </div>

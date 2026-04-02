@@ -112,10 +112,31 @@ export const authAPI = {
   },
 
   register: async (userData) => {
-    return await apiRequest('/signup', {
+    const data = await apiRequest('/signup', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
+
+    // After signup the server sets a session cookie automatically.
+    // Cache the user in sessionStorage for consistency with login flow
+    if (data) {
+      const u = data.user
+        ? data.user
+        : {
+            id:       data.id       || data._id,
+            email:    data.email    || userData.email,
+            role:     data.role,
+            is_admin: data.is_admin,
+            name:     data.name     || data.username || userData.fullname,
+          };
+      sessionStorage.setItem('user', JSON.stringify(u));
+      console.log('✓ Signup successful, user cached:', u?.email);
+    }
+
+    // Reset CSRF cache so next mutating request fetches a fresh token
+    _csrf = null;
+
+    return data;
   },
 
   logout: async () => {

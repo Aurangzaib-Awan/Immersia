@@ -185,14 +185,14 @@ const ProjectDetail = ({ user }) => {
                     <div className="flex gap-2 mt-3">
                       <Link
                         to="/login"
-                        state={{ from: location }}
+                        state={{ from: { pathname: `/projects/${projectId}` } }}
                         className="flex-1 bg-[rgb(241,245,249)] hover:bg-[rgb(226,232,240)] text-[rgb(15,23,42)] py-2 px-4 rounded-lg transition-colors duration-300 text-center"
                       >
                         Login
                       </Link>
                       <Link
                         to="/signup"
-                        state={{ from: location }}
+                        state={{ from: { pathname: `/projects/${projectId}` } }}
                         className="flex-1 bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white py-2 px-4 rounded-lg transition-colors duration-300 text-center"
                       >
                         Register

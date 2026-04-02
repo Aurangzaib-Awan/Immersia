@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input.jsx";
 import { Label } from "@/components/ui/label.jsx";
 import { Button } from "@/components/ui/button.jsx";
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { authAPI } from "@/services/api";
 import { XCircle } from "lucide-react";
 
@@ -20,6 +20,10 @@ function Login({ setUser }) {
 
     // Get the return URL from location state (undefined if none)
     const from = location.state?.from?.pathname;
+    
+    // Debug logging
+    console.log('Login - location.state:', location.state);
+    console.log('Login - from value:', from);
 
     function handleChange(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -50,34 +54,28 @@ function Login({ setUser }) {
 
             // Server-managed session: success indicated by presence of user
             if (data && data.user) {
-                const user = data.user;
-                if (setUser) setUser(user);
+                // API already cached normalized user in sessionStorage
+                const cachedUser = JSON.parse(sessionStorage.getItem('user'));
 
-                // Enhanced role-based redirection
-                if (data.user.is_admin) {
-                    navigate("/admin");
-                } else if (data.user.is_hr) {
-                    // HR users go to talent section or return URL
-                    if (from) {
-                        navigate(from);
-                    } else {
-                        navigate("/talent");
-                    }
-                } else if (data.user.is_mentor) {
-                    // Mentor users go to mentor dashboard
-                    if (from) {
-                        navigate(from);
-                    } else {
-                        navigate("/mentor-dashboard");
-                    }
-                } else {
-                    // Normal users (students) go to projects marketplace or return URL
-                    if (from) {
-                        navigate(from);
-                    } else {
-                        navigate("/projects");
-                    }
-                }
+                // Enhanced role-based redirection - navigate BEFORE state update
+                const redirectPath = (() => {
+                  if (cachedUser.is_admin) {
+                    return "/admin";
+                  } else if (cachedUser.is_hr) {
+                    return from || "/talent";
+                  } else if (cachedUser.is_mentor) {
+                    return from || "/mentor-dashboard";
+                  } else {
+                    return from || "/projects";
+                  }
+                })();
+                
+                navigate(redirectPath, { replace: true });
+                
+                // Update app state AFTER navigation
+                setTimeout(() => {
+                  if (setUser) setUser(cachedUser);
+                }, 0);
             } else {
                 setError("Login failed. Please check your credentials.");
             }
@@ -210,6 +208,18 @@ function Login({ setUser }) {
                                 "Sign In"
                             )}
                         </Button>
+
+                        {/* Signup Link */}
+                        <div className="text-center text-sm text-[rgb(148,163,184)] mt-6 pt-6 border-t border-[rgb(226,232,240)]">
+                            Don't have an account?{" "}
+                            <Link
+                                to="/signup"
+                                state={location.state?.from ? { from: location.state.from } : undefined}
+                                className="font-semibold text-[rgb(37,99,235)] hover:text-[rgb(29,78,216)] hover:underline transition-colors duration-300"
+                            >
+                                Create one
+                            </Link>
+                        </div>
                     </form>
 
                 </div>

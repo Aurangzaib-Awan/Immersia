@@ -1,6 +1,5 @@
 // routes/AppRoutes.jsx
 import { Route, Routes, Navigate, useLocation } from "react-router-dom";
-
 import Home from "./pages/Home.jsx";
 import Signup from "./pages/Signup.jsx";
 import Login from "./pages/Login.jsx";
@@ -12,8 +11,6 @@ import Mindmap from "./pages/MindMap.jsx";
 import Divide from "./pages/Divide.jsx";
 import MentorDashboard from "./pages/mentorReview/MentorDashboard.jsx";
 import AgenticRecommendations from './pages/AgenticRecommendations.jsx';
-
-
 import { OnboardingProvider } from "./context/OnboardingContext";
 
 // PROJECT-BASED LEARNING
@@ -44,11 +41,21 @@ import ProjectManagement from "./pages/admin/ProjectManagement";
 const ProtectedRoute = ({ user, children, adminOnly = false }) => {
   const location = useLocation();
 
-  if (!user) {
+  // Check both user prop and sessionStorage as fallback for state update delays
+  const currentUser = user || (() => {
+    try {
+      const cached = sessionStorage.getItem('user');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  if (!currentUser) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (adminOnly && !user.is_admin) {
+  if (adminOnly && !currentUser.is_admin) {
     return <Navigate to="/" replace />;
   }
 
@@ -60,12 +67,25 @@ const ProtectedRoute = ({ user, children, adminOnly = false }) => {
 // GUEST ONLY ROUTE
 // =========================
 const GuestOnlyRoute = ({ user, children }) => {
-  if (user) {
-    if (user.is_admin) return <Navigate to="/admin" replace />;
-    if (user.is_hr) return <Navigate to="/talent" replace />;
-    if (user.is_mentor) return <Navigate to="/mentor-dashboard" replace />;
+  // Check both user prop and sessionStorage as fallback for state update delays
+  const currentUser = user || (() => {
+    try {
+      const cached = sessionStorage.getItem('user');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  })();
 
-    return <Navigate to="/projects" replace />;
+  if (currentUser) {
+    // Only redirect based on role
+    if (currentUser.is_admin) return <Navigate to="/admin" replace />;
+    if (currentUser.is_hr) return <Navigate to="/talent" replace />;
+    if (currentUser.is_mentor) return <Navigate to="/mentor-dashboard" replace />;
+
+    // For regular students: allow them to proceed with signup/login page
+    // This lets programmatic navigation (from Signup/Login) take precedence
+    // Don't force redirect to /projects - let the user's intended destination take priority
   }
 
   return children;

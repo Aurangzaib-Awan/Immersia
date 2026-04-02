@@ -2,6 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Root font size scaling for better zoom compatibility */
+html {
+  /* Base font size optimized for 100% zoom */
+  font-size: 15px;
+  /* Smooth font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Ensure text doesn't zoom unexpectedly */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Mobile first approach - very small screens (320px+) */
+@media (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+  
+  /* Reduce padding on mobile */
+  :root {
+    --mobile-padding: 1rem;
+  }
+}
+
+/* Small tablets (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  html {
+    font-size: 14.5px;
+  }
+}
+
+/* Tablets and larger (769px+) */
+@media (min-width: 769px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* Large desktop (1536px+) */
+@media (min-width: 1920px) {
+  html {
+    font-size: 15.5px;
+  }
+}
+
+/* Responsive text sizes - override Tailwind defaults for better scaling */
+@layer components {
+  /* Responsive heading sizes */
+  .responsive-h1 {
+    @apply text-2xl sm:text-3xl md:text-4xl;
+  }
+  
+  .responsive-h2 {
+    @apply text-xl sm:text-2xl md:text-3xl;
+  }
+  
+  .responsive-h3 {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+  
+  /* Container padding responsive */
+  .container-responsive {
+    @apply px-3 sm:px-4 md:px-6 lg:px-8;
+  }
+  
+  /* Responsive gap for grids */
+  .gap-responsive {
+    @apply gap-2 sm:gap-4 md:gap-6 lg:gap-8;
+  }
+}
+
 :root {
   --background: 210 40% 98%;
   --foreground: 222 47% 11%;

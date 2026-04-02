@@ -147,11 +147,11 @@ const CoursesMarketplace = ({ user }) => {
     <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)] p-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-[rgb(37,99,235)] mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[rgb(37,99,235)] mb-4">
             Course Marketplace
           </h1>
-          <p className="text-[rgb(71,85,105)] text-lg">
-            Master new skills with structured learning paths and expert guidance
+          <p className="text-sm sm:text-base md:text-lg text-[rgb(71,85,105)]">
+            Explore curated courses and expand your knowledge
           </p>
         </div>
 

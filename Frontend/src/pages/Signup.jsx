@@ -12,7 +12,12 @@ import { Link } from "react-router-dom";
 function Signup({ setUser }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/skill";
+  const from = location.state?.from?.pathname || "/projects";
+  
+  // Debug: Log the routing state
+  console.log('Signup - location.state:', location.state);
+  console.log('Signup - from value:', from);
+  
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -99,11 +104,26 @@ function Signup({ setUser }) {
       console.log("Server response:", data);
 
       // Server-managed session: success indicated by presence of user
-      if (data && (data.user || data.email)) {
-        const user = data.user || { email: data.email };
-        if (setUser) setUser(user);
+      if (data && (data.user || data.email || data.id)) {
+        // API already cached normalized user in sessionStorage
+        // Just extract it from there for consistency  
+        const cachedUser = JSON.parse(sessionStorage.getItem('user'));
+        
+        console.log('Signup Success - navigating to:', from);
+        console.log('Signup Success - cached user:', cachedUser);
+        
         setSuccessMessage("Account created successfully! Redirecting...");
-        setTimeout(() => navigate(from), 1000);
+        
+        // Navigate to intended page BEFORE React batches the setState
+        // This prevents GuestOnlyRoute from intercepting
+        navigate(from, { replace: true });
+        
+        // Update app state AFTER navigation
+        // This ensures routes re-evaluate with user available from sessionStorage
+        setTimeout(() => {
+          console.log('Signup - Setting user state after navigation');
+          if (setUser) setUser(cachedUser);
+        }, 0);
       } else {
         setServerError("Signup failed. Please try again.");
       }
@@ -381,6 +401,7 @@ function Signup({ setUser }) {
             Already have an account?{" "}
             <Link
               to="/login"
+              state={location.state?.from ? { from: location.state.from } : undefined}
               className="font-semibold text-[rgb(37,99,235)] hover:text-[rgb(29,78,216)] hover:underline transition-colors duration-300"
             >
               Sign in
