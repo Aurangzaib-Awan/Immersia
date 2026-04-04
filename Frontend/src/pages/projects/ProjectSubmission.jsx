@@ -19,6 +19,7 @@ const ProjectSubmission = ({ user }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [error, setError] = useState('');
+  const [curatedProjectId, setCuratedProjectId] = useState(null);
 
   const handleFileChange = (e) => {
     const selected = Array.from(e.target.files);
@@ -28,6 +29,32 @@ const ProjectSubmission = ({ user }) => {
   const removeFile = (index) => {
     setFormData(prev => ({ ...prev, files: prev.files.filter((_, i) => i !== index) }));
   };
+
+  // ── Find matching curated project on mount for redirect ─────────────────────
+  React.useEffect(() => {
+    const findCuratedProject = async () => {
+      try {
+        // Fetch user project to get title
+        const userProjData = await projectAPI.getUserProject(projectId);
+        if (!userProjData) return;
+
+        // Fetch curated projects and find matching one
+        const projectsRes = await projectAPI.getProjects();
+        const projectsList = projectsRes.projects || projectsRes.data || projectsRes || [];
+        const matchedCurated = projectsList.find(p => p.title === userProjData.title);
+        
+        if (matchedCurated) {
+          const curatedId = matchedCurated.id || matchedCurated._id;
+          setCuratedProjectId(curatedId);
+          console.log('✅ Found curated project for details redirect:', curatedId);
+        }
+      } catch (err) {
+        console.warn('Could not find matching curated project:', err);
+      }
+    };
+
+    findCuratedProject();
+  }, [projectId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,7 +102,12 @@ const ProjectSubmission = ({ user }) => {
 
   const handleModalClose = () => {
     setShowSuccessModal(false);
-    navigate(`/projects/${projectId}/workspace`);
+    // Navigate to curated project details if found, otherwise fallback to workspace
+    if (curatedProjectId) {
+      navigate(`/projects/${curatedProjectId}`);
+    } else {
+      navigate(`/projects/${projectId}/workspace`);
+    }
   };
 
   return (

@@ -1,19 +1,3 @@
-/**
- * Quiz Component - Production Ready
- *
- * Secure quiz interface with AI proctoring integration
- *
- * Features:
- * - 3-strike integrity system
- * - Real-time AI monitoring
- * - 3-second gaze violation threshold
- * - Immediate alerts for critical violations (devices, multiple faces)
- * - Violation logging
- * - Auto-termination on 0 chances
- * - Results calculation
- * - CSRF token support (fixes 401 on submit)
- * - Smart back navigation: returns to projects or courses based on origin
- */
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
@@ -31,31 +15,25 @@ import ProctorFeed from '../../components/fyp/ProctorFeed';
 import ProctorStats from '../../components/fyp/ProctorStats';
 import useProctoring from '../../hooks/useProctoring';
 
-// ============================================================================
-// CSRF TOKEN HELPER
-// ============================================================================
 const getCsrfToken = () => {
   const match = document.cookie.match(/csrf_token=([^;]+)/);
   return match ? decodeURIComponent(match[1]) : null;
 };
 
-const Quiz = ({ questions: propQuestions, quizId, userId }) => {
+const Quiz = ({ questions: propQuestions, quizId, userId, projectId }) => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ========================================================================
-  // SMART BACK NAVIGATION
-  // Detects whether the user came from a project quiz or course quiz
-  // and navigates back to the correct section on exit / termination / finish
-  // ========================================================================
   const handleBackToWorkspace = useCallback(() => {
     stopProctoring();
 
-    // If we came from a project quiz route (/project-quiz/:id)
-    // navigate back to /projects
     if (location.pathname.startsWith('/project-quiz')) {
-      navigate('/projects');
+      if (projectId) {
+        navigate(`/projects/${projectId}`);
+      } else {
+        navigate('/projects');
+      }
       return;
     }
 
@@ -394,7 +372,7 @@ const Quiz = ({ questions: propQuestions, quizId, userId }) => {
             onClick={handleBackToWorkspace}
             className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-xl transition-all"
           >
-            {location.pathname.startsWith('/project-quiz') ? 'Return to Projects' : 'Return to Workspace'}
+            {location.pathname.startsWith('/project-quiz') ? 'Return to Project Details' : 'Return to Workspace'}
           </button>
         </div>
       </div>
@@ -510,7 +488,7 @@ const Quiz = ({ questions: propQuestions, quizId, userId }) => {
               onClick={handleBackToWorkspace}
               className="bg-[rgb(37,99,235)] text-white font-bold py-3 px-8 rounded-xl hover:bg-[rgb(29,78,216)] transition-all"
             >
-              {isProjectQuiz ? 'Back to Projects' : 'Back to Workspace'}
+              {isProjectQuiz ? 'Back to Project Details' : 'Back to Workspace'}
             </button>
           </div>
         </div>

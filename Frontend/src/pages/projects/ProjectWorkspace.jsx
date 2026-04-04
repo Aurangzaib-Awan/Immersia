@@ -26,6 +26,7 @@ const ProjectWorkspace = ({ user }) => {
   const [certLoading, setCertLoading] = useState(true);
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [projectData, setProjectData] = useState(null);
+  const [curatedProjectId, setCuratedProjectId] = useState(null);
 
   const columns = [
     { id: 'backlog', title: 'Backlog', color: 'bg-gray-500' },
@@ -67,6 +68,20 @@ const ProjectWorkspace = ({ user }) => {
           const projData = await projectAPI.getUserProject(projectId);
           setProjectData(projData);
           console.log('Project data fetched:', projData);
+
+          // Find matching curated project for back navigation
+          try {
+            const projectsRes = await projectAPI.getProjects();
+            const projectsList = projectsRes.projects || projectsRes.data || projectsRes || [];
+            const matchedCurated = projectsList.find(p => p.title === projData.title);
+            if (matchedCurated) {
+              const curatedId = matchedCurated.id || matchedCurated._id;
+              setCuratedProjectId(curatedId);
+              console.log('Matched curated project for back navigation:', curatedId);
+            }
+          } catch (err) {
+            console.warn('Could not find matching curated project for back navigation:', err);
+          }
         } catch (err) {
           console.error('Failed to fetch project data:', err);
         }
@@ -117,11 +132,11 @@ const ProjectWorkspace = ({ user }) => {
     <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)] p-6">
       <div className="max-w-7xl mx-auto">
         <button
-          onClick={() => navigate('/projects')}
+          onClick={() => navigate(`/projects/${curatedProjectId || projectId}`)}
           className="flex items-center gap-2 text-[rgb(37,99,235)] hover:text-[rgb(29,78,216)] font-semibold mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
-          Back to Projects
+          Back to Project Details
         </button>
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8">
           <div>

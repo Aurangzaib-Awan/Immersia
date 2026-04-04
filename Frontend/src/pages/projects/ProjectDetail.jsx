@@ -43,30 +43,46 @@ const ProjectDetail = ({ user }) => {
 
   // ── Fetch curated project list ────────────────────────────────────────────
   useEffect(() => {
-    const fetchProject = async () => {
-      try {
-        setLoading(true);
-        const response = await projectAPI.getProjects();
-        const projectsArray = response.projects || response.data || response || [];
-        console.log('Projects array in ProjectDetail:', projectsArray);
+  const fetchProject = async () => {
+    try {
+      setLoading(true);
+      const response = await projectAPI.getProjects();
+      const projectsArray = response.projects || response.data || response || [];
 
-        const foundProject = projectsArray.find(p => {
-          const projectId_str = String(p.id || p._id || '');
-          return projectId_str === projectId || (p.id && p.id.toString && p.id.toString() === projectId);
-        });
+      // Try matching by curated project ID first
+      let foundProject = projectsArray.find(p => {
+        const id_str = String(p.id || p._id || '');
+        return id_str === projectId || (p.id && p.id.toString && p.id.toString() === projectId);
+      });
 
-        if (!foundProject) throw new Error('Project not found');
-        setProject(foundProject);
-      } catch (err) {
-        setError('Failed to load project details. Please try again later.');
-        console.error('Error fetching project:', err);
-      } finally {
-        setLoading(false);
+      // ── Fallback: projectId might be a user project ID ────────────────
+      if (!foundProject) {
+        try {
+          const userProj = await projectAPI.getUserProject(projectId);
+          if (userProj?.title) {
+            foundProject = projectsArray.find(p => p.title === userProj.title);
+            // Also pre-set the userProjectId so progress section loads immediately
+            if (userProj) {
+              const uid = userProj._id || userProj.project_id || userProj.id;
+              if (uid) setUserProjectId(projectId); // projectId IS the user project id here
+            }
+          }
+        } catch (fallbackErr) {
+          console.error('Fallback user project fetch failed:', fallbackErr);
+        }
       }
-    };
-    fetchProject();
-  }, [projectId]);
 
+      if (!foundProject) throw new Error('Project not found');
+      setProject(foundProject);
+    } catch (err) {
+      setError('Failed to load project details. Please try again later.');
+      console.error('Error fetching project:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchProject();
+}, [projectId]);
   // ── Find existing user project once project is loaded ─────────────────────
   useEffect(() => {
     if (!user || !project) return;
@@ -182,8 +198,8 @@ const ProjectDetail = ({ user }) => {
                 <h3 className="text-white font-bold text-sm">Certificate Earned!</h3>
                 <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/20 text-white">✓</span>
               </div>
-              <p className="text-blue-100 text-xs truncate">{certificate.project_title}</p>
-              <p className="text-blue-200 text-xs mt-1">
+              <p className="text-blue-100 text-xs font-semibold truncate">{certificate.project_title}</p>
+              <p className="text-blue-200 text-xs font-semibold mt-1">
                 Score: {certificate.quiz_score}% · {new Date(certificate.issued_at).toLocaleDateString()}
               </p>
             </div>
@@ -266,7 +282,7 @@ const ProjectDetail = ({ user }) => {
               >
                 {step.label}
               </p>
-              <p className="text-xs text-[rgb(148,163,184)] truncate">{step.desc}</p>
+              <p className="text-xs font-semibold text-[rgb(148,163,184)] truncate">{step.desc}</p>
             </div>
             <span
               className={`text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${
@@ -468,7 +484,7 @@ const ProjectDetail = ({ user }) => {
                     >
                       <div className="flex items-center gap-2">
                         <Award className="w-4 h-4 text-[rgb(37,99,235)]" />
-                        <span className="text-sm font-semibold text-[rgb(15,23,42)]">Certificate Progress</span>
+                        <span className="text-sm font-bold text-[rgb(15,23,42)]">Certificate Progress</span>
                       </div>
                       {showProgress
                         ? <ChevronUp className="w-4 h-4 text-[rgb(148,163,184)]" />

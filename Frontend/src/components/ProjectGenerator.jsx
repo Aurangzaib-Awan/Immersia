@@ -170,7 +170,7 @@ export default function GenerateProjectPage({ userId }) {
           <div className="flex items-center justify-between mb-6">
             <button
               onClick={() => { setProject(null); setSkills([]); setError(""); }}
-              className="flex items-center gap-1.5 text-sm text-[rgb(148,163,184)] hover:text-[rgb(15,23,42)] transition-colors"
+              className="flex items-center gap-2 bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white font-semibold px-4 py-2 rounded-lg transition-colors"
             >
               <X className="w-4 h-4" />
               Generate New Project
