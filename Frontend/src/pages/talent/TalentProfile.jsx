@@ -13,7 +13,6 @@ const TalentProfile = ({ user }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Only fetch if user is HR — avoids leaking data to non-HR
     if (!user || !user.is_hr) {
       setLoading(false);
       return;
@@ -38,7 +37,6 @@ const TalentProfile = ({ user }) => {
     fetchProfile();
   }, [talentId, user]);
 
-  // ── Guards (after hooks) ─────────────────────────────────────────────────
   if (!user) {
     return <Navigate to="/login" state={{ from: `/talent/${talentId}` }} />;
   }
@@ -51,7 +49,6 @@ const TalentProfile = ({ user }) => {
             <h2 className="text-2xl font-bold text-red-500 mb-3">Access Denied</h2>
             <p className="text-[rgb(71,85,105)] mb-4">
               Only verified HR professionals can view full talent profiles.
-              Your account ({user.email}) does not have HR privileges.
             </p>
             <button
               onClick={() => navigate('/talent')}
@@ -94,18 +91,21 @@ const TalentProfile = ({ user }) => {
     );
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
   const formatDate = (iso) => {
     if (!iso) return "—";
-    try { return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }); }
-    catch { return iso; }
+    try {
+      return new Date(iso).toLocaleDateString("en-US", {
+        year: "numeric", month: "short", day: "numeric"
+      });
+    } catch { return iso; }
   };
+
+  const displayName = talent.name || talent.fullname || talent.full_name || 'Anonymous';
 
   return (
     <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)]">
       <div className="max-w-6xl mx-auto px-6 py-8">
 
-        {/* Back */}
         <Link
           to="/talent"
           className="inline-flex items-center gap-2 text-[rgb(37,99,235)] hover:opacity-80 mb-6 transition-opacity"
@@ -114,7 +114,6 @@ const TalentProfile = ({ user }) => {
           Back to Talent Pool
         </Link>
 
-        {/* HR notice */}
         <div className="bg-[rgb(37,99,235)]/10 border border-[rgb(37,99,235)]/20 rounded-xl p-4 mb-6 flex items-center gap-3">
           <Users className="w-5 h-5 text-[rgb(37,99,235)] shrink-0" />
           <div>
@@ -127,18 +126,18 @@ const TalentProfile = ({ user }) => {
 
         <div className="grid lg:grid-cols-3 gap-8">
 
-          {/* ── Main content ─────────────────────────────────────────────── */}
+          {/* Main content */}
           <div className="lg:col-span-2 space-y-6">
 
-            {/* Profile header */}
+            {/* Profile header — no title/position */}
             <div className="bg-white border border-[rgb(226,232,240)] rounded-xl p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-[rgb(15,23,42)] mb-1">{talent.name}</h1>
-                  {talent.title && (
-                    <p className="text-[rgb(37,99,235)] font-medium text-lg mb-3">{talent.title}</p>
+                  {/* ✅ Show proper fullname, no position/title */}
+                  <h1 className="text-3xl font-bold text-[rgb(15,23,42)] mb-3">{displayName}</h1>
+                  {talent.bio && (
+                    <p className="text-[rgb(71,85,105)] leading-relaxed">{talent.bio}</p>
                   )}
-                  <p className="text-[rgb(71,85,105)] leading-relaxed">{talent.bio}</p>
                 </div>
                 <div className="flex items-center gap-1 text-green-600 bg-green-500/10 px-3 py-1.5 rounded-full border border-green-400/20 shrink-0">
                   <Award className="w-4 h-4" />
@@ -182,13 +181,12 @@ const TalentProfile = ({ user }) => {
                   <Calendar className="w-5 h-5 text-[rgb(37,99,235)] shrink-0" />
                   <div>
                     <p className="text-xs text-[rgb(148,163,184)]">Availability</p>
-                    <p className="text-[rgb(15,23,42)] text-sm">{talent.availability}</p>
+                    <p className="text-[rgb(15,23,42)] text-sm">{talent.availability || 'Open to opportunities'}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Experience — only if present */}
             {talent.experience?.length > 0 && (
               <div className="bg-white border border-[rgb(226,232,240)] rounded-xl p-6">
                 <h2 className="text-lg font-bold text-[rgb(15,23,42)] mb-4">Work Experience</h2>
@@ -204,7 +202,6 @@ const TalentProfile = ({ user }) => {
               </div>
             )}
 
-            {/* Education — only if present */}
             {talent.education && (
               <div className="bg-white border border-[rgb(226,232,240)] rounded-xl p-6">
                 <h2 className="text-lg font-bold text-[rgb(15,23,42)] mb-2">Education</h2>
@@ -213,10 +210,9 @@ const TalentProfile = ({ user }) => {
             )}
           </div>
 
-          {/* ── Sidebar ──────────────────────────────────────────────────── */}
+          {/* Sidebar */}
           <div className="space-y-6">
 
-            {/* Salary */}
             {talent.expected_salary && (
               <div className="bg-white border border-[rgb(226,232,240)] rounded-xl p-6">
                 <h3 className="text-base font-bold text-[rgb(15,23,42)] mb-2">Salary Expectations</h3>
@@ -224,7 +220,6 @@ const TalentProfile = ({ user }) => {
               </div>
             )}
 
-            {/* Skills */}
             {talent.skills?.length > 0 && (
               <div className="bg-white border border-[rgb(226,232,240)] rounded-xl p-6">
                 <h3 className="text-base font-bold text-[rgb(15,23,42)] mb-4">Skills</h3>
@@ -241,13 +236,13 @@ const TalentProfile = ({ user }) => {
               </div>
             )}
 
-            {/* Earned Certificates — real data */}
+            {/* ✅ Fixed height scrollable certificates */}
             <div className="bg-white border border-[rgb(226,232,240)] rounded-xl p-6">
               <h3 className="text-base font-bold text-[rgb(15,23,42)] mb-4 flex items-center gap-2">
                 <Award className="w-5 h-5 text-[rgb(37,99,235)]" />
                 Earned Certificates ({talent.cert_count})
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
                 {talent.certifications.map((cert, i) => (
                   <div key={i} className="border border-[rgb(226,232,240)] rounded-lg p-3">
                     <div className="flex items-start gap-2 mb-2">
@@ -293,5 +288,4 @@ const TalentProfile = ({ user }) => {
     </div>
   );
 };
-
 export default TalentProfile;

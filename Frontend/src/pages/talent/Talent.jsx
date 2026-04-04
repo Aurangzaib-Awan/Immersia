@@ -15,14 +15,31 @@ const Talent = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTalent, setSelectedTalent] = useState(null);
 
-  // ── Fetch certified talent on mount ────────────────────────────────────
   useEffect(() => {
     const fetchTalent = async () => {
       try {
         const res = await fetch(`${API_BASE}/api/talent`, { credentials: "include" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        setTalents(data.talent || []);
+
+        // ✅ Deduplicate by user_id (in case backend returns duplicates)
+        const seen = new Set();
+        const unique = (data.talent || []).filter(t => {
+          if (seen.has(t.user_id)) return false;
+          seen.add(t.user_id);
+          return true;
+        });
+
+        // ✅ Exclude the currently logged-in user from the list
+        const currentUserId = user?.id || user?._id;
+        const currentEmail  = user?.email;
+        const filtered = unique.filter(t =>
+          t.user_id !== currentUserId &&
+          t.user_id !== String(currentUserId) &&
+          t.email   !== currentEmail
+        );
+
+        setTalents(filtered);
       } catch (err) {
         console.error("Failed to fetch talent:", err);
         setError("Failed to load talent pool. Make sure the backend is running.");
@@ -31,19 +48,25 @@ const Talent = ({ user }) => {
       }
     };
     fetchTalent();
-  }, []);
+  }, [user]);
 
-  // ── Filter ──────────────────────────────────────────────────────────────
-  const filteredTalents = talents.filter(t =>
-    t.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.bio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    t.skills?.some(s => s.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    t.certifications?.some(c =>
-      c.project_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.category?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+  const getDisplayName = (talent) => {
+  return talent.name || talent.fullname || talent.full_name || 'Anonymous';
+};
+
+  const filteredTalents = talents.filter(t => {
+    const name = getDisplayName(t).toLowerCase();
+    const term = searchTerm.toLowerCase();
+    return (
+      name.includes(term) ||
+      t.bio?.toLowerCase().includes(term) ||
+      t.skills?.some(s => s.toLowerCase().includes(term)) ||
+      t.certifications?.some(c =>
+        c.project_title?.toLowerCase().includes(term) ||
+        c.category?.toLowerCase().includes(term)
+      )
+    );
+  });
 
   const handleLogin = () => navigate('/login', { state: { from: location } });
 
@@ -79,14 +102,16 @@ const Talent = ({ user }) => {
 
             <div className="border border-[rgb(226,232,240)] rounded-3xl">
               <div className="w-fit p-4 rounded-3xl bg-[rgb(241,245,249)] flex flex-col space-y-4 items-center">
-                <div className="relative border border-[rgb(226,232,240)] rounded-full">
-                  <button
-                    onClick={handleLogin}
-                    className="w-full min-w-[160px] rounded-full py-2 px-6 text-[rgb(15,23,42)] text-base font-semibold bg-white hover:bg-[rgb(241,245,249)] transition-colors"
-                  >
-                    Login
-                  </button>
-                </div>
+                {!user && (
+                  <div className="relative border border-[rgb(226,232,240)] rounded-full">
+                    <button
+                      onClick={handleLogin}
+                      className="w-full min-w-[160px] rounded-full py-2 px-6 text-[rgb(15,23,42)] text-base font-semibold bg-white hover:bg-[rgb(241,245,249)] transition-colors"
+                    >
+                      Login
+                    </button>
+                  </div>
+                )}
                 <div className="relative border border-[rgb(226,232,240)] rounded-full">
                   <button
                     onClick={handleRecruit}
@@ -107,7 +132,7 @@ const Talent = ({ user }) => {
                   <Search className="w-5 h-5 text-[rgb(148,163,184)] ml-3 shrink-0" />
                   <input
                     type="text"
-                    placeholder="Search by name, skills, role, certifications..."
+                    placeholder="Search by name, skills, certifications..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full bg-transparent border-0 text-[rgb(15,23,42)] placeholder-[rgb(148,163,184)] focus:outline-none focus:ring-0 px-4 py-2 text-base"
@@ -128,7 +153,6 @@ const Talent = ({ user }) => {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-6 py-12">
 
-        {/* Loading */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-24">
             <Loader2 className="w-10 h-10 text-[rgb(37,99,235)] animate-spin mb-4" />
@@ -136,7 +160,6 @@ const Talent = ({ user }) => {
           </div>
         )}
 
-        {/* Error */}
         {error && !loading && (
           <div className="text-center py-16">
             <div className="bg-red-50 border border-red-200 rounded-xl p-6 max-w-md mx-auto">
@@ -145,17 +168,17 @@ const Talent = ({ user }) => {
           </div>
         )}
 
-        {/* Talent cards */}
         {!loading && !error && (
           <div className="space-y-6">
             {filteredTalents.map((talent) => (
               <div
                 key={talent.user_id}
                 onClick={() => setSelectedTalent(talent)}
-                className={`cursor-pointer rounded-xl border transition-all duration-300 ${selectedTalent?.user_id === talent.user_id
+                className={`cursor-pointer rounded-xl border transition-all duration-300 ${
+                  selectedTalent?.user_id === talent.user_id
                     ? 'ring-2 ring-[rgb(37,99,235)] scale-[1.01] border-[rgb(37,99,235)]/30'
                     : 'border-[rgb(226,232,240)] hover:shadow-md'
-                  }`}
+                }`}
               >
                 <div className="bg-white rounded-xl p-6">
                   <div className="flex flex-col lg:flex-row gap-6 items-start">
@@ -165,24 +188,26 @@ const Talent = ({ user }) => {
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                         <div>
                           <div className="flex items-center gap-3 mb-1">
-                            <h3 className="text-xl font-bold text-[rgb(15,23,42)]">{talent.name}</h3>
+                            {/* ✅ Use proper fullname, no title/position shown */}
+                            <h3 className="text-xl font-bold text-[rgb(15,23,42)]">
+                              {getDisplayName(talent)}
+                            </h3>
                             <div className="flex items-center gap-1 text-green-600 text-xs bg-green-500/10 px-2 py-1 rounded-full border border-green-400/20">
                               <Award className="w-3 h-3" />
                               <span>Verified</span>
                             </div>
                           </div>
-                          {talent.title && (
-                            <p className="text-[rgb(37,99,235)] font-medium text-sm">{talent.title}</p>
-                          )}
+                          {/* ✅ No title/position shown here */}
                         </div>
                         <div className="text-xs text-[rgb(148,163,184)] shrink-0">
                           {talent.cert_count} certificate{talent.cert_count !== 1 ? 's' : ''}
                         </div>
                       </div>
 
-                      <p className="text-[rgb(71,85,105)] text-sm mb-4 leading-relaxed">{talent.bio}</p>
+                      {talent.bio && (
+                        <p className="text-[rgb(71,85,105)] text-sm mb-4 leading-relaxed">{talent.bio}</p>
+                      )}
 
-                      {/* Skills from actual certified projects */}
                       {talent.skills?.length > 0 && (
                         <div>
                           <h4 className="text-xs font-semibold text-[rgb(148,163,184)] uppercase mb-2">Skills</h4>
@@ -197,14 +222,15 @@ const Talent = ({ user }) => {
                       )}
                     </div>
 
-                    {/* Right — earned certificates */}
+                    {/* Right — certificates with fixed height + scroll */}
                     <div className="lg:w-80 xl:w-96 shrink-0">
                       <div className="bg-[rgb(248,250,252)] rounded-lg p-4 border border-[rgb(226,232,240)]">
                         <h4 className="text-sm font-semibold text-[rgb(71,85,105)] mb-3 flex items-center gap-2">
                           <Award className="w-4 h-4 text-[rgb(37,99,235)]" />
                           Earned Certificates ({talent.cert_count})
                         </h4>
-                        <div className="space-y-3">
+                        {/* ✅ Fixed height, scrollable when certs overflow */}
+                        <div className="space-y-3 max-h-40 overflow-y-auto pr-1">
                           {talent.certifications.map((cert, i) => (
                             <div key={i} className="flex items-start gap-3 text-sm">
                               <Award className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
@@ -229,7 +255,6 @@ const Talent = ({ user }) => {
               </div>
             ))}
 
-            {/* Empty */}
             {filteredTalents.length === 0 && (
               <div className="text-center py-12">
                 <Users className="w-16 h-16 text-[rgb(148,163,184)] mx-auto mb-4" />
