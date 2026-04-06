@@ -16,6 +16,7 @@ from routes.register import signup
 from routes.course import courseRoute
 from routes.register import login
 from routes.project import projectRoute 
+from routes.mentor import mentorRoute
 from routes.admin import admin
 from routes import proctoring
 from routes.talent import talentRoute
@@ -93,6 +94,7 @@ app.include_router(courseRoute.router)
 app.include_router(signup.router)
 app.include_router(login.router)
 app.include_router(projectRoute.router)
+app.include_router(mentorRoute.router)
 app.include_router(admin.router)
 app.include_router(proctoring.router)
 app.include_router(talentRoute.router)

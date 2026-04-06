@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Request
 from db import client
 from models.projects import Project, UserProject, ProjectQuiz, QuizQuestion
+from models.mentor import MentorActionRequest
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
@@ -112,10 +113,6 @@ class ProjectSubmissionRequest(BaseModel):
     live_demo_url: str
     challenges: str
     learnings: str
-
-class MentorActionRequest(BaseModel):
-    mentor_id: Optional[str] = None
-    reason: Optional[str] = None
 
 
 # CERTIFICATE HELPER
@@ -1061,30 +1058,11 @@ async def get_all_submissions():
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+# Mentor-related endpoints have been moved to routes/mentor/mentorRoute.py
+# See: /api/submissions/{submission_id}/reject
+#      /api/submissions/{submission_id}/approve
+#      /api/submissions
 
-
-# ============================================================================
-# MENTOR REJECT
-# ============================================================================
-@router.post("/api/submissions/{submission_id}/reject")
-async def reject_submission(submission_id: str, body: MentorActionRequest):
-    try:
-        doc = submissions_collection.find_one({"_id": ObjectId(submission_id)})
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid submission_id")
-    if not doc:
-        raise HTTPException(status_code=404, detail="Submission not found")
-
-    submissions_collection.update_one(
-        {"_id": ObjectId(submission_id)},
-        {"$set": {
-            "status":      "rejected",
-            "reviewed_at": datetime.now(timezone.utc),
-            "mentor_id":   body.mentor_id,
-            "reason":      body.reason,
-        }}
-    )
-    return {"message": "Submission rejected"}
 
 @router.get("/api/certificates/{user_id}")
 async def get_user_certificates(user_id: str, request: Request):
@@ -1359,62 +1337,5 @@ async def get_user_project(project_id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
     
 
-@router.post("/api/submissions/{submission_id}/approve")
-async def approve_submission(submission_id: str, body: MentorActionRequest):
-    try:
-        doc = submissions_collection.find_one({"_id": ObjectId(submission_id)})
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid submission_id")
-    if not doc:
-        raise HTTPException(status_code=404, detail="Submission not found")
-
-    user_id    = doc.get("user_id", "")
-    project_id = doc.get("project_id", "")
-
-    logger.info(f"Approving submission {submission_id}: user={user_id}, project={project_id}")
-
-    # 1. Mark submission as approved
-    submissions_collection.update_one(
-        {"_id": ObjectId(submission_id)},
-        {"$set": {
-            "status":      "approved",
-            "reviewed_at": datetime.now(timezone.utc),
-            "mentor_id":   body.mentor_id,
-            "reason":      body.reason,
-        }}
-    )
-
-    # 2. Mark the user_project as APPROVED (new status between in-progress and completed)
-    try:
-        update_result = user_projects_collection.update_one(
-            {"_id": ObjectId(project_id)},
-            {"$set": {
-                "status": "approved",  # ✅ Update status to approved
-                "submission_id": doc.get("_id"),
-                "submission_approved": True,
-                "submission_approved_at": datetime.now(timezone.utc),
-                "mentor_id": body.mentor_id,
-            }}
-        )
-        if update_result.matched_count > 0:
-            logger.info(f"✅ Project {project_id} status updated to APPROVED")
-        else:
-            logger.warning(f"⚠️ Project {project_id} not found for update")
-    except Exception as e:
-        logger.error(f"❌ Failed to update user_project {project_id}: {e}")
-
-    # 3. Move targeted skills from unknownTopics → knownTopics on the User doc
-    try:
-        user_proj = user_projects_collection.find_one({"_id": ObjectId(project_id)})
-        if user_proj:
-            skills_to_promote = user_proj.get("skills", [])  # targeted skills
-            if skills_to_promote:
-                update_user_knowledge(user_id, skills_to_promote, users_collection)
-                logger.info(f"Updated knowledge for user {user_id}")
-    except Exception as e:
-        logger.warning(f"Could not update knowledge for user {user_id}: {e}")
-
-    # 4. Issue certificate if quiz also passed
-    certificate = maybe_issue_certificate(user_id, project_id)
-
-    return {"message": "Submission approved", "certificate": certificate}
+# Mentor approval endpoints have been moved to routes/mentor/mentorRoute.py
+# See: /api/submissions/{submission_id}/approve
