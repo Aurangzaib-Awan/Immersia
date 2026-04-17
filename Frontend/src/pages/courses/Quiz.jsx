@@ -64,6 +64,13 @@ const Quiz = ({ questions: propQuestions, quizId, userId, projectId }) => {
   const [quizStartTime, setQuizStartTime] = useState(null);
 
   // ========================================================================
+  // QUIZ FREEZE STATE
+  // ========================================================================
+  const [isFrozen, setIsFrozen] = useState(false);
+  const [frozenUntil, setFrozenUntil] = useState(null);
+  const [remainingTime, setRemainingTime] = useState("Loading...");
+
+  // ========================================================================
   // PROCTORING STATE
   // ========================================================================
   const [chances, setChances] = useState(3);
@@ -74,9 +81,20 @@ const Quiz = ({ questions: propQuestions, quizId, userId, projectId }) => {
   const [gazeViolationDuration, setGazeViolationDuration] = useState(0);
 
   const gazeTimerRef = useRef(null);
+  const lockTimeoutRef = useRef(null);
+  const quizContainerRef = useRef(null);
+  const freezeIntervalRef = useRef(null);
+  const mouseOutsideRef = useRef(false);
 
   // ========================================================================
-  // ALERT HANDLER
+  // LOCK INTERFACE FUNCTION
+  // ========================================================================
+  const lockInterface = useCallback(() => {
+    // Removed - no longer needed for simple solution
+  }, []);
+
+  // ========================================================================
+  // ALERT HANDLER (depends on lockInterface)
   // ========================================================================
   const handleAlert = useCallback((data) => {
     const alertType = data.alert;
@@ -110,6 +128,207 @@ const Quiz = ({ questions: propQuestions, quizId, userId, projectId }) => {
       return next;
     });
   }, []);
+
+  // ========================================================================
+  // BLOCK KEYBOARD SHORTCUTS (REMOVED - SIMPLIFIED)
+  // ========================================================================
+  // Keyboard blocking removed for simplified solution
+
+  // ========================================================================
+  // BRUTAL MOUSE BOUNDARY DETECTION - IMMEDIATE VIOLATION
+  // ========================================================================
+  useEffect(() => {
+    if (!quizStarted || !quizContainerRef.current) return;
+
+    const handleMouseMove = (e) => {
+      const container = quizContainerRef.current;
+      if (!container) return;
+
+      const rect = container.getBoundingClientRect();
+
+      // BRUTAL: Check if mouse is ANYWHERE outside the quiz container - NO GRACE PERIOD
+      const isOutsideBoundary =
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom;
+
+      // Trigger violation IMMEDIATELY when mouse leaves, even briefly
+      if (isOutsideBoundary && !mouseOutsideRef.current) {
+        mouseOutsideRef.current = true;
+        console.log('🖱️ BRUTAL: Mouse left quiz area IMMEDIATELY DETECTED', { clientX: e.clientX, clientY: e.clientY, rect });
+        handleAlert({
+          alert: 'mouse_left_quiz',
+          behavior_status: 'Mouse left quiz area - Boundary violation detected'
+        });
+      } else if (!isOutsideBoundary && mouseOutsideRef.current) {
+        // Only reset when mouse comes back inside
+        mouseOutsideRef.current = false;
+      }
+    };
+
+    // Detect when mouse completely leaves browser window
+    const handleMouseLeave = () => {
+      if (!mouseOutsideRef.current) {
+        mouseOutsideRef.current = true;
+        console.log('🖱️ CRITICAL: Mouse left browser window completely');
+        handleAlert({
+          alert: 'mouse_left_window',
+          behavior_status: 'Mouse left the browser window - went to taskbar/system area'
+        });
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, [quizStarted, handleAlert]);
+
+  // ========================================================================
+  // WINDOW BLUR/FOCUS DETECTION - INSTANT TERMINATION
+  // ========================================================================
+  useEffect(() => {
+    if (!quizStarted) return;
+
+    const handleWindowBlur = () => {
+      console.log('❌ Window lost focus - Terminating quiz');
+      setQuizTerminated(true);
+      setQuizStarted(false);
+      handleAlert({
+        alert: 'window_blur',
+        behavior_status: 'User switched to another window/application'
+      });
+    };
+
+    window.addEventListener('blur', handleWindowBlur);
+    return () => window.removeEventListener('blur', handleWindowBlur);
+  }, [quizStarted, handleAlert]);
+
+  // ========================================================================
+  // CHECK QUIZ FREEZE STATUS (Call on mount to check if frozen)
+  // ========================================================================
+  useEffect(() => {
+    if (!projectId || !userId) {
+      console.log('⏭️ Skipping freeze check - missing projectId or userId');
+      return;
+    }
+
+    console.log(`🔍 Checking freeze status for project: ${projectId}, user: ${userId}`);
+
+    const checkFreezeStatus = async () => {
+      try {
+        const res = await fetch(`http://localhost:8000/api/quiz/check-freeze/${projectId}/${userId}`);
+        if (!res.ok) {
+          console.error('Freeze check failed with status:', res.status);
+          return;
+        }
+        
+        const data = await res.json();
+        console.log('📊 Freeze check response:', data);
+        
+        setIsFrozen(data.is_frozen);
+        setFrozenUntil(data.frozen_until ? new Date(data.frozen_until) : null);
+        setRemainingTime(data.remaining_time || "");
+        
+        if (data.is_frozen) {
+          console.log(`🔒 PROJECT QUIZ IS FROZEN: ${data.message}`);
+        } else {
+          console.log('✅ Quiz is available (not frozen)');
+        }
+      } catch (err) {
+        console.error('❌ Error checking quiz freeze status:', err);
+      }
+    };
+
+    checkFreezeStatus();
+  }, [projectId, userId]); // Only depends on projectId and userId
+
+  // ========================================================================
+  // COUNTDOWN TIMER FOR FROZEN QUIZ
+  // ========================================================================
+  useEffect(() => {
+    if (!isFrozen || !frozenUntil) {
+      return; // No need to update if not frozen
+    }
+
+    console.log('⏱️ Starting countdown timer for frozen quiz');
+
+    const updateCountdown = () => {
+      const now = new Date();
+      const remaining = frozenUntil - now;
+      
+      if (remaining <= 0) {
+        console.log('✅ Freeze period expired - quiz is now available');
+        setIsFrozen(false);
+        setRemainingTime(null);
+        if (freezeIntervalRef.current) {
+          clearInterval(freezeIntervalRef.current);
+          freezeIntervalRef.current = null;
+        }
+      } else {
+        const hours = Math.floor(remaining / (1000 * 60 * 60));
+        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+        setRemainingTime(`${hours}h ${minutes}m ${seconds}s`);
+      }
+    };
+
+    // Update immediately
+    updateCountdown();
+
+    // Then update every second
+    freezeIntervalRef.current = setInterval(updateCountdown, 1000);
+
+    return () => {
+      if (freezeIntervalRef.current) {
+        clearInterval(freezeIntervalRef.current);
+        freezeIntervalRef.current = null;
+      }
+    };
+  }, [isFrozen, frozenUntil]);
+
+  // ========================================================================
+  // TRACK QUIZ TERMINATION (when terminated before submission)
+  // ========================================================================
+  useEffect(() => {
+    if (!quizTerminated || !quizId || !userId) return;
+
+    console.log('📊 Tracking quiz termination as failed attempt...');
+
+    const trackTermination = async () => {
+      try {
+        const res = await fetch('http://localhost:8000/api/quiz/attempt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: userId,
+            quiz_id: quizId,
+            passed: false
+          }),
+          credentials: 'include'
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          console.log('✅ Termination tracked - freeze status:', data.is_frozen);
+          if (data.is_frozen) {
+            setIsFrozen(true);
+            setFrozenUntil(data.frozen_until ? new Date(data.frozen_until) : null);
+          }
+        } else {
+          console.error('Failed to track termination:', res.status);
+        }
+      } catch (err) {
+        console.error('❌ Error tracking quiz termination:', err);
+      }
+    };
+
+    trackTermination();
+  }, [quizTerminated, quizId, userId]);
 
   // ========================================================================
   // GAZE TIMER
@@ -319,6 +538,7 @@ const Quiz = ({ questions: propQuestions, quizId, userId, projectId }) => {
     return () => {
       stopProctoring();
       if (gazeTimerRef.current) clearInterval(gazeTimerRef.current);
+      if (freezeIntervalRef.current) clearInterval(freezeIntervalRef.current);
     };
   }, [stopProctoring]);
 
@@ -500,6 +720,38 @@ const Quiz = ({ questions: propQuestions, quizId, userId, projectId }) => {
   // RENDER: START SCREEN
   // ========================================================================
   if (!quizStarted) {
+    // Show frozen message if quiz is frozen
+    if (isFrozen) {
+      return (
+        <div className="min-h-screen bg-[rgb(248,250,252)] flex items-center justify-center p-6">
+          <div className="max-w-md w-full bg-white border border-red-200 rounded-3xl p-8 text-center">
+            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShieldX className="w-10 h-10 text-red-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-[rgb(15,23,42)] mb-4">Quiz Frozen</h2>
+            <p className="text-[rgb(71,85,105)] mb-6">
+              You have reached the maximum of 3 failed attempts on this quiz.
+            </p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+              <p className="text-red-600 text-sm font-medium mb-3">⏱️ Available in:</p>
+              <div className="text-3xl font-bold text-red-600 font-mono">{remainingTime}</div>
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <p className="text-blue-600 text-sm">
+                💡 Use this time to review the material and prepare for your next attempt.
+              </p>
+            </div>
+            <button
+              onClick={handleBackToWorkspace}
+              className="w-full bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white font-bold py-3 px-6 rounded-xl transition-all"
+            >
+              Back to Project
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-[rgb(248,250,252)] flex items-center justify-center p-6">
         <div className="max-w-2xl w-full">
@@ -552,13 +804,27 @@ const Quiz = ({ questions: propQuestions, quizId, userId, projectId }) => {
                     <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-yellow-500" />
                     <span>Stay alone in the room</span>
                   </li>
+                  <li className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-red-600 font-bold" />
+                    <span className="font-semibold text-red-600">⚠️ Keep mouse INSIDE quiz area - any movement outside triggers violation</span>
+                  </li>
                 </ul>
               </div>
             </div>
 
-            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-4">
               <p className="text-sm text-yellow-500 font-medium">
                 ⚠️ You have 3 chances. Each violation costs 1 chance. At 0 chances, the quiz will auto-terminate.
+              </p>
+            </div>
+
+            <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
+              <p className="text-sm text-red-500 font-bold flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5" />
+                🖱️ CRITICAL: Mouse Boundary Rule
+              </p>
+              <p className="text-sm text-red-500 mt-2">
+                Your mouse must stay INSIDE the quiz area at ALL times. Any movement outside (taskbar, other windows, search bar, etc.) will immediately trigger a violation and cost 1 chance.
               </p>
             </div>
 
@@ -583,7 +849,7 @@ const Quiz = ({ questions: propQuestions, quizId, userId, projectId }) => {
   return (
     <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)]">
       {/* Header */}
-      <div className="h-16 border-b border-[rgb(226,232,240)] bg-white flex items-center justify-between px-6 sticky top-0 z-50">
+      <div className="h-16 border-b border-[rgb(226,232,240)] bg-white flex items-center justify-between px-4 sm:px-6 sticky top-0 z-50">
         <div className="flex items-center gap-4">
           <div className="px-3 py-1 bg-[rgb(241,245,249)] rounded-lg text-xs font-bold text-[rgb(148,163,184)]">
             SECURE EXAM MODE
@@ -614,7 +880,10 @@ const Quiz = ({ questions: propQuestions, quizId, userId, projectId }) => {
         </div>
       </div>
 
-      <div className="max-w-[1600px] mx-auto p-6 lg:p-10">
+      <div
+        ref={quizContainerRef}
+        className="max-w-[1600px] mx-auto p-4 sm:p-6 lg:p-10"
+      >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
           {/* Left Column: Proctor Feed */}

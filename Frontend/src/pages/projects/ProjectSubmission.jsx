@@ -17,6 +17,7 @@ const ProjectSubmission = ({ user }) => {
   });
   const [isSubmitting, setIsSubmitting]     = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showAlreadyApprovedModal, setShowAlreadyApprovedModal] = useState(false);
   const [error, setError]                   = useState('');
   const [curatedProjectId, setCuratedProjectId] = useState(null);
 
@@ -71,9 +72,9 @@ const ProjectSubmission = ({ user }) => {
       });
       setShowSuccessModal(true);
     } catch (err) {
-      // ✅ Show a friendlier message if already submitted (non-rejected)
+      // ✅ Show a friendly modal if already submitted (pending or approved)
       if (err.message?.includes('already submitted')) {
-        setError('You already have a pending or approved submission for this project.');
+        setShowAlreadyApprovedModal(true);
       } else {
         setError(err.message || 'Submission failed. Please try again.');
       }
@@ -87,6 +88,72 @@ const ProjectSubmission = ({ user }) => {
     if (curatedProjectId) navigate(`/projects/${curatedProjectId}`);
     else navigate(`/projects/${projectId}/workspace`);
   };
+
+  // Show modal if already submitted (pending or approved)
+  if (showAlreadyApprovedModal) {
+    return (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        {/* Backdrop */}
+        <div 
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          onClick={() => {
+            setShowAlreadyApprovedModal(false);
+            navigate(`/projects/${projectId}/workspace`);
+          }}
+        />
+        
+        {/* Modal */}
+        <div className="relative z-50 bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95">
+          {/* Header with gradient background */}
+          <div className="bg-gradient-to-r from-[rgb(37,99,235)] to-[rgb(29,78,216)] px-6 py-8 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="bg-white/20 rounded-full p-3">
+                <AlertCircle className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-white">Project Already Submitted</h2>
+          </div>
+
+          {/* Content */}
+          <div className="px-6 py-8 text-center">
+            <p className="text-slate-600 text-base leading-relaxed mb-4">
+              This project already has a submission that is either <span className="font-semibold">pending review</span> or has been <span className="font-semibold">approved</span> by your mentor.
+            </p>
+            <div className="bg-blue-50 border border-[rgb(226,232,240)] rounded-lg p-4 mb-4">
+              <p className="text-sm text-[rgb(37,99,235)]">
+                <span className="font-semibold">ℹ️ Info:</span> You can only resubmit projects that have been <span className="font-semibold">rejected</span> by your mentor.
+              </p>
+            </div>
+            <p className="text-slate-500 text-sm">
+              If you need to make changes after rejection, you'll be able to resubmit then.
+            </p>
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 py-6 bg-blue-50 border-t border-[rgb(226,232,240)] flex gap-3">
+            <button
+              onClick={() => {
+                setShowAlreadyApprovedModal(false);
+                navigate(`/projects/${projectId}/workspace`);
+              }}
+              className="flex-1 px-4 py-3 bg-white hover:bg-slate-50 text-[rgb(37,99,235)] font-semibold rounded-lg transition-colors duration-200 border border-[rgb(226,232,240)]"
+            >
+              Go Back
+            </button>
+            <button
+              onClick={() => {
+                setShowAlreadyApprovedModal(false);
+                navigate('/projects');
+              }}
+              className="flex-1 px-4 py-3 bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white font-semibold rounded-lg transition-all duration-200"
+            >
+              Browse Projects
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[rgb(248,250,252)] text-[rgb(15,23,42)] p-6">

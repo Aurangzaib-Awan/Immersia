@@ -24,6 +24,7 @@ CSRF_EXEMPT_PREFIXES = (
     "/api/generate-project", 
     "/api/generate-quiz",    
     "/api/quiz/submit",       # Quiz submission
+    "/api/quiz/attempt",      # Quiz attempt tracking (terminations)
     "/api/user-projects",     # Create/fetch user projects
     "/api/projects/",         # Project operations
     "/api/certificates/",     # Certificate operations

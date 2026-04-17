@@ -74,13 +74,19 @@ user_projects_collection    = db["user_projects"]
 project_quizzes_collection  = db["project_quizzes"]
 submissions_collection      = db["project_submissions"]
 certificates_collection     = db["certificates"]
-users_collection = db["users"]
+users_collection            = db["users"]
+quiz_freeze_collection      = db["quiz_freeze_history"]
 
 # MODELS
 class QuizSubmission(BaseModel):
     quiz_id: str
     user_id: str
     user_answers: List[dict]
+
+class QuizAttemptRequest(BaseModel):
+    user_id: str
+    quiz_id: str
+    passed: bool = False
 
 class GenerateQuizRequest(BaseModel):
     project_id: str
@@ -603,6 +609,12 @@ async def generate_quiz(request: GenerateQuizRequest):
     if not proj:
         raise HTTPException(status_code=404, detail="Project not found")
 
+    # ✅ CHECK IF QUIZ ALREADY PASSED - Don't allow retaking
+    quiz_passed = proj.get("quiz_passed", False)
+    if quiz_passed:
+        logger.info(f"❌ Quiz already passed for user {request.user_id}, project {request.project_id}")
+        raise HTTPException(status_code=403, detail="You have already passed this quiz. Cannot retake.")
+
     title        = proj.get('title', proj.get('project_title', 'Unknown Project'))
     technologies = proj.get('technologies', proj.get('skills', []))
     tasks        = proj.get('tasks', [])
@@ -897,7 +909,107 @@ async def get_projects_by_difficulty(difficulty: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 # ============================================================================
-# QUIZ SUBMIT
+# ============================================================================
+# QUIZ FREEZE HELPERS
+# ============================================================================
+def check_quiz_frozen(user_id: str, project_id: str) -> tuple[bool, Optional[datetime]]:
+    """
+    Check if a quiz is frozen for this user on this project.
+    Returns: (is_frozen, frozen_until_time)
+    """
+    freeze_record = quiz_freeze_collection.find_one({
+        "user_id": user_id,
+        "project_id": project_id
+    })
+    
+    if not freeze_record:
+        return False, None
+    
+    frozen_until = freeze_record.get("frozen_until")
+    if isinstance(frozen_until, str):
+        frozen_until = datetime.fromisoformat(frozen_until)
+    
+    # Ensure frozen_until is timezone-aware
+    if frozen_until and frozen_until.tzinfo is None:
+        frozen_until = frozen_until.replace(tzinfo=timezone.utc)
+    
+    now = datetime.now(timezone.utc)
+    
+    # If freeze period has expired, remove the freeze record
+    if frozen_until and frozen_until < now:
+        quiz_freeze_collection.delete_one({
+            "user_id": user_id,
+            "project_id": project_id
+        })
+        return False, None
+    
+    return True, frozen_until
+
+def track_quiz_attempt(user_id: str, project_id: str, passed: bool):
+    """
+    Track a quiz attempt per project. If 3 failures in a row, freeze for 6 hours.
+    """
+    logger.info(f"🔄 TRACKING QUIZ ATTEMPT - user_id: {user_id}, project_id: {project_id}, passed: {passed}")
+    
+    freeze_record = quiz_freeze_collection.find_one({
+        "user_id": user_id,
+        "project_id": project_id
+    })
+    
+    if not freeze_record:
+        logger.info(f"   → First attempt for this user/project combination")
+        freeze_record = {
+            "user_id": user_id,
+            "project_id": project_id,
+            "failed_attempts": 0,
+            "last_attempt": None,
+            "frozen_until": None,
+            "created_at": datetime.now(timezone.utc)
+        }
+    else:
+        logger.info(f"   → Existing record found: failed_attempts={freeze_record.get('failed_attempts')}")
+    
+    now = datetime.now(timezone.utc)
+    
+    if passed:
+        # Reset on pass
+        quiz_freeze_collection.update_one(
+            {"user_id": user_id, "project_id": project_id},
+            {"$set": {
+                "failed_attempts": 0,
+                "last_attempt": now,
+                "frozen_until": None
+            }},
+            upsert=True
+        )
+        logger.info(f"✅ Quiz attempt recorded as PASS - freeze reset for user {user_id}")
+    else:
+        # Increment failures
+        new_failed_count = freeze_record.get("failed_attempts", 0) + 1
+        update_data = {
+            "failed_attempts": new_failed_count,
+            "last_attempt": now
+        }
+        
+        logger.info(f"   → Failure count incremented: {new_failed_count}/3")
+        
+        # If 3 failures, freeze for 6 hours
+        if new_failed_count >= 3:
+            from datetime import timedelta
+            frozen_until = now + timedelta(hours=6)
+            update_data["frozen_until"] = frozen_until
+            logger.warning(f"❌ 🔒 PROJECT FROZEN for user {user_id}: 3 failed attempts reached! Frozen until {frozen_until}")
+        
+        quiz_freeze_collection.update_one(
+            {"user_id": user_id, "project_id": project_id},
+            {"$set": update_data},
+            upsert=True
+        )
+        if new_failed_count >= 3:
+            logger.warning(f"   → FREEZE RECORD CREATED IN DATABASE")
+        else:
+            logger.info(f"❌ Quiz attempt recorded as FAIL - attempts: {new_failed_count}/3 for user {user_id}")
+
 # ============================================================================
 @router.post("/api/quiz/submit")
 async def submit_quiz(sub: QuizSubmission):
@@ -937,15 +1049,19 @@ async def submit_quiz(sub: QuizSubmission):
     logger.info(f"Quiz {sub.quiz_id} updated: is_completed=True, score={score}, docs_modified={quiz_update.modified_count}")
 
     project_id     = quiz_doc.get("project_id", "")
-    effective_user_id = quiz_doc.get("user_id", sub.user_id)
-
-    logger.info(f"📝 Quiz submission - user_id: {effective_user_id}, project_id: {project_id}")
+    # Prefer the user_id from submission (more reliable) over quiz document
+    effective_user_id = sub.user_id or quiz_doc.get("user_id", "UNKNOWN")
+    
+    logger.info(f"📝 Quiz submission - quiz_id: {sub.quiz_id}, user_id: {effective_user_id}, project_id: {project_id}")
+    logger.info(f"   → Submitted by: {sub.user_id}, Quiz doc user_id: {quiz_doc.get('user_id', 'N/A')}")
 
     total_questions = len(quiz_doc.get("questions", []))
     passing_score   = (total_questions * 70 + 99) // 100  # ceil(70%)
 
     if score >= passing_score:
         logger.info(f"✅ Quiz PASSED! Score: {score}/{total_questions} (≥ {passing_score} required)")
+        # Track successful attempt (per project)
+        track_quiz_attempt(effective_user_id, project_id, passed=True)
         try:
             proj_result = user_projects_collection.update_one(
                 {"_id": ObjectId(project_id)},
@@ -962,6 +1078,8 @@ async def submit_quiz(sub: QuizSubmission):
             logger.error(f"Failed to update project status: {e}", exc_info=True)
     else:
         logger.info(f"❌ Quiz FAILED! Score: {score}/{total_questions} (need ≥ {passing_score} to pass)")
+        # Track failed attempt (per project)
+        track_quiz_attempt(effective_user_id, project_id, passed=False)
 
     logger.info(f"📋 Issuing certificate for user_id='{effective_user_id}', project_id='{project_id}'")
     certificate = maybe_issue_certificate(effective_user_id, project_id)
@@ -977,11 +1095,89 @@ async def submit_quiz(sub: QuizSubmission):
     }
 
 # ============================================================================
+# TRACK QUIZ ATTEMPT (for terminations/violations)
+# ============================================================================
+@router.post("/api/quiz/attempt")
+async def track_quiz_attempt_endpoint(data: QuizAttemptRequest):
+    """
+    Track a quiz attempt when it's terminated due to violations.
+    Body: {user_id, quiz_id, passed: bool}
+    Note: quiz_id is used to resolve project_id; tracking is per project
+    """
+    user_id = data.user_id
+    quiz_id = data.quiz_id
+    passed = data.passed
+    
+    # Resolve project_id from quiz document
+    try:
+        quiz_doc = project_quizzes_collection.find_one({"_id": ObjectId(quiz_id)})
+        if not quiz_doc:
+            raise HTTPException(status_code=404, detail="Quiz not found")
+        project_id = quiz_doc.get("project_id", "")
+    except Exception as e:
+        logger.error(f"Failed to resolve project_id from quiz_id: {e}")
+        raise HTTPException(status_code=400, detail="Invalid quiz_id")
+    
+    logger.info(f"📊 Tracking quiz attempt via endpoint: user_id={user_id}, project_id={project_id}, passed={passed}")
+    track_quiz_attempt(user_id, project_id, passed)
+    
+    is_frozen, frozen_until = check_quiz_frozen(user_id, project_id)
+    
+    return {
+        "success": True,
+        "is_frozen": is_frozen,
+        "frozen_until": frozen_until.isoformat() if frozen_until else None,
+        "message": "Quiz attempt tracked"
+    }
+
+# ============================================================================
+# CHECK QUIZ FREEZE STATUS
+# ============================================================================
+@router.get("/api/quiz/check-freeze/{project_id}/{user_id}")
+async def check_quiz_freeze_status(project_id: str, user_id: str):
+    """
+    Check if a project's quiz is frozen for a user.
+    Returns freeze status and remaining time if frozen.
+    """
+    try:
+        is_frozen, frozen_until = check_quiz_frozen(user_id, project_id)
+        
+        if is_frozen and frozen_until:
+            from datetime import datetime, timezone
+            now = datetime.now(timezone.utc)
+            remaining_seconds = int((frozen_until - now).total_seconds())
+            remaining_minutes = remaining_seconds // 60
+            remaining_hours = remaining_minutes // 60
+            remaining_mins = remaining_minutes % 60
+            
+            logger.info(f"PROJECT {project_id} is frozen for user {user_id}. Remaining: {remaining_hours}h {remaining_mins}m")
+            
+            return {
+                "is_frozen": True,
+                "frozen_until": frozen_until.isoformat(),
+                "remaining_seconds": max(0, remaining_seconds),
+                "remaining_time": f"{remaining_hours}h {remaining_mins}m",
+                "message": f"Quiz is frozen. You can retry in {remaining_hours}h {remaining_mins}m"
+            }
+        else:
+            return {
+                "is_frozen": False,
+                "frozen_until": None,
+                "remaining_seconds": 0,
+                "remaining_time": None,
+                "message": "Quiz is available"
+            }
+    except Exception as e:
+        logger.error(f"Error checking quiz freeze status: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Error checking freeze status")
+
+# ============================================================================
 # PROJECT SUBMISSION
 # ============================================================================
 @router.post("/api/projects/submit")
 async def submit_project(request: ProjectSubmissionRequest):
-    # Check if already submitted
+    # Check if already submitted with pending or approved status
+    # ✅ Allow resubmission if previous was REJECTED
     existing = submissions_collection.find_one({
         "user_id":    request.user_id,
         "project_id": request.project_id,
@@ -990,6 +1186,53 @@ async def submit_project(request: ProjectSubmissionRequest):
     if existing:
         raise HTTPException(status_code=409, detail="You have already submitted this project.")
 
+    # ✅ If there's a rejected submission, update it instead of inserting new one
+    rejected = submissions_collection.find_one({
+        "user_id":    request.user_id,
+        "project_id": request.project_id,
+        "status":     "rejected"
+    })
+
+    now = datetime.now(timezone.utc)
+
+    if rejected:
+        # Resubmission — update the existing rejected doc back to pending
+        submissions_collection.update_one(
+            {"_id": rejected["_id"]},
+            {"$set": {
+                "description":   request.description,
+                "github_url":    request.github_url,
+                "live_demo_url": request.live_demo_url,
+                "challenges":    request.challenges,
+                "learnings":     request.learnings,
+                "status":        "pending",
+                "submitted_at":  now,
+                "reviewed_at":   None,
+                "mentor_id":     None,
+                "reason":        None,
+            }}
+        )
+        submission_id = str(rejected["_id"])
+        logger.info(f"✅ Resubmission — updated rejected submission {submission_id} back to PENDING")
+
+        # Also reset user_project status back to submitted
+        try:
+            user_projects_collection.update_one(
+                {"_id": ObjectId(request.project_id)},
+                {"$set": {
+                    "status":        "submitted",
+                    "submission_id": submission_id,
+                }}
+            )
+            logger.info(f"✅ Project {request.project_id} status reset to SUBMITTED")
+        except Exception as e:
+            logger.warning(f"Failed to reset project status: {e}")
+
+        updated_doc = submissions_collection.find_one({"_id": rejected["_id"]})
+        updated_doc["submission_id"] = submission_id
+        return serialize_doc(updated_doc)
+
+    # Fresh first-time submission
     doc = {
         "user_id":       request.user_id,
         "project_id":    request.project_id,
@@ -999,26 +1242,25 @@ async def submit_project(request: ProjectSubmissionRequest):
         "challenges":    request.challenges,
         "learnings":     request.learnings,
         "status":        "pending",
-        "submitted_at":  datetime.now(timezone.utc),
+        "submitted_at":  now,
     }
     try:
         result               = submissions_collection.insert_one(doc)
         doc["_id"]           = result.inserted_id
         doc["submission_id"] = str(result.inserted_id)
-        
-        # 🔗 LINK: Update user_project to reference this submission AND change status
+
         try:
             user_projects_collection.update_one(
                 {"_id": ObjectId(request.project_id)},
                 {"$set": {
                     "submission_id": str(result.inserted_id),
-                    "status": "submitted"  # ✅ Change from in-progress to submitted
+                    "status":        "submitted"
                 }}
             )
             logger.info(f"✅ Project {request.project_id} status changed to SUBMITTED")
         except Exception as e:
             logger.warning(f"Failed to link submission: {e}")
-            
+
     except Exception as e:
         logger.error(f"Submission insert error: {e}")
         raise HTTPException(status_code=500, detail="Error saving submission")
